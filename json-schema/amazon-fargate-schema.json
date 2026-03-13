@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://api-evangelist.com/schemas/amazon/fargate/task.json",
+  "title": "Amazon Fargate Task",
+  "description": "Represents an Amazon Fargate task with its associated configuration, state, and metadata.",
+  "type": "object",
+  "required": ["taskArn", "taskDefinitionArn", "launchType"],
+  "properties": {
+    "taskArn": {
+      "type": "string",
+      "description": "The Amazon Resource Name (ARN) of the task"
+    },
+    "taskDefinitionArn": {
+      "type": "string",
+      "description": "The ARN of the task definition that created the task"
+    },
+    "clusterArn": {
+      "type": "string",
+      "description": "The ARN of the cluster that hosts the task"
+    },
+    "launchType": {
+      "type": "string",
+      "enum": ["FARGATE", "EC2"],
+      "description": "The launch type on which the task is running"
+    },
+    "lastStatus": {
+      "type": "string",
+      "enum": ["PROVISIONING", "PENDING", "ACTIVATING", "RUNNING", "DEACTIVATING", "STOPPING", "DEPROVISIONING", "STOPPED"],
+      "description": "The last known status of the task"
+    },
+    "desiredStatus": {
+      "type": "string",
+      "description": "The desired status of the task"
+    },
+    "cpu": {
+      "type": "string",
+      "description": "The number of CPU units used by the task"
+    },
+    "memory": {
+      "type": "string",
+      "description": "The amount of memory (in MiB) used by the task"
+    },
+    "containers": {
+      "type": "array",
+      "description": "The containers associated with the task",
+      "items": {
+        "type": "object",
+        "properties": {
+          "containerArn": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "lastStatus": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "platformVersion": {
+      "type": "string",
+      "description": "The Fargate platform version on which the task is running"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The time the task was created"
+    },
+    "tags": {
+      "type": "array",
+      "description": "Tags associated with the task",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "ecs": "https://docs.aws.amazon.com/AmazonECS/latest/APIReference/",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dcterms": "http://purl.org/dc/terms/",
+
+    "Task": {
+      "@id": "ecs:Task",
+      "@context": {
+        "taskArn": "ecs:taskArn",
+        "taskDefinitionArn": "ecs:taskDefinitionArn",
+        "clusterArn": "ecs:clusterArn",
+        "launchType": "ecs:launchType",
+        "lastStatus": "ecs:lastStatus",
+        "desiredStatus": "ecs:desiredStatus",
+        "cpu": "ecs:cpu",
+        "memory": "ecs:memory",
+        "platformVersion": "ecs:platformVersion",
+        "containers": {
+          "@id": "ecs:containers",
+          "@container": "@set"
+        },
+        "createdAt": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        },
+        "tags": {
+          "@id": "ecs:tags",
+          "@container": "@set"
+        }
+      }
+    },
+
+    "Service": {
+      "@id": "ecs:Service",
+      "@context": {
+        "serviceArn": "ecs:serviceArn",
+        "serviceName": "schema:name",
+        "desiredCount": "ecs:desiredCount",
+        "runningCount": "ecs:runningCount",
+        "launchType": "ecs:launchType"
+      }
+    }
+  }
+}

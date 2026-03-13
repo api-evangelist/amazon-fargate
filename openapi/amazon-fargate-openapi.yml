@@ -1,0 +1,82 @@
+openapi: 3.1.0
+info:
+  title: Amazon Fargate API
+  description: >-
+    Amazon Fargate is a serverless compute engine for containers that works
+    with Amazon ECS and Amazon EKS. This API enables you to run containers
+    without managing servers, define task definitions, configure networking,
+    and deploy containerized applications with automatic scaling.
+  version: '2014-11-13'
+  contact:
+    name: Amazon Web Services
+    url: https://aws.amazon.com/contact-us/
+  termsOfService: https://aws.amazon.com/service-terms/
+externalDocs:
+  description: Amazon ECS API Reference (Fargate)
+  url: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/Welcome.html
+servers:
+  - url: https://ecs.{region}.amazonaws.com
+    description: Amazon ECS/Fargate Regional Endpoint
+    variables:
+      region:
+        default: us-east-1
+        description: AWS Region
+tags:
+  - name: Tasks
+    description: Operations for running and managing Fargate tasks
+  - name: Services
+    description: Operations for creating and managing Fargate services
+  - name: Task Definitions
+    description: Operations for registering and managing task definitions
+  - name: Clusters
+    description: Operations for managing ECS clusters with Fargate capacity
+paths:
+  /:
+    post:
+      operationId: RunTask
+      summary: Run a task on Fargate
+      description: Starts a new task using the specified task definition on Fargate launch type.
+      tags:
+        - Tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - taskDefinition
+                - launchType
+              properties:
+                cluster:
+                  type: string
+                  description: The cluster on which to run the task
+                taskDefinition:
+                  type: string
+                  description: The task definition to use
+                launchType:
+                  type: string
+                  enum: [FARGATE, EC2]
+                  description: The launch type
+                networkConfiguration:
+                  type: object
+                  description: Network configuration for Fargate tasks
+                count:
+                  type: integer
+                  description: Number of task instances to run
+      responses:
+        '200':
+          description: Task started successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tasks:
+                    type: array
+                    items:
+                      type: object
+                  failures:
+                    type: array
+                    items:
+                      type: object
