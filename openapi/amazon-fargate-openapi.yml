@@ -24,12 +24,6 @@ servers:
 tags:
   - name: Tasks
     description: Operations for running and managing Fargate tasks
-  - name: Services
-    description: Operations for creating and managing Fargate services
-  - name: Task Definitions
-    description: Operations for registering and managing task definitions
-  - name: Clusters
-    description: Operations for managing ECS clusters with Fargate capacity
 paths:
   /:
     post:
