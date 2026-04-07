@@ -34,7 +34,7 @@ paths:
   /:
     post:
       operationId: RunTask
-      summary: Run a task on Fargate
+      summary: Amazon Fargate Run a task on Fargate
       description: Starts a new task using the specified task definition on Fargate launch type.
       tags:
         - Tasks
