@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/amazon-fargate/refs/heads/main/json-schema/amazon-fargate-account-setting-schema.json",
+  "title": "AccountSetting",
+  "description": "An ECS account setting",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Setting name",
+      "example": "containerInsights"
+    },
+    "value": {
+      "type": "string",
+      "description": "Setting value",
+      "example": "enabled"
+    },
+    "principalArn": {
+      "type": "string",
+      "description": "Principal ARN",
+      "example": "arn:aws:iam::123456789012:root"
+    }
+  }
+}

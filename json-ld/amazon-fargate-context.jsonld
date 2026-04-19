@@ -1,47 +1,282 @@
 {
   "@context": {
     "@version": 1.1,
-    "ecs": "https://docs.aws.amazon.com/AmazonECS/latest/APIReference/",
+    "fargate": "https://aws.amazon.com/fargate/schema/",
     "schema": "https://schema.org/",
-    "xsd": "http://www.w3.org/2001/XMLSchema#",
     "dcterms": "http://purl.org/dc/terms/",
-
-    "Task": {
-      "@id": "ecs:Task",
-      "@context": {
-        "taskArn": "ecs:taskArn",
-        "taskDefinitionArn": "ecs:taskDefinitionArn",
-        "clusterArn": "ecs:clusterArn",
-        "launchType": "ecs:launchType",
-        "lastStatus": "ecs:lastStatus",
-        "desiredStatus": "ecs:desiredStatus",
-        "cpu": "ecs:cpu",
-        "memory": "ecs:memory",
-        "platformVersion": "ecs:platformVersion",
-        "containers": {
-          "@id": "ecs:containers",
-          "@container": "@set"
-        },
-        "createdAt": {
-          "@id": "dcterms:created",
-          "@type": "xsd:dateTime"
-        },
-        "tags": {
-          "@id": "ecs:tags",
-          "@container": "@set"
-        }
-      }
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "PortMapping": "fargate:PortMapping",
+    "containerPort": {
+      "@id": "fargate:containerPort",
+      "@type": "xsd:integer"
     },
-
-    "Service": {
-      "@id": "ecs:Service",
-      "@context": {
-        "serviceArn": "ecs:serviceArn",
-        "serviceName": "schema:name",
-        "desiredCount": "ecs:desiredCount",
-        "runningCount": "ecs:runningCount",
-        "launchType": "ecs:launchType"
-      }
+    "hostPort": {
+      "@id": "fargate:hostPort",
+      "@type": "xsd:integer"
+    },
+    "protocol": {
+      "@id": "fargate:protocol",
+      "@type": "xsd:string"
+    },
+    "LogConfiguration": "fargate:LogConfiguration",
+    "logDriver": {
+      "@id": "fargate:logDriver",
+      "@type": "xsd:string"
+    },
+    "options": {
+      "@id": "fargate:options",
+      "@type": "@id"
+    },
+    "KeyValuePair": "fargate:KeyValuePair",
+    "name": "schema:name",
+    "value": {
+      "@id": "fargate:value",
+      "@type": "xsd:string"
+    },
+    "LoadBalancer": "fargate:LoadBalancer",
+    "targetGroupArn": {
+      "@id": "fargate:targetGroupArn",
+      "@type": "xsd:string"
+    },
+    "loadBalancerName": {
+      "@id": "fargate:loadBalancerName",
+      "@type": "xsd:string"
+    },
+    "containerName": {
+      "@id": "fargate:containerName",
+      "@type": "xsd:string"
+    },
+    "TaskDefinition": "fargate:TaskDefinition",
+    "taskDefinitionArn": {
+      "@id": "fargate:taskDefinitionArn",
+      "@type": "xsd:string"
+    },
+    "family": {
+      "@id": "fargate:family",
+      "@type": "xsd:string"
+    },
+    "revision": {
+      "@id": "fargate:revision",
+      "@type": "xsd:integer"
+    },
+    "status": {
+      "@id": "fargate:status",
+      "@type": "xsd:string"
+    },
+    "requiresCompatibilities": {
+      "@id": "fargate:requiresCompatibilities",
+      "@container": "@set",
+      "@type": "xsd:string"
+    },
+    "networkMode": {
+      "@id": "fargate:networkMode",
+      "@type": "xsd:string"
+    },
+    "cpu": {
+      "@id": "fargate:cpu",
+      "@type": "xsd:string"
+    },
+    "memory": {
+      "@id": "fargate:memory",
+      "@type": "xsd:string"
+    },
+    "executionRoleArn": {
+      "@id": "fargate:executionRoleArn",
+      "@type": "xsd:string"
+    },
+    "taskRoleArn": {
+      "@id": "fargate:taskRoleArn",
+      "@type": "xsd:string"
+    },
+    "containerDefinitions": {
+      "@id": "fargate:containerDefinitions",
+      "@container": "@set",
+      "@type": "xsd:string"
+    },
+    "Tag": "fargate:Tag",
+    "key": {
+      "@id": "fargate:key",
+      "@type": "xsd:string"
+    },
+    "AccountSetting": "fargate:AccountSetting",
+    "principalArn": {
+      "@id": "fargate:principalArn",
+      "@type": "xsd:string"
+    },
+    "Failure": "fargate:Failure",
+    "arn": {
+      "@id": "fargate:arn",
+      "@type": "xsd:string"
+    },
+    "reason": {
+      "@id": "fargate:reason",
+      "@type": "xsd:string"
+    },
+    "detail": {
+      "@id": "fargate:detail",
+      "@type": "xsd:string"
+    },
+    "NetworkConfiguration": "fargate:NetworkConfiguration",
+    "awsvpcConfiguration": {
+      "@id": "fargate:awsvpcConfiguration",
+      "@type": "xsd:string"
+    },
+    "Amazon Fargate Task": "fargate:Amazon Fargate Task",
+    "taskArn": {
+      "@id": "fargate:taskArn",
+      "@type": "xsd:string"
+    },
+    "clusterArn": {
+      "@id": "fargate:clusterArn",
+      "@type": "xsd:string"
+    },
+    "launchType": {
+      "@id": "fargate:launchType",
+      "@type": "xsd:string"
+    },
+    "lastStatus": {
+      "@id": "fargate:lastStatus",
+      "@type": "xsd:string"
+    },
+    "desiredStatus": {
+      "@id": "fargate:desiredStatus",
+      "@type": "xsd:string"
+    },
+    "containers": {
+      "@id": "fargate:containers",
+      "@container": "@set",
+      "@type": "@id"
+    },
+    "containerArn": {
+      "@id": "fargate:containerArn",
+      "@type": "xsd:string"
+    },
+    "image": {
+      "@id": "fargate:image",
+      "@type": "xsd:string"
+    },
+    "platformVersion": {
+      "@id": "fargate:platformVersion",
+      "@type": "xsd:string"
+    },
+    "createdAt": "schema:dateCreated",
+    "tags": {
+      "@id": "fargate:tags",
+      "@container": "@set",
+      "@type": "@id"
+    },
+    "Service": "fargate:Service",
+    "serviceArn": {
+      "@id": "fargate:serviceArn",
+      "@type": "xsd:string"
+    },
+    "serviceName": {
+      "@id": "fargate:serviceName",
+      "@type": "xsd:string"
+    },
+    "taskDefinition": {
+      "@id": "fargate:taskDefinition",
+      "@type": "xsd:string"
+    },
+    "desiredCount": {
+      "@id": "fargate:desiredCount",
+      "@type": "xsd:integer"
+    },
+    "runningCount": {
+      "@id": "fargate:runningCount",
+      "@type": "xsd:integer"
+    },
+    "pendingCount": {
+      "@id": "fargate:pendingCount",
+      "@type": "xsd:integer"
+    },
+    "networkConfiguration": {
+      "@id": "fargate:networkConfiguration",
+      "@type": "xsd:string"
+    },
+    "loadBalancers": {
+      "@id": "fargate:loadBalancers",
+      "@container": "@set",
+      "@type": "xsd:string"
+    },
+    "AwsVpcConfiguration": "fargate:AwsVpcConfiguration",
+    "subnets": {
+      "@id": "fargate:subnets",
+      "@container": "@set",
+      "@type": "xsd:string"
+    },
+    "securityGroups": {
+      "@id": "fargate:securityGroups",
+      "@container": "@set",
+      "@type": "xsd:string"
+    },
+    "assignPublicIp": {
+      "@id": "fargate:assignPublicIp",
+      "@type": "xsd:string"
+    },
+    "ClusterSetting": "fargate:ClusterSetting",
+    "ContainerDefinition": "fargate:ContainerDefinition",
+    "essential": {
+      "@id": "fargate:essential",
+      "@type": "xsd:boolean"
+    },
+    "environment": {
+      "@id": "fargate:environment",
+      "@container": "@set",
+      "@type": "xsd:string"
+    },
+    "portMappings": {
+      "@id": "fargate:portMappings",
+      "@container": "@set",
+      "@type": "xsd:string"
+    },
+    "logConfiguration": {
+      "@id": "fargate:logConfiguration",
+      "@type": "xsd:string"
+    },
+    "Cluster": "fargate:Cluster",
+    "clusterName": {
+      "@id": "fargate:clusterName",
+      "@type": "xsd:string"
+    },
+    "registeredContainerInstancesCount": {
+      "@id": "fargate:registeredContainerInstancesCount",
+      "@type": "xsd:integer"
+    },
+    "runningTasksCount": {
+      "@id": "fargate:runningTasksCount",
+      "@type": "xsd:integer"
+    },
+    "pendingTasksCount": {
+      "@id": "fargate:pendingTasksCount",
+      "@type": "xsd:integer"
+    },
+    "activeServicesCount": {
+      "@id": "fargate:activeServicesCount",
+      "@type": "xsd:integer"
+    },
+    "settings": {
+      "@id": "fargate:settings",
+      "@container": "@set",
+      "@type": "xsd:string"
+    },
+    "Task": "fargate:Task",
+    "startedAt": {
+      "@id": "fargate:startedAt",
+      "@type": "xsd:dateTime"
+    },
+    "stoppedAt": {
+      "@id": "fargate:stoppedAt",
+      "@type": "xsd:dateTime"
+    },
+    "stoppedReason": {
+      "@id": "fargate:stoppedReason",
+      "@type": "xsd:string"
+    },
+    "networkInterfaces": {
+      "@id": "fargate:networkInterfaces",
+      "@container": "@set",
+      "@type": "@id"
     }
   }
 }

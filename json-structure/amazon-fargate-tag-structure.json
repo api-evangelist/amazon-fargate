@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-structure.org/meta/core/v0/#",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/amazon-fargate/refs/heads/main/json-structure/amazon-fargate-tag-structure.json",
+  "description": "A tag applied to an ECS resource",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "The tag key",
+      "example": "Environment"
+    },
+    "value": {
+      "type": "string",
+      "description": "The tag value",
+      "example": "production"
+    }
+  },
+  "name": "Tag"
+}

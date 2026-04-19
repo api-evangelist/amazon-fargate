@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/amazon-fargate/refs/heads/main/json-schema/amazon-fargate-failure-schema.json",
+  "title": "Failure",
+  "description": "A failure returned by an API operation",
+  "type": "object",
+  "properties": {
+    "arn": {
+      "type": "string",
+      "description": "ARN of the resource that failed",
+      "example": "arn:aws:ecs:us-east-1:123456789012:cluster/missing-cluster"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Reason for the failure",
+      "example": "MISSING"
+    },
+    "detail": {
+      "type": "string",
+      "description": "Additional detail about the failure"
+    }
+  }
+}

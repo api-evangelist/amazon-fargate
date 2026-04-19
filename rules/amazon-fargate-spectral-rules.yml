@@ -1,0 +1,214 @@
+rules:
+  info-title-required:
+    description: API must have a title in info
+    severity: error
+    given: $.info
+    then:
+      field: title
+      function: truthy
+  info-title-amazon-fargate-prefix:
+    description: API title must start with Amazon Fargate
+    severity: warn
+    given: $.info.title
+    then:
+      function: pattern
+      functionOptions:
+        match: ^Amazon Fargate
+  info-description-required:
+    description: API must have a description
+    severity: error
+    given: $.info
+    then:
+      field: description
+      function: truthy
+  info-version-required:
+    description: API must have a version
+    severity: error
+    given: $.info
+    then:
+      field: version
+      function: truthy
+  openapi-version-3-1:
+    description: Must use OpenAPI 3.1.x
+    severity: warn
+    given: $
+    then:
+      field: openapi
+      function: pattern
+      functionOptions:
+        match: ^3\.1\.
+  servers-required:
+    description: Must define at least one server
+    severity: error
+    given: $
+    then:
+      field: servers
+      function: truthy
+  servers-https-only:
+    description: Server URLs must use HTTPS
+    severity: error
+    given: $.servers[*].url
+    then:
+      function: pattern
+      functionOptions:
+        match: ^https://
+  operation-operationid-required:
+    description: Every operation must have an operationId
+    severity: error
+    given: $.paths[*][get,post,put,patch,delete,head,options]
+    then:
+      field: operationId
+      function: truthy
+  operation-operationid-camelcase:
+    description: operationId must use camelCase
+    severity: warn
+    given: $.paths[*][get,post,put,patch,delete].operationId
+    then:
+      function: casing
+      functionOptions:
+        type: camel
+  operation-summary-required:
+    description: Every operation must have a summary
+    severity: error
+    given: $.paths[*][get,post,put,patch,delete,head,options]
+    then:
+      field: summary
+      function: truthy
+  operation-summary-amazon-fargate-prefix:
+    description: Operation summary must start with Amazon Fargate
+    severity: warn
+    given: $.paths[*][get,post,put,patch,delete].summary
+    then:
+      function: pattern
+      functionOptions:
+        match: ^Amazon Fargate
+  operation-description-required:
+    description: Every operation must have a description
+    severity: warn
+    given: $.paths[*][get,post,put,patch,delete,head,options]
+    then:
+      field: description
+      function: truthy
+  operation-tags-required:
+    description: Every operation must have at least one tag
+    severity: warn
+    given: $.paths[*][get,post,put,patch,delete,head,options]
+    then:
+      field: tags
+      function: truthy
+  tags-defined:
+    description: Global tags array must be defined
+    severity: warn
+    given: $
+    then:
+      field: tags
+      function: truthy
+  tag-description-required:
+    description: Each tag must have a description
+    severity: warn
+    given: $.tags[*]
+    then:
+      field: description
+      function: truthy
+  request-body-json-content-type:
+    description: Request bodies should use application/x-amz-json-1.1 or application/json
+    severity: warn
+    given: $.paths[*][post,put,patch].requestBody.content
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          minProperties: 1
+  response-success-required:
+    description: Every operation must have a 2xx success response
+    severity: error
+    given: $.paths[*][get,post,put,patch,delete].responses
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          minProperties: 1
+  response-description-required:
+    description: Every response must have a description
+    severity: error
+    given: $.paths[*][get,post,put,patch,delete].responses[*]
+    then:
+      field: description
+      function: truthy
+  response-error-400:
+    description: Operations should have a 400 error response
+    severity: warn
+    given: $.paths[*][post,put,patch].responses
+    then:
+      field: '400'
+      function: truthy
+  response-error-500:
+    description: Operations should document 500 server errors
+    severity: warn
+    given: $.paths[*][get,post,put,patch,delete].responses
+    then:
+      field: '500'
+      function: truthy
+  schema-description-required:
+    description: Component schemas must have descriptions
+    severity: warn
+    given: $.components.schemas[*]
+    then:
+      field: description
+      function: truthy
+  schema-property-description:
+    description: Schema properties should have descriptions
+    severity: info
+    given: $.components.schemas[*].properties[*]
+    then:
+      field: description
+      function: truthy
+  schema-type-defined:
+    description: Schema properties must define a type
+    severity: warn
+    given: $.components.schemas[*].properties[*]
+    then:
+      field: type
+      function: truthy
+  security-schemes-defined:
+    description: Security schemes must be defined in components
+    severity: error
+    given: $.components
+    then:
+      field: securitySchemes
+      function: truthy
+  security-global-defined:
+    description: Global security must be defined
+    severity: warn
+    given: $
+    then:
+      field: security
+      function: truthy
+  security-aws-sig-v4:
+    description: Should use AWS Signature V4 authentication
+    severity: info
+    given: $.components.securitySchemes
+    then:
+      field: aws_signature_v4
+      function: truthy
+  operation-amz-json-content-type:
+    description: Amazon API operations should use application/x-amz-json-1.1 content type
+    severity: info
+    given: $.paths[*][post].requestBody.content
+    then:
+      function: truthy
+  operation-microcks-extension:
+    description: Operations should have x-microcks-operation extension for mock support
+    severity: info
+    given: $.paths[*][get,post,put,patch,delete]
+    then:
+      field: x-microcks-operation
+      function: truthy
+  no-empty-descriptions:
+    description: Descriptions must not be empty strings
+    severity: warn
+    given: $..description
+    then:
+      function: truthy

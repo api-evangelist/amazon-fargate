@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/amazon-fargate/refs/heads/main/json-schema/amazon-fargate-task-definition-schema.json",
+  "title": "TaskDefinition",
+  "description": "An Amazon ECS task definition",
+  "type": "object",
+  "properties": {
+    "taskDefinitionArn": {
+      "type": "string",
+      "description": "Full ARN of the task definition",
+      "example": "arn:aws:ecs:us-east-1:123456789012:task-definition/my-fargate-task:1"
+    },
+    "family": {
+      "type": "string",
+      "description": "Family of the task definition",
+      "example": "my-fargate-task"
+    },
+    "revision": {
+      "type": "integer",
+      "description": "Revision number",
+      "example": 1
+    },
+    "status": {
+      "type": "string",
+      "description": "Task definition status",
+      "example": "ACTIVE",
+      "enum": [
+        "ACTIVE",
+        "INACTIVE",
+        "DELETE_IN_PROGRESS"
+      ]
+    },
+    "requiresCompatibilities": {
+      "type": "array",
+      "description": "Launch types the task definition is compatible with",
+      "items": {
+        "type": "string"
+      },
+      "example": [
+        "FARGATE"
+      ]
+    },
+    "networkMode": {
+      "type": "string",
+      "description": "Docker networking mode",
+      "example": "awsvpc",
+      "enum": [
+        "bridge",
+        "host",
+        "awsvpc",
+        "none"
+      ]
+    },
+    "cpu": {
+      "type": "string",
+      "description": "Number of cpu units",
+      "example": "256"
+    },
+    "memory": {
+      "type": "string",
+      "description": "Amount of memory in MiB",
+      "example": "512"
+    },
+    "executionRoleArn": {
+      "type": "string",
+      "description": "ARN of task execution role",
+      "example": "arn:aws:iam::123456789012:role/ecsTaskExecutionRole"
+    },
+    "taskRoleArn": {
+      "type": "string",
+      "description": "ARN of task IAM role",
+      "example": "arn:aws:iam::123456789012:role/ecsTaskRole"
+    },
+    "containerDefinitions": {
+      "type": "array",
+      "description": "Container definitions",
+      "items": {
+        "$ref": "#/components/schemas/ContainerDefinition"
+      }
+    }
+  }
+}

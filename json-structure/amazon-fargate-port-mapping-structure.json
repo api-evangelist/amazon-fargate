@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-structure.org/meta/core/v0/#",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/amazon-fargate/refs/heads/main/json-structure/amazon-fargate-port-mapping-structure.json",
+  "description": "Port mapping for a container",
+  "type": "object",
+  "properties": {
+    "containerPort": {
+      "type": "int32",
+      "description": "Container port",
+      "example": 80
+    },
+    "hostPort": {
+      "type": "int32",
+      "description": "Host port",
+      "example": 80
+    },
+    "protocol": {
+      "type": "string",
+      "description": "Protocol",
+      "example": "tcp",
+      "enum": [
+        "tcp",
+        "udp"
+      ]
+    }
+  },
+  "name": "PortMapping"
+}

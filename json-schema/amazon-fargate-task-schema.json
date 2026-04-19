@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/amazon-fargate/refs/heads/main/json-schema/amazon-fargate-task-schema.json",
+  "title": "Task",
+  "description": "An Amazon ECS task running on Fargate",
+  "type": "object",
+  "properties": {
+    "taskArn": {
+      "type": "string",
+      "description": "ARN of the task",
+      "example": "arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123"
+    },
+    "clusterArn": {
+      "type": "string",
+      "description": "ARN of the cluster",
+      "example": "arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster"
+    },
+    "taskDefinitionArn": {
+      "type": "string",
+      "description": "ARN of the task definition",
+      "example": "arn:aws:ecs:us-east-1:123456789012:task-definition/my-fargate-task:1"
+    },
+    "lastStatus": {
+      "type": "string",
+      "description": "Last known status",
+      "example": "RUNNING",
+      "enum": [
+        "PROVISIONING",
+        "PENDING",
+        "ACTIVATING",
+        "RUNNING",
+        "DEACTIVATING",
+        "STOPPING",
+        "DEPROVISIONING",
+        "STOPPED",
+        "DELETED"
+      ]
+    },
+    "desiredStatus": {
+      "type": "string",
+      "description": "Desired status",
+      "example": "RUNNING"
+    },
+    "launchType": {
+      "type": "string",
+      "description": "Launch type",
+      "example": "FARGATE",
+      "enum": [
+        "EC2",
+        "FARGATE",
+        "EXTERNAL"
+      ]
+    },
+    "cpu": {
+      "type": "string",
+      "description": "CPU units",
+      "example": "256"
+    },
+    "memory": {
+      "type": "string",
+      "description": "Memory in MiB",
+      "example": "512"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Time task was created",
+      "example": "2026-04-19T12:00:00Z"
+    },
+    "startedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Time task started running",
+      "example": "2026-04-19T12:00:30Z"
+    },
+    "stoppedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Time task stopped"
+    },
+    "stoppedReason": {
+      "type": "string",
+      "description": "Reason task stopped"
+    },
+    "networkInterfaces": {
+      "type": "array",
+      "description": "Network interfaces",
+      "items": {
+        "type": "object"
+      }
+    },
+    "tags": {
+      "type": "array",
+      "description": "Tags",
+      "items": {
+        "$ref": "#/components/schemas/Tag"
+      }
+    }
+  }
+}

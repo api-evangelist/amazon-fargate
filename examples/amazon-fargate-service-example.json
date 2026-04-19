@@ -1,0 +1,19 @@
+{
+  "serviceArn": "arn:aws:ecs:us-east-1:123456789012:service/my-fargate-cluster/my-fargate-service",
+  "serviceName": "my-fargate-service",
+  "clusterArn": "arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster",
+  "taskDefinition": "my-fargate-task:1",
+  "desiredCount": 2,
+  "runningCount": 2,
+  "pendingCount": 0,
+  "status": "ACTIVE",
+  "launchType": "FARGATE",
+  "networkConfiguration": "example-value",
+  "loadBalancers": [
+    "example-value"
+  ],
+  "createdAt": "2026-04-19T12:00:00Z",
+  "tags": [
+    "example-value"
+  ]
+}

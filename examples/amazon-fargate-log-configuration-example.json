@@ -1,0 +1,4 @@
+{
+  "logDriver": "awslogs",
+  "options": {}
+}

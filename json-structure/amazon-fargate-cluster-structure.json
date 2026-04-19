@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-structure.org/meta/core/v0/#",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/amazon-fargate/refs/heads/main/json-structure/amazon-fargate-cluster-structure.json",
+  "description": "An Amazon ECS cluster",
+  "type": "object",
+  "properties": {
+    "clusterArn": {
+      "type": "string",
+      "description": "The ARN of the cluster",
+      "example": "arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster"
+    },
+    "clusterName": {
+      "type": "string",
+      "description": "The name of the cluster",
+      "example": "my-fargate-cluster"
+    },
+    "status": {
+      "type": "string",
+      "description": "Cluster status",
+      "example": "ACTIVE",
+      "enum": [
+        "ACTIVE",
+        "PROVISIONING",
+        "DEPROVISIONING",
+        "FAILED",
+        "INACTIVE"
+      ]
+    },
+    "registeredContainerInstancesCount": {
+      "type": "int32",
+      "description": "Number of registered container instances",
+      "example": 0
+    },
+    "runningTasksCount": {
+      "type": "int32",
+      "description": "Number of running tasks",
+      "example": 5
+    },
+    "pendingTasksCount": {
+      "type": "int32",
+      "description": "Number of pending tasks",
+      "example": 0
+    },
+    "activeServicesCount": {
+      "type": "int32",
+      "description": "Number of active services",
+      "example": 2
+    },
+    "tags": {
+      "type": "array",
+      "description": "Tags associated with the cluster",
+      "items": {
+        "$ref": "#/components/schemas/Tag"
+      }
+    },
+    "settings": {
+      "type": "array",
+      "description": "Cluster settings",
+      "items": {
+        "$ref": "#/components/schemas/ClusterSetting"
+      }
+    }
+  },
+  "name": "Cluster"
+}

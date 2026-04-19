@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-structure.org/meta/core/v0/#",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/amazon-fargate/refs/heads/main/json-structure/amazon-fargate-log-configuration-structure.json",
+  "description": "Log configuration for a container",
+  "type": "object",
+  "properties": {
+    "logDriver": {
+      "type": "string",
+      "description": "Log driver",
+      "example": "awslogs",
+      "enum": [
+        "json-file",
+        "syslog",
+        "journald",
+        "gelf",
+        "fluentd",
+        "awslogs",
+        "splunk",
+        "awsfirelens"
+      ]
+    },
+    "options": {
+      "type": "object",
+      "description": "Log driver options",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  },
+  "name": "LogConfiguration"
+}

@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/amazon-fargate/refs/heads/main/json-schema/amazon-fargate-service-schema.json",
+  "title": "Service",
+  "description": "An Amazon ECS service",
+  "type": "object",
+  "properties": {
+    "serviceArn": {
+      "type": "string",
+      "description": "ARN of the service",
+      "example": "arn:aws:ecs:us-east-1:123456789012:service/my-fargate-cluster/my-fargate-service"
+    },
+    "serviceName": {
+      "type": "string",
+      "description": "Name of the service",
+      "example": "my-fargate-service"
+    },
+    "clusterArn": {
+      "type": "string",
+      "description": "ARN of the cluster",
+      "example": "arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster"
+    },
+    "taskDefinition": {
+      "type": "string",
+      "description": "Task definition ARN or family:revision",
+      "example": "my-fargate-task:1"
+    },
+    "desiredCount": {
+      "type": "integer",
+      "description": "Desired number of tasks",
+      "example": 2
+    },
+    "runningCount": {
+      "type": "integer",
+      "description": "Number of running tasks",
+      "example": 2
+    },
+    "pendingCount": {
+      "type": "integer",
+      "description": "Number of pending tasks",
+      "example": 0
+    },
+    "status": {
+      "type": "string",
+      "description": "Service status",
+      "example": "ACTIVE",
+      "enum": [
+        "ACTIVE",
+        "DRAINING",
+        "INACTIVE"
+      ]
+    },
+    "launchType": {
+      "type": "string",
+      "description": "Launch type",
+      "example": "FARGATE"
+    },
+    "networkConfiguration": {
+      "$ref": "#/components/schemas/NetworkConfiguration"
+    },
+    "loadBalancers": {
+      "type": "array",
+      "description": "Load balancer configurations",
+      "items": {
+        "$ref": "#/components/schemas/LoadBalancer"
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Service creation time"
+    },
+    "tags": {
+      "type": "array",
+      "description": "Tags",
+      "items": {
+        "$ref": "#/components/schemas/Tag"
+      }
+    }
+  }
+}

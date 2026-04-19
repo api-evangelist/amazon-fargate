@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-structure.org/meta/core/v0/#",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/amazon-fargate/refs/heads/main/json-structure/amazon-fargate-load-balancer-structure.json",
+  "description": "Load balancer configuration for a service",
+  "type": "object",
+  "properties": {
+    "targetGroupArn": {
+      "type": "string",
+      "description": "Target group ARN",
+      "example": "arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/my-tg/abc123"
+    },
+    "loadBalancerName": {
+      "type": "string",
+      "description": "Load balancer name"
+    },
+    "containerName": {
+      "type": "string",
+      "description": "Container name",
+      "example": "my-container"
+    },
+    "containerPort": {
+      "type": "int32",
+      "description": "Container port",
+      "example": 80
+    }
+  },
+  "name": "LoadBalancer"
+}

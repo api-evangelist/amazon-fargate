@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-structure.org/meta/core/v0/#",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/amazon-fargate/refs/heads/main/json-structure/amazon-fargate-network-configuration-structure.json",
+  "description": "Network configuration for the task",
+  "type": "object",
+  "properties": {
+    "awsvpcConfiguration": {
+      "$ref": "#/components/schemas/AwsVpcConfiguration"
+    }
+  },
+  "name": "NetworkConfiguration"
+}

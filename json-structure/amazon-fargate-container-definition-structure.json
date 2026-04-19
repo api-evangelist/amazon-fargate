@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-structure.org/meta/core/v0/#",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/amazon-fargate/refs/heads/main/json-structure/amazon-fargate-container-definition-structure.json",
+  "description": "Container definition for a task",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Container name",
+      "example": "my-container"
+    },
+    "image": {
+      "type": "string",
+      "description": "Docker image",
+      "example": "nginx:latest"
+    },
+    "essential": {
+      "type": "boolean",
+      "description": "Whether container is essential",
+      "example": true
+    },
+    "cpu": {
+      "type": "int32",
+      "description": "CPU units for the container",
+      "example": 256
+    },
+    "memory": {
+      "type": "int32",
+      "description": "Memory limit in MiB",
+      "example": 512
+    },
+    "environment": {
+      "type": "array",
+      "description": "Environment variables",
+      "items": {
+        "$ref": "#/components/schemas/KeyValuePair"
+      }
+    },
+    "portMappings": {
+      "type": "array",
+      "description": "Port mappings",
+      "items": {
+        "$ref": "#/components/schemas/PortMapping"
+      }
+    },
+    "logConfiguration": {
+      "$ref": "#/components/schemas/LogConfiguration"
+    }
+  },
+  "name": "ContainerDefinition"
+}

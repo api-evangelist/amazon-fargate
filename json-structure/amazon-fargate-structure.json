@@ -1,10 +1,13 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://api-evangelist.com/schemas/amazon/fargate/task.json",
-  "title": "Amazon Fargate Task",
+  "$schema": "https://json-structure.org/meta/core/v0/#",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/amazon-fargate/refs/heads/main/json-structure/amazon-fargate-structure.json",
   "description": "Represents an Amazon Fargate task with its associated configuration, state, and metadata.",
   "type": "object",
-  "required": ["taskArn", "taskDefinitionArn", "launchType"],
+  "required": [
+    "taskArn",
+    "taskDefinitionArn",
+    "launchType"
+  ],
   "properties": {
     "taskArn": {
       "type": "string",
@@ -20,12 +23,24 @@
     },
     "launchType": {
       "type": "string",
-      "enum": ["FARGATE", "EC2"],
+      "enum": [
+        "FARGATE",
+        "EC2"
+      ],
       "description": "The launch type on which the task is running"
     },
     "lastStatus": {
       "type": "string",
-      "enum": ["PROVISIONING", "PENDING", "ACTIVATING", "RUNNING", "DEACTIVATING", "STOPPING", "DEPROVISIONING", "STOPPED"],
+      "enum": [
+        "PROVISIONING",
+        "PENDING",
+        "ACTIVATING",
+        "RUNNING",
+        "DEACTIVATING",
+        "STOPPING",
+        "DEPROVISIONING",
+        "STOPPED"
+      ],
       "description": "The last known status of the task"
     },
     "desiredStatus": {
@@ -66,8 +81,7 @@
       "description": "The Fargate platform version on which the task is running"
     },
     "createdAt": {
-      "type": "string",
-      "format": "date-time",
+      "type": "datetime",
       "description": "The time the task was created"
     },
     "tags": {
@@ -85,5 +99,6 @@
         }
       }
     }
-  }
+  },
+  "name": "Amazon Fargate Task"
 }

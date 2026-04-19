@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-structure.org/meta/core/v0/#",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/amazon-fargate/refs/heads/main/json-structure/amazon-fargate-cluster-setting-structure.json",
+  "description": "A cluster setting",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Setting name",
+      "example": "containerInsights"
+    },
+    "value": {
+      "type": "string",
+      "description": "Setting value",
+      "example": "enabled"
+    }
+  },
+  "name": "ClusterSetting"
+}

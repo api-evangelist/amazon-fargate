@@ -1,0 +1,26 @@
+{
+  "taskArn": "arn:aws:ecs:us-east-1:123456789012:resource/my-resource",
+  "taskDefinitionArn": "arn:aws:ecs:us-east-1:123456789012:resource/my-resource",
+  "clusterArn": "arn:aws:ecs:us-east-1:123456789012:resource/my-resource",
+  "launchType": "FARGATE",
+  "lastStatus": "DEACTIVATING",
+  "desiredStatus": "ACTIVE",
+  "cpu": "example-value",
+  "memory": "example-value",
+  "containers": [
+    {
+      "containerArn": "arn:aws:ecs:us-east-1:123456789012:resource/my-resource",
+      "name": "Name 01",
+      "image": "nginx:latest",
+      "lastStatus": "ACTIVE"
+    }
+  ],
+  "platformVersion": "example-value",
+  "createdAt": "2026-04-19T12:00:00Z",
+  "tags": [
+    {
+      "key": "example-value",
+      "value": "example-value"
+    }
+  ]
+}

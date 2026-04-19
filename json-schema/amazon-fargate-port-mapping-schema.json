@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/amazon-fargate/refs/heads/main/json-schema/amazon-fargate-port-mapping-schema.json",
+  "title": "PortMapping",
+  "description": "Port mapping for a container",
+  "type": "object",
+  "properties": {
+    "containerPort": {
+      "type": "integer",
+      "description": "Container port",
+      "example": 80
+    },
+    "hostPort": {
+      "type": "integer",
+      "description": "Host port",
+      "example": 80
+    },
+    "protocol": {
+      "type": "string",
+      "description": "Protocol",
+      "example": "tcp",
+      "enum": [
+        "tcp",
+        "udp"
+      ]
+    }
+  }
+}

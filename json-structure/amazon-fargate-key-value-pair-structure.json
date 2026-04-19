@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-structure.org/meta/core/v0/#",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/amazon-fargate/refs/heads/main/json-structure/amazon-fargate-key-value-pair-structure.json",
+  "description": "A key-value pair",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Key name",
+      "example": "LOG_LEVEL"
+    },
+    "value": {
+      "type": "string",
+      "description": "Key value",
+      "example": "INFO"
+    }
+  },
+  "name": "KeyValuePair"
+}

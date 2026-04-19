@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-structure.org/meta/core/v0/#",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/amazon-fargate/refs/heads/main/json-structure/amazon-fargate-aws-vpc-configuration-structure.json",
+  "description": "VPC configuration for awsvpc network mode",
+  "type": "object",
+  "properties": {
+    "subnets": {
+      "type": "array",
+      "description": "Subnets for the task",
+      "items": {
+        "type": "string"
+      },
+      "example": [
+        "subnet-12345678"
+      ]
+    },
+    "securityGroups": {
+      "type": "array",
+      "description": "Security groups",
+      "items": {
+        "type": "string"
+      },
+      "example": [
+        "sg-12345678"
+      ]
+    },
+    "assignPublicIp": {
+      "type": "string",
+      "description": "Whether to assign a public IP",
+      "example": "ENABLED",
+      "enum": [
+        "ENABLED",
+        "DISABLED"
+      ]
+    }
+  },
+  "required": [
+    "subnets"
+  ],
+  "name": "AwsVpcConfiguration"
+}

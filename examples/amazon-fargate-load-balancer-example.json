@@ -1,0 +1,6 @@
+{
+  "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/my-tg/abc123",
+  "loadBalancerName": "Loadbalancername 01",
+  "containerName": "my-container",
+  "containerPort": 80
+}

@@ -1,0 +1,315 @@
+vocabulary: 1.0.0
+info:
+  provider: Amazon Fargate
+  description: Unified taxonomy for Amazon Fargate serverless container orchestration APIs, covering operational dimensions from OpenAPI specs and capability dimensions from Naftiko workflow 
+    definitions.
+  created: '2026-04-19'
+  modified: '2026-04-19'
+operational:
+  apis:
+  - name: Amazon Fargate API
+    namespace: fargate
+    version: '2014-11-13'
+    baseUrl: https://ecs.{region}.amazonaws.com
+    status: active
+  resources:
+  - name: clusters
+    api: fargate
+    description: ECS clusters for organizing Fargate workloads
+    actions:
+    - create
+    - describe
+    - list
+    - delete
+    - update
+  - name: task-definitions
+    api: fargate
+    description: Task definitions specifying container images, CPU, and memory
+    actions:
+    - register
+    - describe
+    - list
+    - deregister
+    - delete
+  - name: tasks
+    api: fargate
+    description: Running container instances on Fargate
+    actions:
+    - run
+    - stop
+    - describe
+    - list
+    - execute-command
+  - name: services
+    api: fargate
+    description: Long-running services maintaining desired task count
+    actions:
+    - create
+    - describe
+    - list
+    - update
+    - delete
+  - name: capacity-providers
+    api: fargate
+    description: Fargate capacity provider configurations
+    actions:
+    - create
+    - describe
+    - update
+    - delete
+  - name: account-settings
+    api: fargate
+    description: Account-level ECS/Fargate settings
+    actions:
+    - put
+    - list
+    - delete
+  - name: tags
+    api: fargate
+    description: Resource tags for cost allocation and organization
+    actions:
+    - tag
+    - untag
+    - list
+  actions:
+  - name: run
+    httpMethod: POST
+    pattern: write
+    description: Start a new task or service
+  - name: create
+    httpMethod: POST
+    pattern: write
+    description: Create a new resource
+  - name: register
+    httpMethod: POST
+    pattern: write
+    description: Register a task definition
+  - name: describe
+    httpMethod: POST
+    pattern: read
+    description: Get detailed resource information
+  - name: list
+    httpMethod: POST
+    pattern: read
+    description: List resources with pagination
+  - name: update
+    httpMethod: POST
+    pattern: write
+    description: Update resource configuration
+  - name: delete
+    httpMethod: POST
+    pattern: destructive
+    description: Delete a resource
+  - name: stop
+    httpMethod: POST
+    pattern: destructive
+    description: Stop a running task
+  - name: deregister
+    httpMethod: POST
+    pattern: destructive
+    description: Deregister a task definition
+  - name: tag
+    httpMethod: POST
+    pattern: write
+    description: Apply tags to a resource
+  schemas:
+    core:
+    - name: Cluster
+      description: ECS cluster for Fargate workloads
+      key_properties:
+      - clusterArn
+      - clusterName
+      - status
+      - runningTasksCount
+    - name: TaskDefinition
+      description: Container task specification
+      key_properties:
+      - taskDefinitionArn
+      - family
+      - revision
+      - cpu
+      - memory
+      - containerDefinitions
+    - name: Task
+      description: Running Fargate task instance
+      key_properties:
+      - taskArn
+      - lastStatus
+      - launchType
+      - cpu
+      - memory
+    - name: Service
+      description: Long-running Fargate service
+      key_properties:
+      - serviceArn
+      - serviceName
+      - desiredCount
+      - runningCount
+      - status
+    networking:
+    - name: NetworkConfiguration
+      description: VPC networking settings
+    - name: AwsVpcConfiguration
+      description: awsvpc network mode configuration with subnets and security groups
+    containers:
+    - name: ContainerDefinition
+      description: Container specification within a task definition
+    - name: PortMapping
+      description: Container port-to-host port mapping
+    - name: LogConfiguration
+      description: Container log driver configuration
+  parameters:
+    identifiers:
+    - cluster
+    - taskDefinition
+    - task
+    - service
+    - resourceArn
+    pagination:
+    - nextToken
+    - maxResults
+    filters:
+    - desiredStatus
+    - launchType
+    - familyPrefix
+    - status
+    include:
+    - include
+    - effectiveSettings
+  enums:
+    launch_types:
+    - EC2
+    - FARGATE
+    - EXTERNAL
+    task_statuses:
+    - PROVISIONING
+    - PENDING
+    - ACTIVATING
+    - RUNNING
+    - DEACTIVATING
+    - STOPPING
+    - DEPROVISIONING
+    - STOPPED
+    - DELETED
+    cluster_statuses:
+    - ACTIVE
+    - PROVISIONING
+    - DEPROVISIONING
+    - FAILED
+    - INACTIVE
+    service_statuses:
+    - ACTIVE
+    - DRAINING
+    - INACTIVE
+    network_modes:
+    - bridge
+    - host
+    - awsvpc
+    - none
+    assign_public_ip:
+    - ENABLED
+    - DISABLED
+    task_def_statuses:
+    - ACTIVE
+    - INACTIVE
+    - DELETE_IN_PROGRESS
+  authentication:
+    scheme: AWS Signature Version 4
+    type: apiKey
+    headerName: Authorization
+    description: AWS SigV4 signing with access key, secret key, and region
+capability:
+  workflows:
+  - name: Amazon Fargate Container Orchestration
+    file: capabilities/amazon-fargate-container-orchestration.yaml
+    description: Full lifecycle management of serverless container workloads
+    apis_combined:
+    - Amazon Fargate API
+    tool_count: 17
+    personas:
+    - Platform Engineer
+    - DevOps Engineer
+    - Cloud Architect
+  personas:
+  - id: platform-engineer
+    name: Platform Engineer
+    description: Engineers building container platforms and infrastructure
+    workflows:
+    - amazon-fargate-container-orchestration
+  - id: devops-engineer
+    name: DevOps Engineer
+    description: Engineers deploying and operating containerized applications
+    workflows:
+    - amazon-fargate-container-orchestration
+  - id: cloud-architect
+    name: Cloud Architect
+    description: Architects designing serverless container solutions
+    workflows:
+    - amazon-fargate-container-orchestration
+  domains:
+  - name: Container Orchestration
+    description: Managing container lifecycle from definition to deployment
+  - name: Serverless Compute
+    description: Running workloads without managing infrastructure
+  - name: Microservices
+    description: Deploying and scaling microservices architectures
+  namespaces:
+  - type: consumed
+    namespace: fargate
+    source: Amazon Fargate API
+  - type: rest
+    namespace: fargate-orchestration-api
+    port: 8080
+  - type: mcp
+    namespace: fargate-orchestration-mcp
+    port: 9090
+  binds:
+  - AWS_ACCESS_KEY_ID
+  - AWS_SECRET_ACCESS_KEY
+  - AWS_REGION
+crossReference:
+- resource: clusters
+  operations:
+  - create-cluster
+  - describe-clusters
+  - list-clusters
+  - delete-cluster
+  workflows:
+  - amazon-fargate-container-orchestration
+  personas:
+  - Platform Engineer
+  - DevOps Engineer
+- resource: task-definitions
+  operations:
+  - register-task-definition
+  - describe-task-definition
+  - list-task-definitions
+  - deregister-task-definition
+  workflows:
+  - amazon-fargate-container-orchestration
+  personas:
+  - Platform Engineer
+  - DevOps Engineer
+- resource: tasks
+  operations:
+  - run-task
+  - stop-task
+  - describe-tasks
+  - list-tasks
+  workflows:
+  - amazon-fargate-container-orchestration
+  personas:
+  - DevOps Engineer
+- resource: services
+  operations:
+  - create-service
+  - describe-services
+  - list-services
+  - update-service
+  - delete-service
+  workflows:
+  - amazon-fargate-container-orchestration
+  personas:
+  - Platform Engineer
+  - DevOps Engineer
+  - Cloud Architect

@@ -1,0 +1,403 @@
+naftiko: 1.0.0-alpha1
+info:
+  label: Amazon Fargate API
+  description: Shared capability definition for the Amazon Fargate API, providing serverless container orchestration through Amazon ECS.
+  tags:
+  - Amazon Fargate
+  - Containers
+  - Serverless
+  - ECS
+  created: '2026-04-19'
+  modified: '2026-04-19'
+binds:
+- namespace: env
+  keys:
+    AWS_ACCESS_KEY_ID: AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY: AWS_SECRET_ACCESS_KEY
+    AWS_REGION: AWS_REGION
+capability:
+  consumes:
+  - type: http
+    namespace: fargate
+    baseUri: https://ecs.{region}.amazonaws.com
+    description: Amazon Fargate API via Amazon ECS
+    authentication:
+      type: apikey
+      key: Authorization
+      value: '{{AWS_ACCESS_KEY_ID}}'
+      placement: header
+    resources:
+    - name: clusters
+      path: /#Clusters
+      description: ECS cluster management operations
+      operations:
+      - name: create-cluster
+        method: POST
+        description: Create a new ECS cluster
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: describe-clusters
+        method: POST
+        description: Describe one or more clusters
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: list-clusters
+        method: POST
+        description: List all clusters
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: delete-cluster
+        method: POST
+        description: Delete a cluster
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: task-definitions
+      path: /#TaskDefinitions
+      description: Task definition management operations
+      operations:
+      - name: register-task-definition
+        method: POST
+        description: Register a new task definition
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: describe-task-definition
+        method: POST
+        description: Describe a task definition
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: list-task-definitions
+        method: POST
+        description: List task definitions
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: deregister-task-definition
+        method: POST
+        description: Deregister a task definition
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: tasks
+      path: /#Tasks
+      description: Task execution and management operations
+      operations:
+      - name: run-task
+        method: POST
+        description: Run a Fargate task
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: stop-task
+        method: POST
+        description: Stop a running task
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: describe-tasks
+        method: POST
+        description: Describe running tasks
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: list-tasks
+        method: POST
+        description: List tasks in a cluster
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: services
+      path: /#Services
+      description: Long-running service management operations
+      operations:
+      - name: create-service
+        method: POST
+        description: Create a new service
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: describe-services
+        method: POST
+        description: Describe services
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: list-services
+        method: POST
+        description: List services in a cluster
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: update-service
+        method: POST
+        description: Update a service configuration
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: delete-service
+        method: POST
+        description: Delete a service
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+  exposes:
+  - type: rest
+    port: 8100
+    namespace: fargate-rest
+    resources:
+    - path: /v1/clusters
+      name: clusters
+      description: Cluster operations
+      operations:
+      - method: GET
+        name: list-clusters
+        description: List clusters
+        call: fargate.list-clusters
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: create-cluster
+        description: Create a cluster
+        call: fargate.create-cluster
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/task-definitions
+      name: task-definitions
+      description: Task definition operations
+      operations:
+      - method: GET
+        name: list-task-definitions
+        description: List task definitions
+        call: fargate.list-task-definitions
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: register-task-definition
+        description: Register task definition
+        call: fargate.register-task-definition
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/tasks
+      name: tasks
+      description: Task operations
+      operations:
+      - method: GET
+        name: list-tasks
+        description: List tasks
+        call: fargate.list-tasks
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: run-task
+        description: Run a task
+        call: fargate.run-task
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/services
+      name: services
+      description: Service operations
+      operations:
+      - method: GET
+        name: list-services
+        description: List services
+        call: fargate.list-services
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: create-service
+        description: Create a service
+        call: fargate.create-service
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    port: 9100
+    namespace: fargate-mcp
+    transport: http
+    tools:
+    - name: list-clusters
+      description: List all ECS clusters available for Fargate workloads
+      hints:
+        readOnly: true
+      call: fargate.list-clusters
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-cluster
+      description: Create a new ECS cluster for Fargate tasks
+      hints:
+        readOnly: false
+      call: fargate.create-cluster
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: describe-clusters
+      description: Get detailed information about ECS clusters
+      hints:
+        readOnly: true
+      call: fargate.describe-clusters
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-cluster
+      description: Delete an ECS cluster
+      hints:
+        readOnly: false
+        destructive: true
+      call: fargate.delete-cluster
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: register-task-definition
+      description: Register a new Fargate task definition with container specifications
+      hints:
+        readOnly: false
+      call: fargate.register-task-definition
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: describe-task-definition
+      description: Get details of a specific Fargate task definition
+      hints:
+        readOnly: true
+      call: fargate.describe-task-definition
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-task-definitions
+      description: List all registered Fargate task definitions
+      hints:
+        readOnly: true
+      call: fargate.list-task-definitions
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: deregister-task-definition
+      description: Deregister a Fargate task definition
+      hints:
+        readOnly: false
+        destructive: true
+      call: fargate.deregister-task-definition
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: run-task
+      description: Start a new Fargate task using a task definition
+      hints:
+        readOnly: false
+      call: fargate.run-task
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: stop-task
+      description: Stop a running Fargate task
+      hints:
+        readOnly: false
+        destructive: true
+      call: fargate.stop-task
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: describe-tasks
+      description: Get detailed status and configuration of Fargate tasks
+      hints:
+        readOnly: true
+      call: fargate.describe-tasks
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-tasks
+      description: List running and stopped Fargate tasks in a cluster
+      hints:
+        readOnly: true
+      call: fargate.list-tasks
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-service
+      description: Deploy a long-running Fargate service with desired task count
+      hints:
+        readOnly: false
+      call: fargate.create-service
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: describe-services
+      description: Get status and configuration of Fargate services
+      hints:
+        readOnly: true
+      call: fargate.describe-services
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-services
+      description: List all Fargate services in a cluster
+      hints:
+        readOnly: true
+      call: fargate.list-services
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-service
+      description: Update Fargate service configuration including task count and definition
+      hints:
+        readOnly: false
+      call: fargate.update-service
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-service
+      description: Delete a Fargate service
+      hints:
+        readOnly: false
+        destructive: true
+      call: fargate.delete-service
+      outputParameters:
+      - type: object
+        mapping: $.

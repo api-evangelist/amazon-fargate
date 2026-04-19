@@ -1,0 +1,17 @@
+{
+  "taskDefinitionArn": "arn:aws:ecs:us-east-1:123456789012:task-definition/my-fargate-task:1",
+  "family": "my-fargate-task",
+  "revision": 1,
+  "status": "ACTIVE",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "networkMode": "awsvpc",
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::123456789012:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::123456789012:role/ecsTaskRole",
+  "containerDefinitions": [
+    "example-value"
+  ]
+}
