@@ -1,0 +1,13 @@
+{
+  "repo": "amazon-fargate",
+  "feeds": [
+    {
+      "source": "https://aws.amazon.com/blogs/containers/",
+      "feed_url": "https://aws.amazon.com/blogs/containers/feed/",
+      "saved": 10,
+      "title": "Containers"
+    }
+  ],
+  "post_count": 10,
+  "fetched": "2026-05-03T23:21:22Z"
+}
