@@ -1,8 +1,8 @@
-naftiko: 1.0.0-alpha1
+naftiko: 1.0.0-alpha2
 info:
   label: Amazon Fargate Container Orchestration
-  description: Workflow capability for deploying and managing serverless container workloads on Amazon Fargate. Combines cluster management, task definitions, task execution, and service deployment 
-    for platform engineers and DevOps teams.
+  description: Workflow capability for deploying and managing serverless container workloads on Amazon Fargate. Combines cluster
+    management, task definitions, task execution, and service deployment for platform engineers and DevOps teams.
   tags:
   - Amazon Fargate
   - Containers
@@ -10,7 +10,7 @@ info:
   - ECS
   - DevOps
   created: '2026-04-19'
-  modified: '2026-04-19'
+  modified: '2026-05-06'
 binds:
 - namespace: env
   keys:
@@ -19,8 +19,168 @@ binds:
     AWS_REGION: AWS_REGION
 capability:
   consumes:
-  - import: fargate
-    location: ./shared/fargate.yaml
+  - type: http
+    namespace: fargate
+    baseUri: https://ecs.{region}.amazonaws.com
+    description: Amazon Fargate API via Amazon ECS
+    authentication:
+      type: apikey
+      key: Authorization
+      value: '{{AWS_ACCESS_KEY_ID}}'
+      placement: header
+    resources:
+    - name: clusters
+      path: /#Clusters
+      description: ECS cluster management operations
+      operations:
+      - name: create-cluster
+        method: POST
+        description: Create a new ECS cluster
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: describe-clusters
+        method: POST
+        description: Describe one or more clusters
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: list-clusters
+        method: POST
+        description: List all clusters
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: delete-cluster
+        method: POST
+        description: Delete a cluster
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: task-definitions
+      path: /#TaskDefinitions
+      description: Task definition management operations
+      operations:
+      - name: register-task-definition
+        method: POST
+        description: Register a new task definition
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: describe-task-definition
+        method: POST
+        description: Describe a task definition
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: list-task-definitions
+        method: POST
+        description: List task definitions
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: deregister-task-definition
+        method: POST
+        description: Deregister a task definition
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: tasks
+      path: /#Tasks
+      description: Task execution and management operations
+      operations:
+      - name: run-task
+        method: POST
+        description: Run a Fargate task
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: stop-task
+        method: POST
+        description: Stop a running task
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: describe-tasks
+        method: POST
+        description: Describe running tasks
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: list-tasks
+        method: POST
+        description: List tasks in a cluster
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: services
+      path: /#Services
+      description: Long-running service management operations
+      operations:
+      - name: create-service
+        method: POST
+        description: Create a new service
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: describe-services
+        method: POST
+        description: Describe services
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: list-services
+        method: POST
+        description: List services in a cluster
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: update-service
+        method: POST
+        description: Update a service configuration
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: delete-service
+        method: POST
+        description: Delete a service
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
   exposes:
   - type: rest
     port: 8080
