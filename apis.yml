@@ -104,7 +104,7 @@ common:
   url: capabilities/amazon-fargate-container-orchestration.yaml
 - type: Vocabulary
   url: vocabulary/amazon-fargate-vocabulary.yaml
-- type: JSON-LD
+- type: JSONLD
   url: json-ld/amazon-fargate-context.jsonld
 - type: Features
   data:
