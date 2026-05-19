@@ -1,0 +1,124 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Amazon Fargate API — Tagging
+  description: 'Amazon Fargate API — Tagging. 2 operations. Lead operation: Amazon Fargate List Tags for a Resource. Self-contained
+    Naftiko capability covering one Amazon Fargate business surface.'
+  tags:
+  - Amazon Fargate
+  - Tagging
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    AMAZON_FARGATE_API_KEY: AMAZON_FARGATE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: amazon-fargate-tagging
+    baseUri: https://ecs.{region}.amazonaws.com
+    description: Amazon Fargate API — Tagging business capability. Self-contained, no shared references.
+    resources:
+    - name: '#ListTagsForResource'
+      path: /#ListTagsForResource
+      operations:
+      - name: listtagsforresource
+        method: POST
+        description: Amazon Fargate List Tags for a Resource
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: '#TagResource'
+      path: /#TagResource
+      operations:
+      - name: tagresource
+        method: POST
+        description: Amazon Fargate Tag a Resource
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: apikey
+      key: Authorization
+      value: '{{env.AMAZON_FARGATE_API_KEY}}'
+      placement: header
+  exposes:
+  - type: rest
+    namespace: amazon-fargate-tagging-rest
+    port: 8080
+    description: REST adapter for Amazon Fargate API — Tagging. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/listtagsforresource
+      name: listtagsforresource
+      description: 'REST surface for #ListTagsForResource.'
+      operations:
+      - method: POST
+        name: listtagsforresource
+        description: Amazon Fargate List Tags for a Resource
+        call: amazon-fargate-tagging.listtagsforresource
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/tagresource
+      name: tagresource
+      description: 'REST surface for #TagResource.'
+      operations:
+      - method: POST
+        name: tagresource
+        description: Amazon Fargate Tag a Resource
+        call: amazon-fargate-tagging.tagresource
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: amazon-fargate-tagging-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Amazon Fargate API — Tagging. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: amazon-fargate-list-tags-resource
+      description: Amazon Fargate List Tags for a Resource
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: false
+      call: amazon-fargate-tagging.listtagsforresource
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: amazon-fargate-tag-resource
+      description: Amazon Fargate Tag a Resource
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: amazon-fargate-tagging.tagresource
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

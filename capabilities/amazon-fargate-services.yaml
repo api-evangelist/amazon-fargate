@@ -1,0 +1,250 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Amazon Fargate API — Services
+  description: 'Amazon Fargate API — Services. 5 operations. Lead operation: Amazon Fargate Create a Service. Self-contained
+    Naftiko capability covering one Amazon Fargate business surface.'
+  tags:
+  - Amazon Fargate
+  - Services
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    AMAZON_FARGATE_API_KEY: AMAZON_FARGATE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: amazon-fargate-services
+    baseUri: https://ecs.{region}.amazonaws.com
+    description: Amazon Fargate API — Services business capability. Self-contained, no shared references.
+    resources:
+    - name: '#CreateService'
+      path: /#CreateService
+      operations:
+      - name: createservice
+        method: POST
+        description: Amazon Fargate Create a Service
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: '#DeleteService'
+      path: /#DeleteService
+      operations:
+      - name: deleteservice
+        method: POST
+        description: Amazon Fargate Delete a Service
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: '#DescribeServices'
+      path: /#DescribeServices
+      operations:
+      - name: describeservices
+        method: POST
+        description: Amazon Fargate Describe Services
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: '#ListServices'
+      path: /#ListServices
+      operations:
+      - name: listservices
+        method: POST
+        description: Amazon Fargate List Services
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: '#UpdateService'
+      path: /#UpdateService
+      operations:
+      - name: updateservice
+        method: POST
+        description: Amazon Fargate Update a Service
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: apikey
+      key: Authorization
+      value: '{{env.AMAZON_FARGATE_API_KEY}}'
+      placement: header
+  exposes:
+  - type: rest
+    namespace: amazon-fargate-services-rest
+    port: 8080
+    description: REST adapter for Amazon Fargate API — Services. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/createservice
+      name: createservice
+      description: 'REST surface for #CreateService.'
+      operations:
+      - method: POST
+        name: createservice
+        description: Amazon Fargate Create a Service
+        call: amazon-fargate-services.createservice
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/deleteservice
+      name: deleteservice
+      description: 'REST surface for #DeleteService.'
+      operations:
+      - method: POST
+        name: deleteservice
+        description: Amazon Fargate Delete a Service
+        call: amazon-fargate-services.deleteservice
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/describeservices
+      name: describeservices
+      description: 'REST surface for #DescribeServices.'
+      operations:
+      - method: POST
+        name: describeservices
+        description: Amazon Fargate Describe Services
+        call: amazon-fargate-services.describeservices
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/listservices
+      name: listservices
+      description: 'REST surface for #ListServices.'
+      operations:
+      - method: POST
+        name: listservices
+        description: Amazon Fargate List Services
+        call: amazon-fargate-services.listservices
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/updateservice
+      name: updateservice
+      description: 'REST surface for #UpdateService.'
+      operations:
+      - method: POST
+        name: updateservice
+        description: Amazon Fargate Update a Service
+        call: amazon-fargate-services.updateservice
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: amazon-fargate-services-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Amazon Fargate API — Services. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: amazon-fargate-create-service
+      description: Amazon Fargate Create a Service
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: amazon-fargate-services.createservice
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: amazon-fargate-delete-service
+      description: Amazon Fargate Delete a Service
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: amazon-fargate-services.deleteservice
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: amazon-fargate-describe-services
+      description: Amazon Fargate Describe Services
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: amazon-fargate-services.describeservices
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: amazon-fargate-list-services
+      description: Amazon Fargate List Services
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: false
+      call: amazon-fargate-services.listservices
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: amazon-fargate-update-service
+      description: Amazon Fargate Update a Service
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: amazon-fargate-services.updateservice
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

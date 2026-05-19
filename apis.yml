@@ -1,14 +1,12 @@
 name: Amazon Fargate
-description: >-
-  Amazon Fargate is a serverless compute engine for containers that works with
-  both Amazon ECS and Amazon EKS. Fargate removes the need to provision and
-  manage servers, letting you specify and pay for resources per application,
-  and improves security through application isolation by design.
+description: Amazon Fargate is a serverless compute engine for containers that works with both Amazon ECS and Amazon EKS.
+  Fargate removes the need to provision and manage servers, letting you specify and pay for resources per application, and
+  improves security through application isolation by design.
 image: https://a0.awsstatic.com/libra-css/images/logos/aws_logo_smile_1200x630.png
 url: https://aws.amazon.com/fargate/
 type: Index
 created: '2024-01-15'
-modified: '2026-04-19'
+modified: '2026-05-19'
 tags:
 - AWS
 - Compute
@@ -19,11 +17,9 @@ tags:
 - Serverless
 apis:
 - name: Amazon Fargate API
-  description: >-
-    The Amazon Fargate API is accessed through Amazon ECS and enables you to
-    run containers without managing servers or clusters. You can define tasks,
-    configure networking and IAM policies, and deploy containerized
-    applications with serverless compute capacity.
+  description: The Amazon Fargate API is accessed through Amazon ECS and enables you to run containers without managing servers
+    or clusters. You can define tasks, configure networking and IAM policies, and deploy containerized applications with serverless
+    compute capacity.
   image: https://a0.awsstatic.com/libra-css/images/logos/aws_logo_smile_1200x630.png
   humanURL: https://aws.amazon.com/fargate/
   baseURL: https://ecs.amazonaws.com
@@ -69,6 +65,18 @@ apis:
     url: https://aws.amazon.com/fargate/faqs/
   - type: APIReference
     url: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/Welcome.html
+  - type: NaftikoCapability
+    url: capabilities/amazon-fargate-account-settings.yaml
+  - type: NaftikoCapability
+    url: capabilities/amazon-fargate-clusters.yaml
+  - type: NaftikoCapability
+    url: capabilities/amazon-fargate-services.yaml
+  - type: NaftikoCapability
+    url: capabilities/amazon-fargate-tagging.yaml
+  - type: NaftikoCapability
+    url: capabilities/amazon-fargate-task-definitions.yaml
+  - type: NaftikoCapability
+    url: capabilities/amazon-fargate-tasks.yaml
 common:
 - type: Portal
   url: https://console.aws.amazon.com/
@@ -98,10 +106,6 @@ common:
   url: https://stackoverflow.com/questions/tagged/aws-fargate
 - type: SpectralRules
   url: rules/amazon-fargate-spectral-rules.yml
-- type: NaftikoCapability
-  url: capabilities/shared/fargate.yaml
-- type: NaftikoCapability
-  url: capabilities/amazon-fargate-container-orchestration.yaml
 - type: Vocabulary
   url: vocabulary/amazon-fargate-vocabulary.yaml
 - type: JSONLD
@@ -109,7 +113,8 @@ common:
 - type: Features
   data:
   - name: Serverless Compute
-    description: Run containers without provisioning or managing servers. Fargate handles capacity, OS updates, and scaling automatically.
+    description: Run containers without provisioning or managing servers. Fargate handles capacity, OS updates, and scaling
+      automatically.
   - name: ECS and EKS Integration
     description: Works seamlessly with both Amazon ECS task definitions and Amazon EKS pods.
   - name: Workload Isolation
@@ -167,15 +172,15 @@ common:
 - type: Integrations
   url: https://aws.amazon.com/marketplace
 integrations:
-  - name: Sign in
-  - name: Agent Mode
-  - name: 'Why AWS Marketplace?'
-  - name: Get started in AWS Marketplace
-  - name: Industry
-  - name: Resources
-  - name: Become a Channel Partner
-  - name: Sell in AWS Marketplace
-  - name: Manage Your Account
+- name: Sign in
+- name: Agent Mode
+- name: Why AWS Marketplace?
+- name: Get started in AWS Marketplace
+- name: Industry
+- name: Resources
+- name: Become a Channel Partner
+- name: Sell in AWS Marketplace
+- name: Manage Your Account
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

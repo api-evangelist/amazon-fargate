@@ -1,0 +1,208 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Amazon Fargate API — Tasks
+  description: 'Amazon Fargate API — Tasks. 4 operations. Lead operation: Amazon Fargate Describe Tasks. Self-contained Naftiko
+    capability covering one Amazon Fargate business surface.'
+  tags:
+  - Amazon Fargate
+  - Tasks
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    AMAZON_FARGATE_API_KEY: AMAZON_FARGATE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: amazon-fargate-tasks
+    baseUri: https://ecs.{region}.amazonaws.com
+    description: Amazon Fargate API — Tasks business capability. Self-contained, no shared references.
+    resources:
+    - name: '#DescribeTasks'
+      path: /#DescribeTasks
+      operations:
+      - name: describetasks
+        method: POST
+        description: Amazon Fargate Describe Tasks
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: '#ListTasks'
+      path: /#ListTasks
+      operations:
+      - name: listtasks
+        method: POST
+        description: Amazon Fargate List Tasks
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: '#RunTask'
+      path: /#RunTask
+      operations:
+      - name: runtask
+        method: POST
+        description: Amazon Fargate Run a Task
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: '#StopTask'
+      path: /#StopTask
+      operations:
+      - name: stoptask
+        method: POST
+        description: Amazon Fargate Stop a Task
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: apikey
+      key: Authorization
+      value: '{{env.AMAZON_FARGATE_API_KEY}}'
+      placement: header
+  exposes:
+  - type: rest
+    namespace: amazon-fargate-tasks-rest
+    port: 8080
+    description: REST adapter for Amazon Fargate API — Tasks. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/describetasks
+      name: describetasks
+      description: 'REST surface for #DescribeTasks.'
+      operations:
+      - method: POST
+        name: describetasks
+        description: Amazon Fargate Describe Tasks
+        call: amazon-fargate-tasks.describetasks
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/listtasks
+      name: listtasks
+      description: 'REST surface for #ListTasks.'
+      operations:
+      - method: POST
+        name: listtasks
+        description: Amazon Fargate List Tasks
+        call: amazon-fargate-tasks.listtasks
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/runtask
+      name: runtask
+      description: 'REST surface for #RunTask.'
+      operations:
+      - method: POST
+        name: runtask
+        description: Amazon Fargate Run a Task
+        call: amazon-fargate-tasks.runtask
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/stoptask
+      name: stoptask
+      description: 'REST surface for #StopTask.'
+      operations:
+      - method: POST
+        name: stoptask
+        description: Amazon Fargate Stop a Task
+        call: amazon-fargate-tasks.stoptask
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: amazon-fargate-tasks-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Amazon Fargate API — Tasks. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: amazon-fargate-describe-tasks
+      description: Amazon Fargate Describe Tasks
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: amazon-fargate-tasks.describetasks
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: amazon-fargate-list-tasks
+      description: Amazon Fargate List Tasks
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: false
+      call: amazon-fargate-tasks.listtasks
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: amazon-fargate-run-task
+      description: Amazon Fargate Run a Task
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: amazon-fargate-tasks.runtask
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: amazon-fargate-stop-task
+      description: Amazon Fargate Stop a Task
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: amazon-fargate-tasks.stoptask
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
