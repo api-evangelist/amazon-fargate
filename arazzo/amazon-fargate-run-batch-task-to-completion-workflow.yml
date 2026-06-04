@@ -1,0 +1,113 @@
+arazzo: 1.0.1
+info:
+  title: Amazon Fargate Run a Batch Task to Completion
+  summary: Run a one-off Fargate task and poll DescribeTasks until it reaches STOPPED.
+  description: >-
+    Runs a short-lived batch job on Fargate and waits for it to finish. The
+    workflow runs a single task from an existing task definition and then polls
+    DescribeTasks until the task's lastStatus becomes STOPPED, capturing the
+    stopped reason. This is the standard pattern for fire-and-wait batch jobs
+    where you need the exit state. Each step inlines its AWS JSON 1.1 request and
+    the X-Amz-Target action header so the job can be read and executed directly.
+  version: 1.0.0
+sourceDescriptions:
+- name: fargateApi
+  url: ../openapi/amazon-fargate-openapi.yml
+  type: openapi
+workflows:
+- workflowId: run-batch-task-to-completion
+  summary: Run a single Fargate task from an existing definition and wait until it stops.
+  description: >-
+    Chains runTask and a describeTasks poll loop that ends when the task reaches
+    a STOPPED terminal state.
+  inputs:
+    type: object
+    required:
+    - cluster
+    - taskDefinition
+    - subnets
+    - securityGroups
+    properties:
+      cluster:
+        type: string
+        description: Name or ARN of the cluster to run the task in.
+      taskDefinition:
+        type: string
+        description: Family:revision or ARN of the task definition to run.
+      subnets:
+        type: array
+        items:
+          type: string
+        description: Subnet IDs for the awsvpc network configuration.
+      securityGroups:
+        type: array
+        items:
+          type: string
+        description: Security group IDs for the awsvpc network configuration.
+      assignPublicIp:
+        type: string
+        description: Whether to assign a public IP (ENABLED or DISABLED).
+        default: ENABLED
+  steps:
+  - stepId: runTask
+    description: Run a single Fargate task from the supplied task definition.
+    operationId: runTask
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.RunTask
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        cluster: $inputs.cluster
+        taskDefinition: $inputs.taskDefinition
+        launchType: FARGATE
+        count: 1
+        networkConfiguration:
+          awsvpcConfiguration:
+            subnets: $inputs.subnets
+            securityGroups: $inputs.securityGroups
+            assignPublicIp: $inputs.assignPublicIp
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      taskArn: $response.body#/tasks/0/taskArn
+      lastStatus: $response.body#/tasks/0/lastStatus
+  - stepId: pollUntilStopped
+    description: >-
+      Poll DescribeTasks until the task reaches STOPPED, re-entering this step
+      while the task is still provisioning, pending, or running.
+    operationId: describeTasks
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.DescribeTasks
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        cluster: $inputs.cluster
+        tasks:
+        - $steps.runTask.outputs.taskArn
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      lastStatus: $response.body#/tasks/0/lastStatus
+      stoppedReason: $response.body#/tasks/0/stoppedReason
+    onSuccess:
+    - name: stillRunning
+      type: goto
+      stepId: pollUntilStopped
+      criteria:
+      - context: $response.body
+        condition: $.tasks[0].lastStatus != 'STOPPED'
+        type: jsonpath
+    - name: completed
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.tasks[0].lastStatus == 'STOPPED'
+        type: jsonpath
+  outputs:
+    taskArn: $steps.runTask.outputs.taskArn
+    finalStatus: $steps.pollUntilStopped.outputs.lastStatus
+    stoppedReason: $steps.pollUntilStopped.outputs.stoppedReason

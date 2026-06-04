@@ -1,0 +1,109 @@
+arazzo: 1.0.1
+info:
+  title: Amazon Fargate Tear Down a Service
+  summary: Scale a service to zero, wait for it to drain, then delete it.
+  description: >-
+    Safely decommissions a Fargate service. ECS requires a service to have zero
+    running tasks before it can be deleted cleanly, so the workflow first
+    updates the service desired count to zero, polls DescribeServices until the
+    running count reaches zero, and then deletes the service. Each step inlines
+    its AWS JSON 1.1 request and the X-Amz-Target action header so the teardown
+    can be read and executed directly.
+  version: 1.0.0
+sourceDescriptions:
+- name: fargateApi
+  url: ../openapi/amazon-fargate-openapi.yml
+  type: openapi
+workflows:
+- workflowId: teardown-service
+  summary: Drain a service to zero tasks and then delete it.
+  description: >-
+    Chains updateService (desiredCount 0), a describeServices drain poll, and
+    deleteService.
+  inputs:
+    type: object
+    required:
+    - cluster
+    - service
+    properties:
+      cluster:
+        type: string
+        description: Name or ARN of the cluster hosting the service.
+      service:
+        type: string
+        description: Name or ARN of the service to tear down.
+  steps:
+  - stepId: scaleToZero
+    description: Update the service desired count to zero so its tasks drain.
+    operationId: updateService
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.UpdateService
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        cluster: $inputs.cluster
+        service: $inputs.service
+        desiredCount: 0
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      serviceArn: $response.body#/service/serviceArn
+      desiredCount: $response.body#/service/desiredCount
+  - stepId: pollDrained
+    description: >-
+      Poll DescribeServices until the running count reaches zero, re-entering
+      while tasks are still draining.
+    operationId: describeServices
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.DescribeServices
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        cluster: $inputs.cluster
+        services:
+        - $inputs.service
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      runningCount: $response.body#/services/0/runningCount
+      status: $response.body#/services/0/status
+    onSuccess:
+    - name: stillDraining
+      type: goto
+      stepId: pollDrained
+      criteria:
+      - context: $response.body
+        condition: $.services[0].runningCount > 0
+        type: jsonpath
+    - name: drained
+      type: goto
+      stepId: deleteService
+      criteria:
+      - context: $response.body
+        condition: $.services[0].runningCount == 0
+        type: jsonpath
+  - stepId: deleteService
+    description: Delete the now-drained service from the cluster.
+    operationId: deleteService
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.DeleteService
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        cluster: $inputs.cluster
+        service: $inputs.service
+        force: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      serviceArn: $response.body#/service/serviceArn
+      finalStatus: $response.body#/service/status
+  outputs:
+    serviceArn: $steps.deleteService.outputs.serviceArn
+    finalStatus: $steps.deleteService.outputs.finalStatus

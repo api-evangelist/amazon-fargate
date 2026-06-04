@@ -1,0 +1,169 @@
+arazzo: 1.0.1
+info:
+  title: Amazon Fargate Deploy a Service
+  summary: Register a task definition, create a Fargate service, and poll until the running count meets the desired count.
+  description: >-
+    Stands up a long-running Fargate service. The workflow registers a
+    FARGATE-compatible task definition, creates a service that maintains a
+    desired number of tasks behind an awsvpc network configuration, and then
+    polls DescribeServices until the running count reaches the desired count.
+    Each step inlines its AWS JSON 1.1 request and the X-Amz-Target action
+    header so the deployment can be read and executed directly.
+  version: 1.0.0
+sourceDescriptions:
+- name: fargateApi
+  url: ../openapi/amazon-fargate-openapi.yml
+  type: openapi
+workflows:
+- workflowId: deploy-service
+  summary: Register a task definition and create a Fargate service, then confirm it reaches its desired count.
+  description: >-
+    Chains registerTaskDefinition and createService, then loops over
+    describeServices until runningCount equals desiredCount.
+  inputs:
+    type: object
+    required:
+    - cluster
+    - family
+    - serviceName
+    - containerName
+    - image
+    - desiredCount
+    - subnets
+    - securityGroups
+    properties:
+      cluster:
+        type: string
+        description: Name or ARN of the cluster to deploy into.
+      family:
+        type: string
+        description: Family name for the task definition to register.
+      serviceName:
+        type: string
+        description: Name for the new service.
+      containerName:
+        type: string
+        description: Name of the container in the task definition.
+      image:
+        type: string
+        description: Container image URI.
+      cpu:
+        type: string
+        description: Task-level CPU units for Fargate.
+        default: "256"
+      memory:
+        type: string
+        description: Task-level memory in MiB for Fargate.
+        default: "512"
+      executionRoleArn:
+        type: string
+        description: ARN of the ECS task execution role.
+      desiredCount:
+        type: integer
+        description: Number of tasks the service should maintain.
+      subnets:
+        type: array
+        items:
+          type: string
+        description: Subnet IDs for the awsvpc network configuration.
+      securityGroups:
+        type: array
+        items:
+          type: string
+        description: Security group IDs for the awsvpc network configuration.
+      assignPublicIp:
+        type: string
+        description: Whether to assign a public IP (ENABLED or DISABLED).
+        default: ENABLED
+  steps:
+  - stepId: registerTaskDefinition
+    description: Register the FARGATE-compatible task definition the service will run.
+    operationId: registerTaskDefinition
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.RegisterTaskDefinition
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        family: $inputs.family
+        requiresCompatibilities:
+        - FARGATE
+        networkMode: awsvpc
+        cpu: $inputs.cpu
+        memory: $inputs.memory
+        executionRoleArn: $inputs.executionRoleArn
+        containerDefinitions:
+        - name: $inputs.containerName
+          image: $inputs.image
+          essential: true
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      taskDefinitionArn: $response.body#/taskDefinition/taskDefinitionArn
+  - stepId: createService
+    description: Create the Fargate service that maintains the desired number of tasks.
+    operationId: createService
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.CreateService
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        cluster: $inputs.cluster
+        serviceName: $inputs.serviceName
+        taskDefinition: $steps.registerTaskDefinition.outputs.taskDefinitionArn
+        desiredCount: $inputs.desiredCount
+        launchType: FARGATE
+        networkConfiguration:
+          awsvpcConfiguration:
+            subnets: $inputs.subnets
+            securityGroups: $inputs.securityGroups
+            assignPublicIp: $inputs.assignPublicIp
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      serviceArn: $response.body#/service/serviceArn
+      serviceName: $response.body#/service/serviceName
+      serviceStatus: $response.body#/service/status
+  - stepId: pollServiceSteady
+    description: >-
+      Poll DescribeServices until the running count reaches the desired count,
+      re-entering this step while the service is still scaling up.
+    operationId: describeServices
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.DescribeServices
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        cluster: $inputs.cluster
+        services:
+        - $steps.createService.outputs.serviceName
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      runningCount: $response.body#/services/0/runningCount
+      desiredCount: $response.body#/services/0/desiredCount
+      status: $response.body#/services/0/status
+    onSuccess:
+    - name: stillScaling
+      type: goto
+      stepId: pollServiceSteady
+      criteria:
+      - context: $response.body
+        condition: $.services[0].runningCount < $.services[0].desiredCount
+        type: jsonpath
+    - name: steadyState
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.services[0].runningCount >= $.services[0].desiredCount
+        type: jsonpath
+  outputs:
+    taskDefinitionArn: $steps.registerTaskDefinition.outputs.taskDefinitionArn
+    serviceArn: $steps.createService.outputs.serviceArn
+    runningCount: $steps.pollServiceSteady.outputs.runningCount
+    desiredCount: $steps.pollServiceSteady.outputs.desiredCount

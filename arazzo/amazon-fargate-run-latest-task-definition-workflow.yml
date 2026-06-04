@@ -1,0 +1,127 @@
+arazzo: 1.0.1
+info:
+  title: Amazon Fargate Run the Latest Task Definition
+  summary: Find the latest active revision of a task definition family, describe it, and run a task from it.
+  description: >-
+    Launches a task from whatever the newest active revision of a family is. The
+    workflow lists the active task definitions for a family, describes the most
+    recent revision to confirm it is FARGATE-compatible, and runs a single task
+    from it. Each step inlines its AWS JSON 1.1 request and the X-Amz-Target
+    action header so the launch can be read and executed directly.
+  version: 1.0.0
+sourceDescriptions:
+- name: fargateApi
+  url: ../openapi/amazon-fargate-openapi.yml
+  type: openapi
+workflows:
+- workflowId: run-latest-task-definition
+  summary: Resolve the latest active task definition revision for a family and run it.
+  description: >-
+    Chains listTaskDefinitions, describeTaskDefinition, and runTask so the most
+    recent revision is launched without hard-coding a revision number.
+  inputs:
+    type: object
+    required:
+    - familyPrefix
+    - cluster
+    - subnets
+    - securityGroups
+    properties:
+      familyPrefix:
+        type: string
+        description: Family name prefix to filter task definitions by.
+      cluster:
+        type: string
+        description: Name or ARN of the cluster to run the task in.
+      subnets:
+        type: array
+        items:
+          type: string
+        description: Subnet IDs for the awsvpc network configuration.
+      securityGroups:
+        type: array
+        items:
+          type: string
+        description: Security group IDs for the awsvpc network configuration.
+      assignPublicIp:
+        type: string
+        description: Whether to assign a public IP (ENABLED or DISABLED).
+        default: ENABLED
+  steps:
+  - stepId: listDefinitions
+    description: List the active task definition revisions for the family, newest last.
+    operationId: listTaskDefinitions
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.ListTaskDefinitions
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        familyPrefix: $inputs.familyPrefix
+        status: ACTIVE
+        sort: DESC
+        maxResults: 1
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      latestArn: $response.body#/taskDefinitionArns/0
+    onSuccess:
+    - name: found
+      type: goto
+      stepId: describeLatest
+      criteria:
+      - context: $response.body
+        condition: $.taskDefinitionArns.length > 0
+        type: jsonpath
+    - name: none
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.taskDefinitionArns.length == 0
+        type: jsonpath
+  - stepId: describeLatest
+    description: Describe the latest revision to confirm it is FARGATE-compatible.
+    operationId: describeTaskDefinition
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.DescribeTaskDefinition
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        taskDefinition: $steps.listDefinitions.outputs.latestArn
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      taskDefinitionArn: $response.body#/taskDefinition/taskDefinitionArn
+      revision: $response.body#/taskDefinition/revision
+      status: $response.body#/taskDefinition/status
+  - stepId: runLatest
+    description: Run a single Fargate task from the latest revision.
+    operationId: runTask
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.RunTask
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        cluster: $inputs.cluster
+        taskDefinition: $steps.describeLatest.outputs.taskDefinitionArn
+        launchType: FARGATE
+        count: 1
+        networkConfiguration:
+          awsvpcConfiguration:
+            subnets: $inputs.subnets
+            securityGroups: $inputs.securityGroups
+            assignPublicIp: $inputs.assignPublicIp
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      taskArn: $response.body#/tasks/0/taskArn
+      lastStatus: $response.body#/tasks/0/lastStatus
+  outputs:
+    latestTaskDefinitionArn: $steps.describeLatest.outputs.taskDefinitionArn
+    taskArn: $steps.runLatest.outputs.taskArn
+    lastStatus: $steps.runLatest.outputs.lastStatus

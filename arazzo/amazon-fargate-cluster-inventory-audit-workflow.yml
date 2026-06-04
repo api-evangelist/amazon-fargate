@@ -1,0 +1,107 @@
+arazzo: 1.0.1
+info:
+  title: Amazon Fargate Cluster Inventory Audit
+  summary: Enumerate clusters, describe one, then list its services and running tasks.
+  description: >-
+    A read-only audit that builds an inventory of a Fargate footprint. The
+    workflow lists clusters, describes the first cluster to pull its detailed
+    counts and settings, lists the services running in that cluster, and lists
+    its running tasks. Each step inlines its AWS JSON 1.1 request and the
+    X-Amz-Target action header so the audit can be read and executed directly.
+  version: 1.0.0
+sourceDescriptions:
+- name: fargateApi
+  url: ../openapi/amazon-fargate-openapi.yml
+  type: openapi
+workflows:
+- workflowId: cluster-inventory-audit
+  summary: List clusters and describe the first, then enumerate its services and tasks.
+  description: >-
+    Chains listClusters, describeClusters, listServices, and listTasks to
+    produce an at-a-glance inventory of a cluster.
+  inputs:
+    type: object
+    properties:
+      maxResults:
+        type: integer
+        description: Maximum number of clusters/services/tasks to list per call.
+        default: 20
+  steps:
+  - stepId: listClusters
+    description: List the cluster ARNs available in the account/region.
+    operationId: listClusters
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.ListClusters
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        maxResults: $inputs.maxResults
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      clusterArns: $response.body#/clusterArns
+      firstClusterArn: $response.body#/clusterArns/0
+  - stepId: describeFirstCluster
+    description: Describe the first cluster to retrieve its counts, settings, and statistics.
+    operationId: describeClusters
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.DescribeClusters
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        clusters:
+        - $steps.listClusters.outputs.firstClusterArn
+        include:
+        - SETTINGS
+        - STATISTICS
+        - TAGS
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      clusterArn: $response.body#/clusters/0/clusterArn
+      runningTasksCount: $response.body#/clusters/0/runningTasksCount
+      activeServicesCount: $response.body#/clusters/0/activeServicesCount
+  - stepId: listClusterServices
+    description: List the service ARNs running in the described cluster.
+    operationId: listServices
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.ListServices
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        cluster: $steps.describeFirstCluster.outputs.clusterArn
+        launchType: FARGATE
+        maxResults: $inputs.maxResults
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      serviceArns: $response.body#/serviceArns
+  - stepId: listClusterTasks
+    description: List the running task ARNs in the described cluster.
+    operationId: listTasks
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.ListTasks
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        cluster: $steps.describeFirstCluster.outputs.clusterArn
+        desiredStatus: RUNNING
+        launchType: FARGATE
+        maxResults: $inputs.maxResults
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      taskArns: $response.body#/taskArns
+  outputs:
+    clusterArns: $steps.listClusters.outputs.clusterArns
+    auditedClusterArn: $steps.describeFirstCluster.outputs.clusterArn
+    serviceArns: $steps.listClusterServices.outputs.serviceArns
+    taskArns: $steps.listClusterTasks.outputs.taskArns

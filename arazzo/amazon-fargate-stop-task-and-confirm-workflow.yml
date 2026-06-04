@@ -1,0 +1,122 @@
+arazzo: 1.0.1
+info:
+  title: Amazon Fargate Stop a Task and Confirm
+  summary: Find a running task in a cluster, stop it, and poll DescribeTasks until it is STOPPED.
+  description: >-
+    Cleanly stops a single running Fargate task. The workflow lists the running
+    tasks in a cluster, issues StopTask for the first match with a reason, and
+    then polls DescribeTasks until the task's lastStatus is STOPPED. Each step
+    inlines its AWS JSON 1.1 request and the X-Amz-Target action header so the
+    operation can be read and executed directly.
+  version: 1.0.0
+sourceDescriptions:
+- name: fargateApi
+  url: ../openapi/amazon-fargate-openapi.yml
+  type: openapi
+workflows:
+- workflowId: stop-task-and-confirm
+  summary: Locate a running task, stop it, and confirm it has reached STOPPED.
+  description: >-
+    Chains listTasks, stopTask, and a describeTasks poll loop that ends when the
+    task is STOPPED.
+  inputs:
+    type: object
+    required:
+    - cluster
+    properties:
+      cluster:
+        type: string
+        description: Name or ARN of the cluster to operate on.
+      reason:
+        type: string
+        description: Human-readable reason recorded when the task is stopped.
+        default: Stopped by Arazzo workflow
+  steps:
+  - stepId: listRunningTasks
+    description: List the running tasks in the cluster to find one to stop.
+    operationId: listTasks
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.ListTasks
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        cluster: $inputs.cluster
+        desiredStatus: RUNNING
+        launchType: FARGATE
+        maxResults: 1
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      taskArn: $response.body#/taskArns/0
+    onSuccess:
+    - name: hasTask
+      type: goto
+      stepId: stopTask
+      criteria:
+      - context: $response.body
+        condition: $.taskArns.length > 0
+        type: jsonpath
+    - name: noTask
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.taskArns.length == 0
+        type: jsonpath
+  - stepId: stopTask
+    description: Stop the located task, recording the supplied reason.
+    operationId: stopTask
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.StopTask
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        cluster: $inputs.cluster
+        task: $steps.listRunningTasks.outputs.taskArn
+        reason: $inputs.reason
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      taskArn: $response.body#/task/taskArn
+      lastStatus: $response.body#/task/lastStatus
+  - stepId: confirmStopped
+    description: >-
+      Poll DescribeTasks until the task reaches STOPPED, re-entering while it is
+      still shutting down.
+    operationId: describeTasks
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.DescribeTasks
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        cluster: $inputs.cluster
+        tasks:
+        - $steps.stopTask.outputs.taskArn
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      lastStatus: $response.body#/tasks/0/lastStatus
+      stoppedReason: $response.body#/tasks/0/stoppedReason
+    onSuccess:
+    - name: stillStopping
+      type: goto
+      stepId: confirmStopped
+      criteria:
+      - context: $response.body
+        condition: $.tasks[0].lastStatus != 'STOPPED'
+        type: jsonpath
+    - name: stopped
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.tasks[0].lastStatus == 'STOPPED'
+        type: jsonpath
+  outputs:
+    taskArn: $steps.stopTask.outputs.taskArn
+    finalStatus: $steps.confirmStopped.outputs.lastStatus
+    stoppedReason: $steps.confirmStopped.outputs.stoppedReason

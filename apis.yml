@@ -78,6 +78,36 @@ apis:
   - type: NaftikoCapability
     url: capabilities/amazon-fargate-tasks.yaml
 common:
+- type: ArazzoWorkflows
+  url: arazzo/
+  workflows:
+  - url: arazzo/amazon-fargate-cluster-inventory-audit-workflow.yml
+    name: Amazon Fargate Cluster Inventory Audit
+    summary: Enumerate clusters, describe one, then list its services and running tasks.
+  - url: arazzo/amazon-fargate-decommission-cluster-workflow.yml
+    name: Amazon Fargate Decommission a Cluster
+    summary: Scale a service to zero and delete it, then delete the cluster once it has no active services.
+  - url: arazzo/amazon-fargate-deploy-service-workflow.yml
+    name: Amazon Fargate Deploy a Service
+    summary: Register a task definition, create a Fargate service, and poll until the running count meets the desired count.
+  - url: arazzo/amazon-fargate-provision-and-run-task-workflow.yml
+    name: Amazon Fargate Provision and Run a Task
+    summary: Create a cluster, register a Fargate task definition, run a task, and poll until it reaches RUNNING.
+  - url: arazzo/amazon-fargate-rolling-update-service-workflow.yml
+    name: Amazon Fargate Roll Out a Service Update
+    summary: Register a new task definition revision, update a service to it, and poll until the deployment is steady.
+  - url: arazzo/amazon-fargate-run-batch-task-to-completion-workflow.yml
+    name: Amazon Fargate Run a Batch Task to Completion
+    summary: Run a one-off Fargate task and poll DescribeTasks until it reaches STOPPED.
+  - url: arazzo/amazon-fargate-run-latest-task-definition-workflow.yml
+    name: Amazon Fargate Run the Latest Task Definition
+    summary: Find the latest active revision of a task definition family, describe it, and run a task from it.
+  - url: arazzo/amazon-fargate-stop-task-and-confirm-workflow.yml
+    name: Amazon Fargate Stop a Task and Confirm
+    summary: Find a running task in a cluster, stop it, and poll DescribeTasks until it is STOPPED.
+  - url: arazzo/amazon-fargate-teardown-service-workflow.yml
+    name: Amazon Fargate Tear Down a Service
+    summary: Scale a service to zero, wait for it to drain, then delete it.
 - type: Portal
   url: https://console.aws.amazon.com/
 - type: Website

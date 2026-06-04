@@ -1,0 +1,125 @@
+arazzo: 1.0.1
+info:
+  title: Amazon Fargate Decommission a Cluster
+  summary: Scale a service to zero and delete it, then delete the cluster once it has no active services.
+  description: >-
+    Fully retires a Fargate cluster and its single service. ECS will not delete a
+    cluster that still has active services, so the workflow scales the service to
+    zero, deletes it, polls DescribeClusters until the active service count
+    reaches zero, and then deletes the cluster. Each step inlines its AWS JSON
+    1.1 request and the X-Amz-Target action header so the decommission can be
+    read and executed directly.
+  version: 1.0.0
+sourceDescriptions:
+- name: fargateApi
+  url: ../openapi/amazon-fargate-openapi.yml
+  type: openapi
+workflows:
+- workflowId: decommission-cluster
+  summary: Remove a service and then delete its cluster once no active services remain.
+  description: >-
+    Chains updateService (desiredCount 0), deleteService, a describeClusters
+    poll until activeServicesCount is zero, and deleteCluster.
+  inputs:
+    type: object
+    required:
+    - cluster
+    - service
+    properties:
+      cluster:
+        type: string
+        description: Name or ARN of the cluster to decommission.
+      service:
+        type: string
+        description: Name or ARN of the service to remove first.
+  steps:
+  - stepId: scaleServiceToZero
+    description: Scale the service to zero tasks so it can be deleted.
+    operationId: updateService
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.UpdateService
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        cluster: $inputs.cluster
+        service: $inputs.service
+        desiredCount: 0
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      serviceArn: $response.body#/service/serviceArn
+  - stepId: deleteService
+    description: Delete the now-zeroed service, forcing removal if needed.
+    operationId: deleteService
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.DeleteService
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        cluster: $inputs.cluster
+        service: $inputs.service
+        force: true
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      serviceStatus: $response.body#/service/status
+  - stepId: pollClusterServices
+    description: >-
+      Poll DescribeClusters until the active service count reaches zero, then
+      proceed to delete the cluster.
+    operationId: describeClusters
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.DescribeClusters
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        clusters:
+        - $inputs.cluster
+        include:
+        - STATISTICS
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      clusterArn: $response.body#/clusters/0/clusterArn
+      activeServicesCount: $response.body#/clusters/0/activeServicesCount
+    onSuccess:
+    - name: servicesRemain
+      type: goto
+      stepId: pollClusterServices
+      criteria:
+      - context: $response.body
+        condition: $.clusters[0].activeServicesCount > 0
+        type: jsonpath
+    - name: cleared
+      type: goto
+      stepId: deleteCluster
+      criteria:
+      - context: $response.body
+        condition: $.clusters[0].activeServicesCount == 0
+        type: jsonpath
+  - stepId: deleteCluster
+    description: Delete the cluster now that it has no active services.
+    operationId: deleteCluster
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.DeleteCluster
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        cluster: $inputs.cluster
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      clusterArn: $response.body#/cluster/clusterArn
+      finalStatus: $response.body#/cluster/status
+  outputs:
+    deletedServiceArn: $steps.scaleServiceToZero.outputs.serviceArn
+    clusterArn: $steps.deleteCluster.outputs.clusterArn
+    finalStatus: $steps.deleteCluster.outputs.finalStatus

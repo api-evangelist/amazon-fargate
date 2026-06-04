@@ -1,0 +1,145 @@
+arazzo: 1.0.1
+info:
+  title: Amazon Fargate Roll Out a Service Update
+  summary: Register a new task definition revision, update a service to it, and poll until the deployment is steady.
+  description: >-
+    A rolling deployment for an existing Fargate service. The workflow registers
+    a new revision of the task definition (typically a new image), updates the
+    target service to that revision and an optional new desired count, and then
+    polls DescribeServices until the running count matches the desired count.
+    Each step inlines its AWS JSON 1.1 request and the X-Amz-Target action
+    header so the rollout can be read and executed directly.
+  version: 1.0.0
+sourceDescriptions:
+- name: fargateApi
+  url: ../openapi/amazon-fargate-openapi.yml
+  type: openapi
+workflows:
+- workflowId: rolling-update-service
+  summary: Register a new task definition revision and roll it out to an existing service.
+  description: >-
+    Chains registerTaskDefinition and updateService, then loops over
+    describeServices until the new deployment reaches steady state.
+  inputs:
+    type: object
+    required:
+    - cluster
+    - service
+    - family
+    - containerName
+    - image
+    properties:
+      cluster:
+        type: string
+        description: Name or ARN of the cluster hosting the service.
+      service:
+        type: string
+        description: Name or ARN of the service to update.
+      family:
+        type: string
+        description: Family name for the new task definition revision.
+      containerName:
+        type: string
+        description: Name of the container in the task definition.
+      image:
+        type: string
+        description: New container image URI to deploy.
+      cpu:
+        type: string
+        description: Task-level CPU units for Fargate.
+        default: "256"
+      memory:
+        type: string
+        description: Task-level memory in MiB for Fargate.
+        default: "512"
+      executionRoleArn:
+        type: string
+        description: ARN of the ECS task execution role.
+      desiredCount:
+        type: integer
+        description: Desired number of tasks after the update.
+  steps:
+  - stepId: registerNewRevision
+    description: Register a new revision of the task definition with the updated image.
+    operationId: registerTaskDefinition
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.RegisterTaskDefinition
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        family: $inputs.family
+        requiresCompatibilities:
+        - FARGATE
+        networkMode: awsvpc
+        cpu: $inputs.cpu
+        memory: $inputs.memory
+        executionRoleArn: $inputs.executionRoleArn
+        containerDefinitions:
+        - name: $inputs.containerName
+          image: $inputs.image
+          essential: true
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      taskDefinitionArn: $response.body#/taskDefinition/taskDefinitionArn
+      revision: $response.body#/taskDefinition/revision
+  - stepId: updateService
+    description: Update the service to the new task definition revision and desired count.
+    operationId: updateService
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.UpdateService
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        cluster: $inputs.cluster
+        service: $inputs.service
+        taskDefinition: $steps.registerNewRevision.outputs.taskDefinitionArn
+        desiredCount: $inputs.desiredCount
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      serviceArn: $response.body#/service/serviceArn
+      desiredCount: $response.body#/service/desiredCount
+  - stepId: pollDeployment
+    description: >-
+      Poll DescribeServices until the running count matches the desired count,
+      re-entering while the rollout is still in progress.
+    operationId: describeServices
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.DescribeServices
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        cluster: $inputs.cluster
+        services:
+        - $inputs.service
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      runningCount: $response.body#/services/0/runningCount
+      desiredCount: $response.body#/services/0/desiredCount
+      status: $response.body#/services/0/status
+    onSuccess:
+    - name: rollingOut
+      type: goto
+      stepId: pollDeployment
+      criteria:
+      - context: $response.body
+        condition: $.services[0].runningCount != $.services[0].desiredCount
+        type: jsonpath
+    - name: deployed
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.services[0].runningCount == $.services[0].desiredCount
+        type: jsonpath
+  outputs:
+    taskDefinitionArn: $steps.registerNewRevision.outputs.taskDefinitionArn
+    serviceArn: $steps.updateService.outputs.serviceArn
+    runningCount: $steps.pollDeployment.outputs.runningCount

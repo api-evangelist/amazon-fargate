@@ -1,0 +1,176 @@
+arazzo: 1.0.1
+info:
+  title: Amazon Fargate Provision and Run a Task
+  summary: Create a cluster, register a Fargate task definition, run a task, and poll until it reaches RUNNING.
+  description: >-
+    The canonical Fargate launch flow. The workflow creates an ECS cluster,
+    registers a FARGATE-compatible task definition, runs a single task with an
+    awsvpc network configuration, and then polls DescribeTasks until the task's
+    lastStatus reaches RUNNING (or STOPPED). Each step spells out its request
+    inline — including the AWS JSON 1.1 content type and the X-Amz-Target action
+    header — so the flow can be read and executed without opening the underlying
+    OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: fargateApi
+  url: ../openapi/amazon-fargate-openapi.yml
+  type: openapi
+workflows:
+- workflowId: provision-and-run-task
+  summary: Stand up a cluster and task definition, then run and confirm a Fargate task is RUNNING.
+  description: >-
+    Chains createCluster, registerTaskDefinition, and runTask, then loops over
+    describeTasks until the started task reports a terminal or running state.
+  inputs:
+    type: object
+    required:
+    - clusterName
+    - family
+    - containerName
+    - image
+    - subnets
+    - securityGroups
+    properties:
+      clusterName:
+        type: string
+        description: Name for the ECS cluster to create.
+      family:
+        type: string
+        description: Family name for the task definition to register.
+      containerName:
+        type: string
+        description: Name of the container in the task definition.
+      image:
+        type: string
+        description: Container image URI (e.g. nginx:latest).
+      cpu:
+        type: string
+        description: Task-level CPU units for Fargate (e.g. "256").
+        default: "256"
+      memory:
+        type: string
+        description: Task-level memory in MiB for Fargate (e.g. "512").
+        default: "512"
+      executionRoleArn:
+        type: string
+        description: ARN of the ECS task execution role.
+      subnets:
+        type: array
+        items:
+          type: string
+        description: Subnet IDs for the awsvpc network configuration.
+      securityGroups:
+        type: array
+        items:
+          type: string
+        description: Security group IDs for the awsvpc network configuration.
+      assignPublicIp:
+        type: string
+        description: Whether to assign a public IP (ENABLED or DISABLED).
+        default: ENABLED
+  steps:
+  - stepId: createCluster
+    description: Create the ECS cluster that will host the Fargate task.
+    operationId: createCluster
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.CreateCluster
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        clusterName: $inputs.clusterName
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      clusterArn: $response.body#/cluster/clusterArn
+      clusterStatus: $response.body#/cluster/status
+  - stepId: registerTaskDefinition
+    description: Register a FARGATE-compatible task definition with the supplied container.
+    operationId: registerTaskDefinition
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.RegisterTaskDefinition
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        family: $inputs.family
+        requiresCompatibilities:
+        - FARGATE
+        networkMode: awsvpc
+        cpu: $inputs.cpu
+        memory: $inputs.memory
+        executionRoleArn: $inputs.executionRoleArn
+        containerDefinitions:
+        - name: $inputs.containerName
+          image: $inputs.image
+          essential: true
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      taskDefinitionArn: $response.body#/taskDefinition/taskDefinitionArn
+      revision: $response.body#/taskDefinition/revision
+  - stepId: runTask
+    description: Run a single task from the registered task definition on Fargate.
+    operationId: runTask
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.RunTask
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        cluster: $steps.createCluster.outputs.clusterArn
+        taskDefinition: $steps.registerTaskDefinition.outputs.taskDefinitionArn
+        launchType: FARGATE
+        count: 1
+        networkConfiguration:
+          awsvpcConfiguration:
+            subnets: $inputs.subnets
+            securityGroups: $inputs.securityGroups
+            assignPublicIp: $inputs.assignPublicIp
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      taskArn: $response.body#/tasks/0/taskArn
+      lastStatus: $response.body#/tasks/0/lastStatus
+  - stepId: pollTaskStatus
+    description: >-
+      Poll DescribeTasks until the started task reaches RUNNING or STOPPED. The
+      loop re-enters this step while the task is still provisioning or pending.
+    operationId: describeTasks
+    parameters:
+    - name: X-Amz-Target
+      in: header
+      value: AmazonEC2ContainerServiceV20141113.DescribeTasks
+    requestBody:
+      contentType: application/x-amz-json-1.1
+      payload:
+        cluster: $steps.createCluster.outputs.clusterArn
+        tasks:
+        - $steps.runTask.outputs.taskArn
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      lastStatus: $response.body#/tasks/0/lastStatus
+      desiredStatus: $response.body#/tasks/0/desiredStatus
+    onSuccess:
+    - name: stillStarting
+      type: goto
+      stepId: pollTaskStatus
+      criteria:
+      - context: $response.body
+        condition: $.tasks[0].lastStatus != 'RUNNING' && $.tasks[0].lastStatus != 'STOPPED'
+        type: jsonpath
+    - name: settled
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.tasks[0].lastStatus == 'RUNNING' || $.tasks[0].lastStatus == 'STOPPED'
+        type: jsonpath
+  outputs:
+    clusterArn: $steps.createCluster.outputs.clusterArn
+    taskDefinitionArn: $steps.registerTaskDefinition.outputs.taskDefinitionArn
+    taskArn: $steps.runTask.outputs.taskArn
+    finalStatus: $steps.pollTaskStatus.outputs.lastStatus
