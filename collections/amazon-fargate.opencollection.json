@@ -1,0 +1,381 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Amazon Fargate API",
+    "version": "2014-11-13"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Clusters",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Amazon Fargate Create a Cluster",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#CreateCluster",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new Amazon ECS cluster. By default, your account receives a default cluster when you launch your first container instance."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate Describe Clusters",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#DescribeClusters",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Describes one or more of your clusters."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate List Clusters",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#ListClusters",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns a list of existing clusters."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate Delete a Cluster",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#DeleteCluster",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Deletes the specified cluster. The cluster will transition to the INACTIVE state. You cannot delete a cluster that has registered container instances or active services."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Task Definitions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Amazon Fargate Register a Task Definition",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#RegisterTaskDefinition",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Registers a new task definition from the supplied family and containerDefinitions. Optionally, you can add data volumes to your containers with the volumes parameter. The task definition requires a launch type of FARGATE to run on Fargate."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate Describe a Task Definition",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#DescribeTaskDefinition",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Describes a task definition. You can get a task definition ARN from the RegisterTaskDefinition or ListTaskDefinitions actions."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate List Task Definitions",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#ListTaskDefinitions",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns a list of task definitions that are registered to your account. You can filter the results by family name and by task definition status."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate Deregister a Task Definition",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#DeregisterTaskDefinition",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Deregisters the specified task definition by family and revision. You may deregister a task definition revision by specifying its family and revision, or by specifying its full ARN."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Tasks",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Amazon Fargate Run a Task",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#RunTask",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Starts a new task using the specified task definition on Fargate launch type. You can run tasks on Fargate using the awsvpc network mode."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate Stop a Task",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#StopTask",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Stops a running task. Any tags associated with the task will be deleted automatically."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate Describe Tasks",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#DescribeTasks",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Describes a specified task or tasks. Returns the full description of the task including container details, task definition, network configuration, and current status."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate List Tasks",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#ListTasks",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns a list of tasks for a specified cluster. You can filter the results by family name, by a particular container instance, by launch type, or by a desired status."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Services",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Amazon Fargate Create a Service",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#CreateService",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Runs and maintains your desired number of tasks from a specified task definition on Fargate. If the number of tasks running in a service drops below the desiredCount, Amazon ECS runs another copy of the task."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate Describe Services",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#DescribeServices",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Describes the specified services running in your cluster."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate List Services",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#ListServices",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Lists the services that are running in a specified cluster."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate Update a Service",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#UpdateService",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Modifies the parameters of a service. You can update a service to change the desired count of tasks, update the task definition, or update the deployment configuration."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate Delete a Service",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#DeleteService",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Deletes a specified service within a cluster. You can delete a service if you have no running tasks in it and the desired task count is zero. If the service is actively maintaining tasks, you must first reduce the desired task count to zero and then delete the service."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Tagging",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Amazon Fargate Tag a Resource",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#TagResource",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Associates the specified tags with the specified Amazon ECS resource. You can specify one or more tags to add to each resource."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate List Tags for a Resource",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#ListTagsForResource",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "List the tags for an Amazon ECS resource."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Account Settings",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Amazon Fargate Put Account Setting",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#PutAccountSetting",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Modifies an account setting. Account settings are set on a per-Region basis."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate List Account Settings",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#ListAccountSettings",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Lists the account settings for an Amazon ECS resource type for a specified principal."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
