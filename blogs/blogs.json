@@ -5,7 +5,7 @@
       "source": "https://aws.amazon.com/blogs/containers/feed/",
       "feed_url": "https://aws.amazon.com/blogs/containers/feed/",
       "title": "",
-      "saved": 1,
+      "saved": 2,
       "method": "feed"
     },
     {
@@ -16,6 +16,6 @@
       "method": "none"
     }
   ],
-  "post_count": 23,
-  "fetched": "2026-06-14T20:42:17Z"
+  "post_count": 25,
+  "fetched": "2026-06-27T12:03:07Z"
 }
