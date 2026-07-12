@@ -68,6 +68,12 @@ apis:
       - type: APIReference
         url: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/Welcome.html
 common:
+  - type: VulnerabilityDisclosure
+    url: security/amazon-fargate-vulnerability-disclosure.yml
+  - type: DomainSecurity
+    url: security/amazon-fargate-domain-security.yml
+  - type: Authentication
+    url: authentication/amazon-fargate-authentication.yml
   - type: PostmanWorkspace
     url: https://www.postman.com/kinlaneapi/amazon-fargate/overview
   - type: Arazzo
