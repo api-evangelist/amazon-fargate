@@ -68,6 +68,8 @@ apis:
       - type: APIReference
         url: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/Welcome.html
 common:
+  - type: AgenticAccess
+    url: agentic-access/amazon-fargate-agentic-access.yml
   - type: VulnerabilityDisclosure
     url: security/amazon-fargate-vulnerability-disclosure.yml
   - type: DomainSecurity
