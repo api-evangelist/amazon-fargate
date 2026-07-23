@@ -1,0 +1,460 @@
+openapi: 3.1.0
+info:
+  title: Amazon Fargate Account Settings Clusters API
+  description: Amazon Fargate is a serverless compute engine for containers that works with Amazon ECS and Amazon EKS. This API enables you to run, manage, and monitor containerized applications without managing servers or clusters. Fargate handles capacity provisioning, patching, and scaling automatically.
+  version: '2014-11-13'
+  contact:
+    name: Amazon Web Services
+    url: https://aws.amazon.com/contact-us/
+  termsOfService: https://aws.amazon.com/service-terms/
+  x-generated-from: documentation
+  x-last-validated: '2026-04-19'
+servers:
+- url: https://ecs.{region}.amazonaws.com
+  description: Amazon ECS/Fargate Regional Endpoint
+  variables:
+    region:
+      default: us-east-1
+      description: AWS Region
+security:
+- aws_signature_v4: []
+tags:
+- name: Clusters
+  description: Operations for creating and managing ECS clusters
+paths:
+  /#CreateCluster:
+    post:
+      operationId: createCluster
+      summary: Amazon Fargate Create a Cluster
+      description: Creates a new Amazon ECS cluster. By default, your account receives a default cluster when you launch your first container instance.
+      tags:
+      - Clusters
+      requestBody:
+        required: false
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/CreateClusterRequest'
+            examples:
+              CreateClusterRequestExample:
+                summary: Default createCluster request
+                x-microcks-default: true
+                value:
+                  clusterName: my-fargate-cluster
+                  tags:
+                  - key: Environment
+                    value: production
+                  settings:
+                  - name: containerInsights
+                    value: enabled
+      responses:
+        '200':
+          description: Cluster created successfully
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/CreateClusterResponse'
+              examples:
+                CreateCluster200Example:
+                  summary: Default createCluster 200 response
+                  x-microcks-default: true
+                  value:
+                    cluster:
+                      clusterArn: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+                      clusterName: my-fargate-cluster
+                      status: ACTIVE
+                      registeredContainerInstancesCount: 0
+                      runningTasksCount: 0
+                      pendingTasksCount: 0
+                      activeServicesCount: 0
+        '400':
+          description: Bad request - invalid parameters
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#DescribeClusters:
+    post:
+      operationId: describeClusters
+      summary: Amazon Fargate Describe Clusters
+      description: Describes one or more of your clusters.
+      tags:
+      - Clusters
+      requestBody:
+        required: false
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/DescribeClustersRequest'
+            examples:
+              DescribeClustersRequestExample:
+                summary: Default describeClusters request
+                x-microcks-default: true
+                value:
+                  clusters:
+                  - my-fargate-cluster
+                  include:
+                  - SETTINGS
+                  - STATISTICS
+                  - TAGS
+      responses:
+        '200':
+          description: Cluster descriptions returned
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/DescribeClustersResponse'
+              examples:
+                DescribeClusters200Example:
+                  summary: Default describeClusters 200 response
+                  x-microcks-default: true
+                  value:
+                    clusters:
+                    - clusterArn: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+                      clusterName: my-fargate-cluster
+                      status: ACTIVE
+                      runningTasksCount: 5
+                      activeServicesCount: 2
+                    failures: []
+        '400':
+          description: Invalid parameters
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#ListClusters:
+    post:
+      operationId: listClusters
+      summary: Amazon Fargate List Clusters
+      description: Returns a list of existing clusters.
+      tags:
+      - Clusters
+      requestBody:
+        required: false
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/ListClustersRequest'
+            examples:
+              ListClustersRequestExample:
+                summary: Default listClusters request
+                x-microcks-default: true
+                value:
+                  maxResults: 10
+      responses:
+        '200':
+          description: List of clusters returned
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ListClustersResponse'
+              examples:
+                ListClusters200Example:
+                  summary: Default listClusters 200 response
+                  x-microcks-default: true
+                  value:
+                    clusterArns:
+                    - arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+                    - arn:aws:ecs:us-east-1:123456789012:cluster/staging-cluster
+                    nextToken: null
+        '400':
+          description: Invalid parameters
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#DeleteCluster:
+    post:
+      operationId: deleteCluster
+      summary: Amazon Fargate Delete a Cluster
+      description: Deletes the specified cluster. The cluster will transition to the INACTIVE state. You cannot delete a cluster that has registered container instances or active services.
+      tags:
+      - Clusters
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/DeleteClusterRequest'
+            examples:
+              DeleteClusterRequestExample:
+                summary: Default deleteCluster request
+                x-microcks-default: true
+                value:
+                  cluster: my-fargate-cluster
+      responses:
+        '200':
+          description: Cluster deleted
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/DeleteClusterResponse'
+              examples:
+                DeleteCluster200Example:
+                  summary: Default deleteCluster 200 response
+                  x-microcks-default: true
+                  value:
+                    cluster:
+                      clusterArn: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+                      clusterName: my-fargate-cluster
+                      status: INACTIVE
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Cluster not found
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+components:
+  schemas:
+    DeleteClusterResponse:
+      type: object
+      description: Response from DeleteCluster
+      properties:
+        cluster:
+          $ref: '#/components/schemas/Cluster'
+    ListClustersRequest:
+      type: object
+      description: Request for ListClusters
+      properties:
+        nextToken:
+          type: string
+          description: Pagination token
+        maxResults:
+          type: integer
+          description: Maximum results
+          example: 10
+    ListClustersResponse:
+      type: object
+      description: Response from ListClusters
+      properties:
+        clusterArns:
+          type: array
+          description: List of cluster ARNs
+          items:
+            type: string
+        nextToken:
+          type: string
+          description: Pagination token for next page
+    Failure:
+      type: object
+      description: A failure returned by an API operation
+      properties:
+        arn:
+          type: string
+          description: ARN of the resource that failed
+          example: arn:aws:ecs:us-east-1:123456789012:cluster/missing-cluster
+        reason:
+          type: string
+          description: Reason for the failure
+          example: MISSING
+        detail:
+          type: string
+          description: Additional detail about the failure
+    CreateClusterRequest:
+      type: object
+      description: Request for CreateCluster operation
+      properties:
+        clusterName:
+          type: string
+          description: Cluster name
+          example: my-fargate-cluster
+        tags:
+          type: array
+          description: Tags to apply
+          items:
+            $ref: '#/components/schemas/Tag'
+        settings:
+          type: array
+          description: Cluster settings
+          items:
+            $ref: '#/components/schemas/ClusterSetting'
+        configuration:
+          type: object
+          description: Cluster configuration
+        capacityProviders:
+          type: array
+          description: Capacity providers
+          items:
+            type: string
+        defaultCapacityProviderStrategy:
+          type: array
+          description: Default capacity provider strategy
+          items:
+            type: object
+    Tag:
+      type: object
+      description: A tag applied to an ECS resource
+      properties:
+        key:
+          type: string
+          description: The tag key
+          example: Environment
+        value:
+          type: string
+          description: The tag value
+          example: production
+    Cluster:
+      type: object
+      description: An Amazon ECS cluster
+      properties:
+        clusterArn:
+          type: string
+          description: The ARN of the cluster
+          example: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+        clusterName:
+          type: string
+          description: The name of the cluster
+          example: my-fargate-cluster
+        status:
+          type: string
+          description: Cluster status
+          example: ACTIVE
+          enum:
+          - ACTIVE
+          - PROVISIONING
+          - DEPROVISIONING
+          - FAILED
+          - INACTIVE
+        registeredContainerInstancesCount:
+          type: integer
+          description: Number of registered container instances
+          example: 0
+        runningTasksCount:
+          type: integer
+          description: Number of running tasks
+          example: 5
+        pendingTasksCount:
+          type: integer
+          description: Number of pending tasks
+          example: 0
+        activeServicesCount:
+          type: integer
+          description: Number of active services
+          example: 2
+        tags:
+          type: array
+          description: Tags associated with the cluster
+          items:
+            $ref: '#/components/schemas/Tag'
+        settings:
+          type: array
+          description: Cluster settings
+          items:
+            $ref: '#/components/schemas/ClusterSetting'
+    DescribeClustersRequest:
+      type: object
+      description: Request for DescribeClusters
+      properties:
+        clusters:
+          type: array
+          description: Cluster names or ARNs
+          items:
+            type: string
+        include:
+          type: array
+          description: Additional data to include
+          items:
+            type: string
+    CreateClusterResponse:
+      type: object
+      description: Response from CreateCluster
+      properties:
+        cluster:
+          $ref: '#/components/schemas/Cluster'
+    DescribeClustersResponse:
+      type: object
+      description: Response from DescribeClusters
+      properties:
+        clusters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Cluster'
+        failures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Failure'
+    DeleteClusterRequest:
+      type: object
+      required:
+      - cluster
+      description: Request for DeleteCluster
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+          example: my-fargate-cluster
+    ErrorResponse:
+      type: object
+      description: Error response from the Amazon ECS API
+      properties:
+        __type:
+          type: string
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
+    ClusterSetting:
+      type: object
+      description: A cluster setting
+      properties:
+        name:
+          type: string
+          description: Setting name
+          example: containerInsights
+        value:
+          type: string
+          description: Setting value
+          example: enabled
+  securitySchemes:
+    aws_signature_v4:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: AWS Signature Version 4 authentication. Include the Authorization header with the AWS4-HMAC-SHA256 signing algorithm.
+externalDocs:
+  description: Amazon ECS API Reference (Fargate)
+  url: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/Welcome.html

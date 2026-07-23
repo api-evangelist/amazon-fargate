@@ -1,0 +1,580 @@
+openapi: 3.1.0
+info:
+  title: Amazon Fargate Account Settings Task Definitions API
+  description: Amazon Fargate is a serverless compute engine for containers that works with Amazon ECS and Amazon EKS. This API enables you to run, manage, and monitor containerized applications without managing servers or clusters. Fargate handles capacity provisioning, patching, and scaling automatically.
+  version: '2014-11-13'
+  contact:
+    name: Amazon Web Services
+    url: https://aws.amazon.com/contact-us/
+  termsOfService: https://aws.amazon.com/service-terms/
+  x-generated-from: documentation
+  x-last-validated: '2026-04-19'
+servers:
+- url: https://ecs.{region}.amazonaws.com
+  description: Amazon ECS/Fargate Regional Endpoint
+  variables:
+    region:
+      default: us-east-1
+      description: AWS Region
+security:
+- aws_signature_v4: []
+tags:
+- name: Task Definitions
+  description: Operations for registering and managing task definitions
+paths:
+  /#RegisterTaskDefinition:
+    post:
+      operationId: registerTaskDefinition
+      summary: Amazon Fargate Register a Task Definition
+      description: Registers a new task definition from the supplied family and containerDefinitions. Optionally, you can add data volumes to your containers with the volumes parameter. The task definition requires a launch type of FARGATE to run on Fargate.
+      tags:
+      - Task Definitions
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/RegisterTaskDefinitionRequest'
+            examples:
+              RegisterTaskDefinitionRequestExample:
+                summary: Default registerTaskDefinition request
+                x-microcks-default: true
+                value:
+                  family: my-fargate-task
+                  requiresCompatibilities:
+                  - FARGATE
+                  networkMode: awsvpc
+                  cpu: '256'
+                  memory: '512'
+                  executionRoleArn: arn:aws:iam::123456789012:role/ecsTaskExecutionRole
+                  containerDefinitions:
+                  - name: my-container
+                    image: nginx:latest
+                    portMappings:
+                    - containerPort: 80
+                      protocol: tcp
+                    essential: true
+      responses:
+        '200':
+          description: Task definition registered
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/RegisterTaskDefinitionResponse'
+              examples:
+                RegisterTaskDefinition200Example:
+                  summary: Default registerTaskDefinition 200 response
+                  x-microcks-default: true
+                  value:
+                    taskDefinition:
+                      taskDefinitionArn: arn:aws:ecs:us-east-1:123456789012:task-definition/my-fargate-task:1
+                      family: my-fargate-task
+                      revision: 1
+                      status: ACTIVE
+                      requiresCompatibilities:
+                      - FARGATE
+                      cpu: '256'
+                      memory: '512'
+        '400':
+          description: Invalid task definition
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#DescribeTaskDefinition:
+    post:
+      operationId: describeTaskDefinition
+      summary: Amazon Fargate Describe a Task Definition
+      description: Describes a task definition. You can get a task definition ARN from the RegisterTaskDefinition or ListTaskDefinitions actions.
+      tags:
+      - Task Definitions
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/DescribeTaskDefinitionRequest'
+            examples:
+              DescribeTaskDefinitionRequestExample:
+                summary: Default describeTaskDefinition request
+                x-microcks-default: true
+                value:
+                  taskDefinition: my-fargate-task:1
+                  include:
+                  - TAGS
+      responses:
+        '200':
+          description: Task definition details
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/DescribeTaskDefinitionResponse'
+              examples:
+                DescribeTaskDefinition200Example:
+                  summary: Default describeTaskDefinition 200 response
+                  x-microcks-default: true
+                  value:
+                    taskDefinition:
+                      taskDefinitionArn: arn:aws:ecs:us-east-1:123456789012:task-definition/my-fargate-task:1
+                      family: my-fargate-task
+                      revision: 1
+                      status: ACTIVE
+                      requiresCompatibilities:
+                      - FARGATE
+                      cpu: '256'
+                      memory: '512'
+                    tags: []
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Task definition not found
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#ListTaskDefinitions:
+    post:
+      operationId: listTaskDefinitions
+      summary: Amazon Fargate List Task Definitions
+      description: Returns a list of task definitions that are registered to your account. You can filter the results by family name and by task definition status.
+      tags:
+      - Task Definitions
+      requestBody:
+        required: false
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/ListTaskDefinitionsRequest'
+            examples:
+              ListTaskDefinitionsRequestExample:
+                summary: Default listTaskDefinitions request
+                x-microcks-default: true
+                value:
+                  familyPrefix: my-fargate-task
+                  status: ACTIVE
+                  maxResults: 10
+      responses:
+        '200':
+          description: List of task definition ARNs
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ListTaskDefinitionsResponse'
+              examples:
+                ListTaskDefinitions200Example:
+                  summary: Default listTaskDefinitions 200 response
+                  x-microcks-default: true
+                  value:
+                    taskDefinitionArns:
+                    - arn:aws:ecs:us-east-1:123456789012:task-definition/my-fargate-task:1
+                    - arn:aws:ecs:us-east-1:123456789012:task-definition/my-fargate-task:2
+                    nextToken: null
+        '400':
+          description: Invalid parameters
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#DeregisterTaskDefinition:
+    post:
+      operationId: deregisterTaskDefinition
+      summary: Amazon Fargate Deregister a Task Definition
+      description: Deregisters the specified task definition by family and revision. You may deregister a task definition revision by specifying its family and revision, or by specifying its full ARN.
+      tags:
+      - Task Definitions
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/DeregisterTaskDefinitionRequest'
+            examples:
+              DeregisterTaskDefinitionRequestExample:
+                summary: Default deregisterTaskDefinition request
+                x-microcks-default: true
+                value:
+                  taskDefinition: my-fargate-task:1
+      responses:
+        '200':
+          description: Task definition deregistered
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/DeregisterTaskDefinitionResponse'
+              examples:
+                DeregisterTaskDefinition200Example:
+                  summary: Default deregisterTaskDefinition 200 response
+                  x-microcks-default: true
+                  value:
+                    taskDefinition:
+                      taskDefinitionArn: arn:aws:ecs:us-east-1:123456789012:task-definition/my-fargate-task:1
+                      status: INACTIVE
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+components:
+  schemas:
+    PortMapping:
+      type: object
+      description: Port mapping for a container
+      properties:
+        containerPort:
+          type: integer
+          description: Container port
+          example: 80
+        hostPort:
+          type: integer
+          description: Host port
+          example: 80
+        protocol:
+          type: string
+          description: Protocol
+          example: tcp
+          enum:
+          - tcp
+          - udp
+    RegisterTaskDefinitionRequest:
+      type: object
+      required:
+      - family
+      - containerDefinitions
+      description: Request for RegisterTaskDefinition
+      properties:
+        family:
+          type: string
+          description: Task definition family
+          example: my-fargate-task
+        taskRoleArn:
+          type: string
+          description: Task IAM role ARN
+        executionRoleArn:
+          type: string
+          description: Task execution IAM role ARN
+          example: arn:aws:iam::123456789012:role/ecsTaskExecutionRole
+        networkMode:
+          type: string
+          description: Docker networking mode
+          example: awsvpc
+        requiresCompatibilities:
+          type: array
+          description: Launch type compatibility
+          items:
+            type: string
+        cpu:
+          type: string
+          description: CPU units (required for Fargate)
+          example: '256'
+        memory:
+          type: string
+          description: Memory in MiB (required for Fargate)
+          example: '512'
+        containerDefinitions:
+          type: array
+          description: Container definitions
+          items:
+            $ref: '#/components/schemas/ContainerDefinition'
+        volumes:
+          type: array
+          description: Volumes to mount
+          items:
+            type: object
+        tags:
+          type: array
+          description: Tags
+          items:
+            $ref: '#/components/schemas/Tag'
+    LogConfiguration:
+      type: object
+      description: Log configuration for a container
+      properties:
+        logDriver:
+          type: string
+          description: Log driver
+          example: awslogs
+          enum:
+          - json-file
+          - syslog
+          - journald
+          - gelf
+          - fluentd
+          - awslogs
+          - splunk
+          - awsfirelens
+        options:
+          type: object
+          description: Log driver options
+          additionalProperties:
+            type: string
+    TaskDefinition:
+      type: object
+      description: An Amazon ECS task definition
+      properties:
+        taskDefinitionArn:
+          type: string
+          description: Full ARN of the task definition
+          example: arn:aws:ecs:us-east-1:123456789012:task-definition/my-fargate-task:1
+        family:
+          type: string
+          description: Family of the task definition
+          example: my-fargate-task
+        revision:
+          type: integer
+          description: Revision number
+          example: 1
+        status:
+          type: string
+          description: Task definition status
+          example: ACTIVE
+          enum:
+          - ACTIVE
+          - INACTIVE
+          - DELETE_IN_PROGRESS
+        requiresCompatibilities:
+          type: array
+          description: Launch types the task definition is compatible with
+          items:
+            type: string
+          example:
+          - FARGATE
+        networkMode:
+          type: string
+          description: Docker networking mode
+          example: awsvpc
+          enum:
+          - bridge
+          - host
+          - awsvpc
+          - none
+        cpu:
+          type: string
+          description: Number of cpu units
+          example: '256'
+        memory:
+          type: string
+          description: Amount of memory in MiB
+          example: '512'
+        executionRoleArn:
+          type: string
+          description: ARN of task execution role
+          example: arn:aws:iam::123456789012:role/ecsTaskExecutionRole
+        taskRoleArn:
+          type: string
+          description: ARN of task IAM role
+          example: arn:aws:iam::123456789012:role/ecsTaskRole
+        containerDefinitions:
+          type: array
+          description: Container definitions
+          items:
+            $ref: '#/components/schemas/ContainerDefinition'
+    DescribeTaskDefinitionRequest:
+      type: object
+      required:
+      - taskDefinition
+      description: Request for DescribeTaskDefinition
+      properties:
+        taskDefinition:
+          type: string
+          description: Task definition family:revision or ARN
+          example: my-fargate-task:1
+        include:
+          type: array
+          description: Additional data to include
+          items:
+            type: string
+    RegisterTaskDefinitionResponse:
+      type: object
+      description: Response from RegisterTaskDefinition
+      properties:
+        taskDefinition:
+          $ref: '#/components/schemas/TaskDefinition'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+    Tag:
+      type: object
+      description: A tag applied to an ECS resource
+      properties:
+        key:
+          type: string
+          description: The tag key
+          example: Environment
+        value:
+          type: string
+          description: The tag value
+          example: production
+    DescribeTaskDefinitionResponse:
+      type: object
+      description: Response from DescribeTaskDefinition
+      properties:
+        taskDefinition:
+          $ref: '#/components/schemas/TaskDefinition'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+    KeyValuePair:
+      type: object
+      description: A key-value pair
+      properties:
+        name:
+          type: string
+          description: Key name
+          example: LOG_LEVEL
+        value:
+          type: string
+          description: Key value
+          example: INFO
+    DeregisterTaskDefinitionResponse:
+      type: object
+      description: Response from DeregisterTaskDefinition
+      properties:
+        taskDefinition:
+          $ref: '#/components/schemas/TaskDefinition'
+    ListTaskDefinitionsResponse:
+      type: object
+      description: Response from ListTaskDefinitions
+      properties:
+        taskDefinitionArns:
+          type: array
+          description: List of task definition ARNs
+          items:
+            type: string
+        nextToken:
+          type: string
+          description: Pagination token
+    ListTaskDefinitionsRequest:
+      type: object
+      description: Request for ListTaskDefinitions
+      properties:
+        familyPrefix:
+          type: string
+          description: Family prefix filter
+        status:
+          type: string
+          description: Status filter
+          enum:
+          - ACTIVE
+          - INACTIVE
+          - DELETE_IN_PROGRESS
+        sort:
+          type: string
+          description: Sort order
+          enum:
+          - ASC
+          - DESC
+        nextToken:
+          type: string
+          description: Pagination token
+        maxResults:
+          type: integer
+          description: Maximum results
+    ErrorResponse:
+      type: object
+      description: Error response from the Amazon ECS API
+      properties:
+        __type:
+          type: string
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
+    DeregisterTaskDefinitionRequest:
+      type: object
+      required:
+      - taskDefinition
+      description: Request for DeregisterTaskDefinition
+      properties:
+        taskDefinition:
+          type: string
+          description: Task definition family:revision or ARN
+    ContainerDefinition:
+      type: object
+      description: Container definition for a task
+      properties:
+        name:
+          type: string
+          description: Container name
+          example: my-container
+        image:
+          type: string
+          description: Docker image
+          example: nginx:latest
+        essential:
+          type: boolean
+          description: Whether container is essential
+          example: true
+        cpu:
+          type: integer
+          description: CPU units for the container
+          example: 256
+        memory:
+          type: integer
+          description: Memory limit in MiB
+          example: 512
+        environment:
+          type: array
+          description: Environment variables
+          items:
+            $ref: '#/components/schemas/KeyValuePair'
+        portMappings:
+          type: array
+          description: Port mappings
+          items:
+            $ref: '#/components/schemas/PortMapping'
+        logConfiguration:
+          $ref: '#/components/schemas/LogConfiguration'
+  securitySchemes:
+    aws_signature_v4:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: AWS Signature Version 4 authentication. Include the Authorization header with the AWS4-HMAC-SHA256 signing algorithm.
+externalDocs:
+  description: Amazon ECS API Reference (Fargate)
+  url: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/Welcome.html

@@ -1,0 +1,655 @@
+openapi: 3.1.0
+info:
+  title: Amazon Fargate Account Settings Services API
+  description: Amazon Fargate is a serverless compute engine for containers that works with Amazon ECS and Amazon EKS. This API enables you to run, manage, and monitor containerized applications without managing servers or clusters. Fargate handles capacity provisioning, patching, and scaling automatically.
+  version: '2014-11-13'
+  contact:
+    name: Amazon Web Services
+    url: https://aws.amazon.com/contact-us/
+  termsOfService: https://aws.amazon.com/service-terms/
+  x-generated-from: documentation
+  x-last-validated: '2026-04-19'
+servers:
+- url: https://ecs.{region}.amazonaws.com
+  description: Amazon ECS/Fargate Regional Endpoint
+  variables:
+    region:
+      default: us-east-1
+      description: AWS Region
+security:
+- aws_signature_v4: []
+tags:
+- name: Services
+  description: Operations for deploying and managing long-running services
+paths:
+  /#CreateService:
+    post:
+      operationId: createService
+      summary: Amazon Fargate Create a Service
+      description: Runs and maintains your desired number of tasks from a specified task definition on Fargate. If the number of tasks running in a service drops below the desiredCount, Amazon ECS runs another copy of the task.
+      tags:
+      - Services
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/CreateServiceRequest'
+            examples:
+              CreateServiceRequestExample:
+                summary: Default createService request
+                x-microcks-default: true
+                value:
+                  cluster: my-fargate-cluster
+                  serviceName: my-fargate-service
+                  taskDefinition: my-fargate-task:1
+                  desiredCount: 2
+                  launchType: FARGATE
+                  networkConfiguration:
+                    awsvpcConfiguration:
+                      subnets:
+                      - subnet-12345678
+                      securityGroups:
+                      - sg-12345678
+                      assignPublicIp: ENABLED
+                  loadBalancers:
+                  - targetGroupArn: arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/my-tg/abc123
+                    containerName: my-container
+                    containerPort: 80
+      responses:
+        '200':
+          description: Service created
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/CreateServiceResponse'
+              examples:
+                CreateService200Example:
+                  summary: Default createService 200 response
+                  x-microcks-default: true
+                  value:
+                    service:
+                      serviceArn: arn:aws:ecs:us-east-1:123456789012:service/my-fargate-cluster/my-fargate-service
+                      serviceName: my-fargate-service
+                      clusterArn: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+                      desiredCount: 2
+                      runningCount: 0
+                      pendingCount: 0
+                      status: ACTIVE
+                      launchType: FARGATE
+        '400':
+          description: Invalid service configuration
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#DescribeServices:
+    post:
+      operationId: describeServices
+      summary: Amazon Fargate Describe Services
+      description: Describes the specified services running in your cluster.
+      tags:
+      - Services
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/DescribeServicesRequest'
+            examples:
+              DescribeServicesRequestExample:
+                summary: Default describeServices request
+                x-microcks-default: true
+                value:
+                  cluster: my-fargate-cluster
+                  services:
+                  - my-fargate-service
+                  include:
+                  - TAGS
+      responses:
+        '200':
+          description: Service details returned
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/DescribeServicesResponse'
+              examples:
+                DescribeServices200Example:
+                  summary: Default describeServices 200 response
+                  x-microcks-default: true
+                  value:
+                    services:
+                    - serviceArn: arn:aws:ecs:us-east-1:123456789012:service/my-fargate-cluster/my-fargate-service
+                      serviceName: my-fargate-service
+                      status: ACTIVE
+                      desiredCount: 2
+                      runningCount: 2
+                      launchType: FARGATE
+                    failures: []
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#ListServices:
+    post:
+      operationId: listServices
+      summary: Amazon Fargate List Services
+      description: Lists the services that are running in a specified cluster.
+      tags:
+      - Services
+      requestBody:
+        required: false
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/ListServicesRequest'
+            examples:
+              ListServicesRequestExample:
+                summary: Default listServices request
+                x-microcks-default: true
+                value:
+                  cluster: my-fargate-cluster
+                  launchType: FARGATE
+                  maxResults: 20
+      responses:
+        '200':
+          description: List of service ARNs
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ListServicesResponse'
+              examples:
+                ListServices200Example:
+                  summary: Default listServices 200 response
+                  x-microcks-default: true
+                  value:
+                    serviceArns:
+                    - arn:aws:ecs:us-east-1:123456789012:service/my-fargate-cluster/my-fargate-service
+                    nextToken: null
+        '400':
+          description: Invalid parameters
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#UpdateService:
+    post:
+      operationId: updateService
+      summary: Amazon Fargate Update a Service
+      description: Modifies the parameters of a service. You can update a service to change the desired count of tasks, update the task definition, or update the deployment configuration.
+      tags:
+      - Services
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/UpdateServiceRequest'
+            examples:
+              UpdateServiceRequestExample:
+                summary: Default updateService request
+                x-microcks-default: true
+                value:
+                  cluster: my-fargate-cluster
+                  service: my-fargate-service
+                  desiredCount: 4
+                  taskDefinition: my-fargate-task:2
+      responses:
+        '200':
+          description: Service updated
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/UpdateServiceResponse'
+              examples:
+                UpdateService200Example:
+                  summary: Default updateService 200 response
+                  x-microcks-default: true
+                  value:
+                    service:
+                      serviceArn: arn:aws:ecs:us-east-1:123456789012:service/my-fargate-cluster/my-fargate-service
+                      serviceName: my-fargate-service
+                      desiredCount: 4
+                      status: ACTIVE
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Service not found
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#DeleteService:
+    post:
+      operationId: deleteService
+      summary: Amazon Fargate Delete a Service
+      description: Deletes a specified service within a cluster. You can delete a service if you have no running tasks in it and the desired task count is zero. If the service is actively maintaining tasks, you must first reduce the desired task count to zero and then delete the service.
+      tags:
+      - Services
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/DeleteServiceRequest'
+            examples:
+              DeleteServiceRequestExample:
+                summary: Default deleteService request
+                x-microcks-default: true
+                value:
+                  cluster: my-fargate-cluster
+                  service: my-fargate-service
+                  force: false
+      responses:
+        '200':
+          description: Service deleted
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/DeleteServiceResponse'
+              examples:
+                DeleteService200Example:
+                  summary: Default deleteService 200 response
+                  x-microcks-default: true
+                  value:
+                    service:
+                      serviceArn: arn:aws:ecs:us-east-1:123456789012:service/my-fargate-cluster/my-fargate-service
+                      serviceName: my-fargate-service
+                      status: DRAINING
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Service not found
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+components:
+  schemas:
+    LoadBalancer:
+      type: object
+      description: Load balancer configuration for a service
+      properties:
+        targetGroupArn:
+          type: string
+          description: Target group ARN
+          example: arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/my-tg/abc123
+        loadBalancerName:
+          type: string
+          description: Load balancer name
+        containerName:
+          type: string
+          description: Container name
+          example: my-container
+        containerPort:
+          type: integer
+          description: Container port
+          example: 80
+    DeleteServiceResponse:
+      type: object
+      description: Response from DeleteService
+      properties:
+        service:
+          $ref: '#/components/schemas/Service'
+    UpdateServiceResponse:
+      type: object
+      description: Response from UpdateService
+      properties:
+        service:
+          $ref: '#/components/schemas/Service'
+    ListServicesRequest:
+      type: object
+      description: Request for ListServices
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        launchType:
+          type: string
+          description: Launch type filter
+        schedulingStrategy:
+          type: string
+          description: Scheduling strategy filter
+        nextToken:
+          type: string
+          description: Pagination token
+        maxResults:
+          type: integer
+          description: Maximum results
+    Failure:
+      type: object
+      description: A failure returned by an API operation
+      properties:
+        arn:
+          type: string
+          description: ARN of the resource that failed
+          example: arn:aws:ecs:us-east-1:123456789012:cluster/missing-cluster
+        reason:
+          type: string
+          description: Reason for the failure
+          example: MISSING
+        detail:
+          type: string
+          description: Additional detail about the failure
+    AwsVpcConfiguration:
+      type: object
+      description: VPC configuration for awsvpc network mode
+      required:
+      - subnets
+      properties:
+        subnets:
+          type: array
+          description: Subnets for the task
+          items:
+            type: string
+          example:
+          - subnet-12345678
+        securityGroups:
+          type: array
+          description: Security groups
+          items:
+            type: string
+          example:
+          - sg-12345678
+        assignPublicIp:
+          type: string
+          description: Whether to assign a public IP
+          example: ENABLED
+          enum:
+          - ENABLED
+          - DISABLED
+    Tag:
+      type: object
+      description: A tag applied to an ECS resource
+      properties:
+        key:
+          type: string
+          description: The tag key
+          example: Environment
+        value:
+          type: string
+          description: The tag value
+          example: production
+    DescribeServicesResponse:
+      type: object
+      description: Response from DescribeServices
+      properties:
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/Service'
+        failures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Failure'
+    Service:
+      type: object
+      description: An Amazon ECS service
+      properties:
+        serviceArn:
+          type: string
+          description: ARN of the service
+          example: arn:aws:ecs:us-east-1:123456789012:service/my-fargate-cluster/my-fargate-service
+        serviceName:
+          type: string
+          description: Name of the service
+          example: my-fargate-service
+        clusterArn:
+          type: string
+          description: ARN of the cluster
+          example: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+        taskDefinition:
+          type: string
+          description: Task definition ARN or family:revision
+          example: my-fargate-task:1
+        desiredCount:
+          type: integer
+          description: Desired number of tasks
+          example: 2
+        runningCount:
+          type: integer
+          description: Number of running tasks
+          example: 2
+        pendingCount:
+          type: integer
+          description: Number of pending tasks
+          example: 0
+        status:
+          type: string
+          description: Service status
+          example: ACTIVE
+          enum:
+          - ACTIVE
+          - DRAINING
+          - INACTIVE
+        launchType:
+          type: string
+          description: Launch type
+          example: FARGATE
+        networkConfiguration:
+          $ref: '#/components/schemas/NetworkConfiguration'
+        loadBalancers:
+          type: array
+          description: Load balancer configurations
+          items:
+            $ref: '#/components/schemas/LoadBalancer'
+        createdAt:
+          type: string
+          format: date-time
+          description: Service creation time
+        tags:
+          type: array
+          description: Tags
+          items:
+            $ref: '#/components/schemas/Tag'
+    CreateServiceRequest:
+      type: object
+      required:
+      - serviceName
+      - taskDefinition
+      description: Request for CreateService
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        serviceName:
+          type: string
+          description: Service name
+          example: my-fargate-service
+        taskDefinition:
+          type: string
+          description: Task definition
+          example: my-fargate-task:1
+        launchType:
+          type: string
+          description: Launch type
+          example: FARGATE
+        desiredCount:
+          type: integer
+          description: Desired number of tasks
+          example: 2
+        networkConfiguration:
+          $ref: '#/components/schemas/NetworkConfiguration'
+        loadBalancers:
+          type: array
+          description: Load balancers
+          items:
+            $ref: '#/components/schemas/LoadBalancer'
+        deploymentConfiguration:
+          type: object
+          description: Deployment configuration
+        tags:
+          type: array
+          description: Tags
+          items:
+            $ref: '#/components/schemas/Tag'
+        enableExecuteCommand:
+          type: boolean
+          description: Enable ECS Exec
+        propagateTags:
+          type: string
+          description: Tag propagation
+          enum:
+          - TASK_DEFINITION
+          - SERVICE
+          - NONE
+    ListServicesResponse:
+      type: object
+      description: Response from ListServices
+      properties:
+        serviceArns:
+          type: array
+          description: List of service ARNs
+          items:
+            type: string
+        nextToken:
+          type: string
+          description: Pagination token
+    UpdateServiceRequest:
+      type: object
+      required:
+      - service
+      description: Request for UpdateService
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        service:
+          type: string
+          description: Service name or ARN
+        desiredCount:
+          type: integer
+          description: Desired task count
+        taskDefinition:
+          type: string
+          description: Task definition
+        networkConfiguration:
+          $ref: '#/components/schemas/NetworkConfiguration'
+        deploymentConfiguration:
+          type: object
+          description: Deployment configuration
+        enableExecuteCommand:
+          type: boolean
+          description: Enable ECS Exec
+    NetworkConfiguration:
+      type: object
+      description: Network configuration for the task
+      properties:
+        awsvpcConfiguration:
+          $ref: '#/components/schemas/AwsVpcConfiguration'
+    ErrorResponse:
+      type: object
+      description: Error response from the Amazon ECS API
+      properties:
+        __type:
+          type: string
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
+    DescribeServicesRequest:
+      type: object
+      required:
+      - services
+      description: Request for DescribeServices
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        services:
+          type: array
+          description: Service names or ARNs
+          items:
+            type: string
+        include:
+          type: array
+          description: Additional data to include
+          items:
+            type: string
+    DeleteServiceRequest:
+      type: object
+      required:
+      - service
+      description: Request for DeleteService
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        service:
+          type: string
+          description: Service name or ARN
+        force:
+          type: boolean
+          description: Force delete even with running tasks
+    CreateServiceResponse:
+      type: object
+      description: Response from CreateService
+      properties:
+        service:
+          $ref: '#/components/schemas/Service'
+  securitySchemes:
+    aws_signature_v4:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: AWS Signature Version 4 authentication. Include the Authorization header with the AWS4-HMAC-SHA256 signing algorithm.
+externalDocs:
+  description: Amazon ECS API Reference (Fargate)
+  url: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/Welcome.html

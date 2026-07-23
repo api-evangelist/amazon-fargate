@@ -1,0 +1,575 @@
+openapi: 3.1.0
+info:
+  title: Amazon Fargate Account Settings Tasks API
+  description: Amazon Fargate is a serverless compute engine for containers that works with Amazon ECS and Amazon EKS. This API enables you to run, manage, and monitor containerized applications without managing servers or clusters. Fargate handles capacity provisioning, patching, and scaling automatically.
+  version: '2014-11-13'
+  contact:
+    name: Amazon Web Services
+    url: https://aws.amazon.com/contact-us/
+  termsOfService: https://aws.amazon.com/service-terms/
+  x-generated-from: documentation
+  x-last-validated: '2026-04-19'
+servers:
+- url: https://ecs.{region}.amazonaws.com
+  description: Amazon ECS/Fargate Regional Endpoint
+  variables:
+    region:
+      default: us-east-1
+      description: AWS Region
+security:
+- aws_signature_v4: []
+tags:
+- name: Tasks
+  description: Operations for running and managing Fargate tasks
+paths:
+  /#RunTask:
+    post:
+      operationId: runTask
+      summary: Amazon Fargate Run a Task
+      description: Starts a new task using the specified task definition on Fargate launch type. You can run tasks on Fargate using the awsvpc network mode.
+      tags:
+      - Tasks
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/RunTaskRequest'
+            examples:
+              RunTaskRequestExample:
+                summary: Default runTask request
+                x-microcks-default: true
+                value:
+                  cluster: my-fargate-cluster
+                  taskDefinition: my-fargate-task:1
+                  launchType: FARGATE
+                  count: 1
+                  networkConfiguration:
+                    awsvpcConfiguration:
+                      subnets:
+                      - subnet-12345678
+                      securityGroups:
+                      - sg-12345678
+                      assignPublicIp: ENABLED
+      responses:
+        '200':
+          description: Task started
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/RunTaskResponse'
+              examples:
+                RunTask200Example:
+                  summary: Default runTask 200 response
+                  x-microcks-default: true
+                  value:
+                    tasks:
+                    - taskArn: arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123
+                      clusterArn: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+                      taskDefinitionArn: arn:aws:ecs:us-east-1:123456789012:task-definition/my-fargate-task:1
+                      lastStatus: PROVISIONING
+                      desiredStatus: RUNNING
+                      launchType: FARGATE
+                    failures: []
+        '400':
+          description: Invalid task configuration
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#StopTask:
+    post:
+      operationId: stopTask
+      summary: Amazon Fargate Stop a Task
+      description: Stops a running task. Any tags associated with the task will be deleted automatically.
+      tags:
+      - Tasks
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/StopTaskRequest'
+            examples:
+              StopTaskRequestExample:
+                summary: Default stopTask request
+                x-microcks-default: true
+                value:
+                  cluster: my-fargate-cluster
+                  task: arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123
+                  reason: Scaling down
+      responses:
+        '200':
+          description: Task stopped
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/StopTaskResponse'
+              examples:
+                StopTask200Example:
+                  summary: Default stopTask 200 response
+                  x-microcks-default: true
+                  value:
+                    task:
+                      taskArn: arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123
+                      lastStatus: STOPPED
+                      stoppedReason: Scaling down
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Task not found
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#DescribeTasks:
+    post:
+      operationId: describeTasks
+      summary: Amazon Fargate Describe Tasks
+      description: Describes a specified task or tasks. Returns the full description of the task including container details, task definition, network configuration, and current status.
+      tags:
+      - Tasks
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/DescribeTasksRequest'
+            examples:
+              DescribeTasksRequestExample:
+                summary: Default describeTasks request
+                x-microcks-default: true
+                value:
+                  cluster: my-fargate-cluster
+                  tasks:
+                  - arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123
+                  include:
+                  - TAGS
+      responses:
+        '200':
+          description: Task details returned
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/DescribeTasksResponse'
+              examples:
+                DescribeTasks200Example:
+                  summary: Default describeTasks 200 response
+                  x-microcks-default: true
+                  value:
+                    tasks:
+                    - taskArn: arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123
+                      clusterArn: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+                      lastStatus: RUNNING
+                      desiredStatus: RUNNING
+                      cpu: '256'
+                      memory: '512'
+                      launchType: FARGATE
+                    failures: []
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#ListTasks:
+    post:
+      operationId: listTasks
+      summary: Amazon Fargate List Tasks
+      description: Returns a list of tasks for a specified cluster. You can filter the results by family name, by a particular container instance, by launch type, or by a desired status.
+      tags:
+      - Tasks
+      requestBody:
+        required: false
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/ListTasksRequest'
+            examples:
+              ListTasksRequestExample:
+                summary: Default listTasks request
+                x-microcks-default: true
+                value:
+                  cluster: my-fargate-cluster
+                  desiredStatus: RUNNING
+                  launchType: FARGATE
+                  maxResults: 20
+      responses:
+        '200':
+          description: List of task ARNs
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ListTasksResponse'
+              examples:
+                ListTasks200Example:
+                  summary: Default listTasks 200 response
+                  x-microcks-default: true
+                  value:
+                    taskArns:
+                    - arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123
+                    - arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/def456
+                    nextToken: null
+        '400':
+          description: Invalid parameters
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+components:
+  schemas:
+    ListTasksResponse:
+      type: object
+      description: Response from ListTasks
+      properties:
+        taskArns:
+          type: array
+          description: List of task ARNs
+          items:
+            type: string
+        nextToken:
+          type: string
+          description: Pagination token
+    DescribeTasksResponse:
+      type: object
+      description: Response from DescribeTasks
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+        failures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Failure'
+    RunTaskRequest:
+      type: object
+      required:
+      - taskDefinition
+      description: Request for RunTask
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+          example: my-fargate-cluster
+        taskDefinition:
+          type: string
+          description: Task definition
+          example: my-fargate-task:1
+        launchType:
+          type: string
+          description: Launch type
+          example: FARGATE
+          enum:
+          - EC2
+          - FARGATE
+          - EXTERNAL
+        count:
+          type: integer
+          description: Number of tasks to run
+          example: 1
+        networkConfiguration:
+          $ref: '#/components/schemas/NetworkConfiguration'
+        overrides:
+          type: object
+          description: Task overrides
+        tags:
+          type: array
+          description: Tags
+          items:
+            $ref: '#/components/schemas/Tag'
+        enableExecuteCommand:
+          type: boolean
+          description: Enable ECS Exec
+          example: false
+        propagateTags:
+          type: string
+          description: Whether to propagate tags
+          enum:
+          - TASK_DEFINITION
+          - SERVICE
+          - NONE
+    DescribeTasksRequest:
+      type: object
+      required:
+      - tasks
+      description: Request for DescribeTasks
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        tasks:
+          type: array
+          description: Task ARNs or IDs
+          items:
+            type: string
+        include:
+          type: array
+          description: Additional data to include
+          items:
+            type: string
+    Failure:
+      type: object
+      description: A failure returned by an API operation
+      properties:
+        arn:
+          type: string
+          description: ARN of the resource that failed
+          example: arn:aws:ecs:us-east-1:123456789012:cluster/missing-cluster
+        reason:
+          type: string
+          description: Reason for the failure
+          example: MISSING
+        detail:
+          type: string
+          description: Additional detail about the failure
+    AwsVpcConfiguration:
+      type: object
+      description: VPC configuration for awsvpc network mode
+      required:
+      - subnets
+      properties:
+        subnets:
+          type: array
+          description: Subnets for the task
+          items:
+            type: string
+          example:
+          - subnet-12345678
+        securityGroups:
+          type: array
+          description: Security groups
+          items:
+            type: string
+          example:
+          - sg-12345678
+        assignPublicIp:
+          type: string
+          description: Whether to assign a public IP
+          example: ENABLED
+          enum:
+          - ENABLED
+          - DISABLED
+    Task:
+      type: object
+      description: An Amazon ECS task running on Fargate
+      properties:
+        taskArn:
+          type: string
+          description: ARN of the task
+          example: arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123
+        clusterArn:
+          type: string
+          description: ARN of the cluster
+          example: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+        taskDefinitionArn:
+          type: string
+          description: ARN of the task definition
+          example: arn:aws:ecs:us-east-1:123456789012:task-definition/my-fargate-task:1
+        lastStatus:
+          type: string
+          description: Last known status
+          example: RUNNING
+          enum:
+          - PROVISIONING
+          - PENDING
+          - ACTIVATING
+          - RUNNING
+          - DEACTIVATING
+          - STOPPING
+          - DEPROVISIONING
+          - STOPPED
+          - DELETED
+        desiredStatus:
+          type: string
+          description: Desired status
+          example: RUNNING
+        launchType:
+          type: string
+          description: Launch type
+          example: FARGATE
+          enum:
+          - EC2
+          - FARGATE
+          - EXTERNAL
+        cpu:
+          type: string
+          description: CPU units
+          example: '256'
+        memory:
+          type: string
+          description: Memory in MiB
+          example: '512'
+        createdAt:
+          type: string
+          format: date-time
+          description: Time task was created
+          example: '2026-04-19T12:00:00Z'
+        startedAt:
+          type: string
+          format: date-time
+          description: Time task started running
+          example: '2026-04-19T12:00:30Z'
+        stoppedAt:
+          type: string
+          format: date-time
+          description: Time task stopped
+        stoppedReason:
+          type: string
+          description: Reason task stopped
+        networkInterfaces:
+          type: array
+          description: Network interfaces
+          items:
+            type: object
+        tags:
+          type: array
+          description: Tags
+          items:
+            $ref: '#/components/schemas/Tag'
+    Tag:
+      type: object
+      description: A tag applied to an ECS resource
+      properties:
+        key:
+          type: string
+          description: The tag key
+          example: Environment
+        value:
+          type: string
+          description: The tag value
+          example: production
+    StopTaskRequest:
+      type: object
+      required:
+      - task
+      description: Request for StopTask
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        task:
+          type: string
+          description: Task ARN or ID
+          example: arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123
+        reason:
+          type: string
+          description: Reason for stopping the task
+    RunTaskResponse:
+      type: object
+      description: Response from RunTask
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+        failures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Failure'
+    StopTaskResponse:
+      type: object
+      description: Response from StopTask
+      properties:
+        task:
+          $ref: '#/components/schemas/Task'
+    NetworkConfiguration:
+      type: object
+      description: Network configuration for the task
+      properties:
+        awsvpcConfiguration:
+          $ref: '#/components/schemas/AwsVpcConfiguration'
+    ErrorResponse:
+      type: object
+      description: Error response from the Amazon ECS API
+      properties:
+        __type:
+          type: string
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
+    ListTasksRequest:
+      type: object
+      description: Request for ListTasks
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        containerInstance:
+          type: string
+          description: Container instance filter
+        family:
+          type: string
+          description: Task definition family filter
+        launchType:
+          type: string
+          description: Launch type filter
+          enum:
+          - EC2
+          - FARGATE
+          - EXTERNAL
+        desiredStatus:
+          type: string
+          description: Desired status filter
+          enum:
+          - RUNNING
+          - PENDING
+          - STOPPED
+        nextToken:
+          type: string
+          description: Pagination token
+        maxResults:
+          type: integer
+          description: Maximum results
+  securitySchemes:
+    aws_signature_v4:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: AWS Signature Version 4 authentication. Include the Authorization header with the AWS4-HMAC-SHA256 signing algorithm.
+externalDocs:
+  description: Amazon ECS API Reference (Fargate)
+  url: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/Welcome.html

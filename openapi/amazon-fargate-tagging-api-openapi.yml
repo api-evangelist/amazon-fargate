@@ -1,0 +1,201 @@
+openapi: 3.1.0
+info:
+  title: Amazon Fargate Account Settings Tagging API
+  description: Amazon Fargate is a serverless compute engine for containers that works with Amazon ECS and Amazon EKS. This API enables you to run, manage, and monitor containerized applications without managing servers or clusters. Fargate handles capacity provisioning, patching, and scaling automatically.
+  version: '2014-11-13'
+  contact:
+    name: Amazon Web Services
+    url: https://aws.amazon.com/contact-us/
+  termsOfService: https://aws.amazon.com/service-terms/
+  x-generated-from: documentation
+  x-last-validated: '2026-04-19'
+servers:
+- url: https://ecs.{region}.amazonaws.com
+  description: Amazon ECS/Fargate Regional Endpoint
+  variables:
+    region:
+      default: us-east-1
+      description: AWS Region
+security:
+- aws_signature_v4: []
+tags:
+- name: Tagging
+  description: Operations for tagging ECS resources
+paths:
+  /#TagResource:
+    post:
+      operationId: tagResource
+      summary: Amazon Fargate Tag a Resource
+      description: Associates the specified tags with the specified Amazon ECS resource. You can specify one or more tags to add to each resource.
+      tags:
+      - Tagging
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/TagResourceRequest'
+            examples:
+              TagResourceRequestExample:
+                summary: Default tagResource request
+                x-microcks-default: true
+                value:
+                  resourceArn: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+                  tags:
+                  - key: Environment
+                    value: production
+                  - key: Team
+                    value: platform
+      responses:
+        '200':
+          description: Tags applied successfully
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                type: object
+              examples:
+                TagResource200Example:
+                  summary: Default tagResource 200 response
+                  x-microcks-default: true
+                  value: {}
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#ListTagsForResource:
+    post:
+      operationId: listTagsForResource
+      summary: Amazon Fargate List Tags for a Resource
+      description: List the tags for an Amazon ECS resource.
+      tags:
+      - Tagging
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/ListTagsForResourceRequest'
+            examples:
+              ListTagsForResourceRequestExample:
+                summary: Default listTagsForResource request
+                x-microcks-default: true
+                value:
+                  resourceArn: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+      responses:
+        '200':
+          description: Tags returned
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ListTagsForResourceResponse'
+              examples:
+                ListTagsForResource200Example:
+                  summary: Default listTagsForResource 200 response
+                  x-microcks-default: true
+                  value:
+                    tags:
+                    - key: Environment
+                      value: production
+                    - key: Team
+                      value: platform
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Resource not found
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+components:
+  schemas:
+    Tag:
+      type: object
+      description: A tag applied to an ECS resource
+      properties:
+        key:
+          type: string
+          description: The tag key
+          example: Environment
+        value:
+          type: string
+          description: The tag value
+          example: production
+    TagResourceRequest:
+      type: object
+      required:
+      - resourceArn
+      - tags
+      description: Request for TagResource
+      properties:
+        resourceArn:
+          type: string
+          description: Resource ARN
+          example: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+        tags:
+          type: array
+          description: Tags to apply
+          items:
+            $ref: '#/components/schemas/Tag'
+    ErrorResponse:
+      type: object
+      description: Error response from the Amazon ECS API
+      properties:
+        __type:
+          type: string
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
+    ListTagsForResourceResponse:
+      type: object
+      description: Response from ListTagsForResource
+      properties:
+        tags:
+          type: array
+          description: List of tags
+          items:
+            $ref: '#/components/schemas/Tag'
+    ListTagsForResourceRequest:
+      type: object
+      required:
+      - resourceArn
+      description: Request for ListTagsForResource
+      properties:
+        resourceArn:
+          type: string
+          description: Resource ARN
+  securitySchemes:
+    aws_signature_v4:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: AWS Signature Version 4 authentication. Include the Authorization header with the AWS4-HMAC-SHA256 signing algorithm.
+externalDocs:
+  description: Amazon ECS API Reference (Fargate)
+  url: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/Welcome.html

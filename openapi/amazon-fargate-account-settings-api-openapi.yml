@@ -1,0 +1,222 @@
+openapi: 3.1.0
+info:
+  title: Amazon Fargate Account Settings API
+  description: Amazon Fargate is a serverless compute engine for containers that works with Amazon ECS and Amazon EKS. This API enables you to run, manage, and monitor containerized applications without managing servers or clusters. Fargate handles capacity provisioning, patching, and scaling automatically.
+  version: '2014-11-13'
+  contact:
+    name: Amazon Web Services
+    url: https://aws.amazon.com/contact-us/
+  termsOfService: https://aws.amazon.com/service-terms/
+  x-generated-from: documentation
+  x-last-validated: '2026-04-19'
+servers:
+- url: https://ecs.{region}.amazonaws.com
+  description: Amazon ECS/Fargate Regional Endpoint
+  variables:
+    region:
+      default: us-east-1
+      description: AWS Region
+security:
+- aws_signature_v4: []
+tags:
+- name: Account Settings
+  description: Operations for managing account-level settings
+paths:
+  /#PutAccountSetting:
+    post:
+      operationId: putAccountSetting
+      summary: Amazon Fargate Put Account Setting
+      description: Modifies an account setting. Account settings are set on a per-Region basis.
+      tags:
+      - Account Settings
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/PutAccountSettingRequest'
+            examples:
+              PutAccountSettingRequestExample:
+                summary: Default putAccountSetting request
+                x-microcks-default: true
+                value:
+                  name: containerInsights
+                  value: enabled
+      responses:
+        '200':
+          description: Account setting updated
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/PutAccountSettingResponse'
+              examples:
+                PutAccountSetting200Example:
+                  summary: Default putAccountSetting 200 response
+                  x-microcks-default: true
+                  value:
+                    setting:
+                      name: containerInsights
+                      value: enabled
+                      principalArn: arn:aws:iam::123456789012:root
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#ListAccountSettings:
+    post:
+      operationId: listAccountSettings
+      summary: Amazon Fargate List Account Settings
+      description: Lists the account settings for an Amazon ECS resource type for a specified principal.
+      tags:
+      - Account Settings
+      requestBody:
+        required: false
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/ListAccountSettingsRequest'
+            examples:
+              ListAccountSettingsRequestExample:
+                summary: Default listAccountSettings request
+                x-microcks-default: true
+                value:
+                  effectiveSettings: true
+      responses:
+        '200':
+          description: Account settings returned
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ListAccountSettingsResponse'
+              examples:
+                ListAccountSettings200Example:
+                  summary: Default listAccountSettings 200 response
+                  x-microcks-default: true
+                  value:
+                    settings:
+                    - name: containerInsights
+                      value: enabled
+                      principalArn: arn:aws:iam::123456789012:root
+                    nextToken: null
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+components:
+  schemas:
+    PutAccountSettingRequest:
+      type: object
+      required:
+      - name
+      - value
+      description: Request for PutAccountSetting
+      properties:
+        name:
+          type: string
+          description: Setting name
+          example: containerInsights
+        value:
+          type: string
+          description: Setting value
+          example: enabled
+        principalArn:
+          type: string
+          description: IAM principal ARN
+    ListAccountSettingsResponse:
+      type: object
+      description: Response from ListAccountSettings
+      properties:
+        settings:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountSetting'
+        nextToken:
+          type: string
+          description: Pagination token
+    ErrorResponse:
+      type: object
+      description: Error response from the Amazon ECS API
+      properties:
+        __type:
+          type: string
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
+    ListAccountSettingsRequest:
+      type: object
+      description: Request for ListAccountSettings
+      properties:
+        name:
+          type: string
+          description: Setting name filter
+        value:
+          type: string
+          description: Setting value filter
+        principalArn:
+          type: string
+          description: Principal ARN filter
+        effectiveSettings:
+          type: boolean
+          description: Return effective settings
+        nextToken:
+          type: string
+          description: Pagination token
+        maxResults:
+          type: integer
+          description: Maximum results
+    AccountSetting:
+      type: object
+      description: An ECS account setting
+      properties:
+        name:
+          type: string
+          description: Setting name
+          example: containerInsights
+        value:
+          type: string
+          description: Setting value
+          example: enabled
+        principalArn:
+          type: string
+          description: Principal ARN
+          example: arn:aws:iam::123456789012:root
+    PutAccountSettingResponse:
+      type: object
+      description: Response from PutAccountSetting
+      properties:
+        setting:
+          $ref: '#/components/schemas/AccountSetting'
+  securitySchemes:
+    aws_signature_v4:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: AWS Signature Version 4 authentication. Include the Authorization header with the AWS4-HMAC-SHA256 signing algorithm.
+externalDocs:
+  description: Amazon ECS API Reference (Fargate)
+  url: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/Welcome.html
