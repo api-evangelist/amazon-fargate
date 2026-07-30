@@ -3,6 +3,19 @@ description: >-
   Amazon Fargate is a serverless compute engine for containers that works with both Amazon ECS and Amazon EKS. Fargate
   removes the need to provision and manage servers, letting you specify and pay for resources per application, and
   improves security through application isolation by design.
+accessModel:
+  pricing: freemium
+  onboarding: self-serve
+  trial: false
+  try_now: true
+  public: false
+  label: Freemium · Self-serve signup
+  confidence: high
+  source:
+  - plans
+  - authentication
+  generated: '2026-07-22'
+  method: derived
 image: https://a0.awsstatic.com/libra-css/images/logos/aws_logo_smile_1200x630.png
 url: https://aws.amazon.com/fargate/
 type: Index
@@ -17,56 +30,270 @@ tags:
   - Microservices
   - Serverless
 apis:
-  - name: Amazon Fargate API
-    description: >-
-      The Amazon Fargate API is accessed through Amazon ECS and enables you to run containers without managing servers
-      or clusters. You can define tasks, configure networking and IAM policies, and deploy containerized applications
-      with serverless compute capacity.
-    image: https://a0.awsstatic.com/libra-css/images/logos/aws_logo_smile_1200x630.png
-    humanURL: https://aws.amazon.com/fargate/
-    baseURL: https://ecs.amazonaws.com
-    tags:
-      - Compute
-      - Containers
-      - Microservices
-      - Serverless
-    properties:
-      - type: Documentation
-        url: https://docs.aws.amazon.com/AmazonECS/latest/userguide/what-is-fargate.html
-      - type: OpenAPI
-        url: openapi/amazon-fargate-openapi.yml
-      - type: JSONSchema
-        url: json-schema/amazon-fargate-cluster-schema.json
-      - type: JSONSchema
-        url: json-schema/amazon-fargate-task-definition-schema.json
-      - type: JSONSchema
-        url: json-schema/amazon-fargate-task-schema.json
-      - type: JSONSchema
-        url: json-schema/amazon-fargate-service-schema.json
-      - type: JSONStructure
-        url: json-structure/amazon-fargate-cluster-structure.json
-      - type: JSONStructure
-        url: json-structure/amazon-fargate-task-definition-structure.json
-      - type: JSONStructure
-        url: json-structure/amazon-fargate-task-structure.json
-      - type: JSONStructure
-        url: json-structure/amazon-fargate-service-structure.json
-      - type: Examples
-        url: examples/amazon-fargate-cluster-example.json
-      - type: Examples
-        url: examples/amazon-fargate-task-definition-example.json
-      - type: Examples
-        url: examples/amazon-fargate-task-example.json
-      - type: Examples
-        url: examples/amazon-fargate-service-example.json
-      - type: Pricing
-        url: https://aws.amazon.com/fargate/pricing/
-      - type: GettingStarted
-        url: https://aws.amazon.com/fargate/getting-started/
-      - type: FAQ
-        url: https://aws.amazon.com/fargate/faqs/
-      - type: APIReference
-        url: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/Welcome.html
+- aid: amazon-fargate:amazon-fargate-account-settings-api
+  name: Amazon Fargate Account Settings API
+  description: Operations for managing account-level settings
+  humanURL: https://aws.amazon.com/fargate/
+  baseURL: https://ecs.amazonaws.com
+  tags:
+  - Account Settings
+  properties:
+  - type: OpenAPI
+    url: openapi/amazon-fargate-account-settings-api-openapi.yml
+  - type: Documentation
+    url: https://docs.aws.amazon.com/AmazonECS/latest/userguide/what-is-fargate.html
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-cluster-schema.json
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-task-definition-schema.json
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-task-schema.json
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-service-schema.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-cluster-structure.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-task-definition-structure.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-task-structure.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-service-structure.json
+  - type: Examples
+    url: examples/amazon-fargate-cluster-example.json
+  - type: Examples
+    url: examples/amazon-fargate-task-definition-example.json
+  - type: Examples
+    url: examples/amazon-fargate-task-example.json
+  - type: Examples
+    url: examples/amazon-fargate-service-example.json
+  - type: Pricing
+    url: https://aws.amazon.com/fargate/pricing/
+  - type: GettingStarted
+    url: https://aws.amazon.com/fargate/getting-started/
+  - type: FAQ
+    url: https://aws.amazon.com/fargate/faqs/
+  - type: APIReference
+    url: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/Welcome.html
+- aid: amazon-fargate:amazon-fargate-clusters-api
+  name: Amazon Fargate Clusters API
+  description: Operations for creating and managing ECS clusters
+  humanURL: https://aws.amazon.com/fargate/
+  baseURL: https://ecs.amazonaws.com
+  tags:
+  - Clusters
+  properties:
+  - type: OpenAPI
+    url: openapi/amazon-fargate-clusters-api-openapi.yml
+  - type: Documentation
+    url: https://docs.aws.amazon.com/AmazonECS/latest/userguide/what-is-fargate.html
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-cluster-schema.json
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-task-definition-schema.json
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-task-schema.json
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-service-schema.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-cluster-structure.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-task-definition-structure.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-task-structure.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-service-structure.json
+  - type: Examples
+    url: examples/amazon-fargate-cluster-example.json
+  - type: Examples
+    url: examples/amazon-fargate-task-definition-example.json
+  - type: Examples
+    url: examples/amazon-fargate-task-example.json
+  - type: Examples
+    url: examples/amazon-fargate-service-example.json
+  - type: Pricing
+    url: https://aws.amazon.com/fargate/pricing/
+  - type: GettingStarted
+    url: https://aws.amazon.com/fargate/getting-started/
+  - type: FAQ
+    url: https://aws.amazon.com/fargate/faqs/
+  - type: APIReference
+    url: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/Welcome.html
+- aid: amazon-fargate:amazon-fargate-services-api
+  name: Amazon Fargate Services API
+  description: Operations for deploying and managing long-running services
+  humanURL: https://aws.amazon.com/fargate/
+  baseURL: https://ecs.amazonaws.com
+  tags:
+  - Services
+  properties:
+  - type: OpenAPI
+    url: openapi/amazon-fargate-services-api-openapi.yml
+  - type: Documentation
+    url: https://docs.aws.amazon.com/AmazonECS/latest/userguide/what-is-fargate.html
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-cluster-schema.json
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-task-definition-schema.json
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-task-schema.json
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-service-schema.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-cluster-structure.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-task-definition-structure.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-task-structure.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-service-structure.json
+  - type: Examples
+    url: examples/amazon-fargate-cluster-example.json
+  - type: Examples
+    url: examples/amazon-fargate-task-definition-example.json
+  - type: Examples
+    url: examples/amazon-fargate-task-example.json
+  - type: Examples
+    url: examples/amazon-fargate-service-example.json
+  - type: Pricing
+    url: https://aws.amazon.com/fargate/pricing/
+  - type: GettingStarted
+    url: https://aws.amazon.com/fargate/getting-started/
+  - type: FAQ
+    url: https://aws.amazon.com/fargate/faqs/
+  - type: APIReference
+    url: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/Welcome.html
+- aid: amazon-fargate:amazon-fargate-tagging-api
+  name: Amazon Fargate Tagging API
+  description: Operations for tagging ECS resources
+  humanURL: https://aws.amazon.com/fargate/
+  baseURL: https://ecs.amazonaws.com
+  tags:
+  - Tagging
+  properties:
+  - type: OpenAPI
+    url: openapi/amazon-fargate-tagging-api-openapi.yml
+  - type: Documentation
+    url: https://docs.aws.amazon.com/AmazonECS/latest/userguide/what-is-fargate.html
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-cluster-schema.json
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-task-definition-schema.json
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-task-schema.json
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-service-schema.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-cluster-structure.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-task-definition-structure.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-task-structure.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-service-structure.json
+  - type: Examples
+    url: examples/amazon-fargate-cluster-example.json
+  - type: Examples
+    url: examples/amazon-fargate-task-definition-example.json
+  - type: Examples
+    url: examples/amazon-fargate-task-example.json
+  - type: Examples
+    url: examples/amazon-fargate-service-example.json
+  - type: Pricing
+    url: https://aws.amazon.com/fargate/pricing/
+  - type: GettingStarted
+    url: https://aws.amazon.com/fargate/getting-started/
+  - type: FAQ
+    url: https://aws.amazon.com/fargate/faqs/
+  - type: APIReference
+    url: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/Welcome.html
+- aid: amazon-fargate:amazon-fargate-task-definitions-api
+  name: Amazon Fargate Task Definitions API
+  description: Operations for registering and managing task definitions
+  humanURL: https://aws.amazon.com/fargate/
+  baseURL: https://ecs.amazonaws.com
+  tags:
+  - Task Definitions
+  properties:
+  - type: OpenAPI
+    url: openapi/amazon-fargate-task-definitions-api-openapi.yml
+  - type: Documentation
+    url: https://docs.aws.amazon.com/AmazonECS/latest/userguide/what-is-fargate.html
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-cluster-schema.json
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-task-definition-schema.json
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-task-schema.json
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-service-schema.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-cluster-structure.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-task-definition-structure.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-task-structure.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-service-structure.json
+  - type: Examples
+    url: examples/amazon-fargate-cluster-example.json
+  - type: Examples
+    url: examples/amazon-fargate-task-definition-example.json
+  - type: Examples
+    url: examples/amazon-fargate-task-example.json
+  - type: Examples
+    url: examples/amazon-fargate-service-example.json
+  - type: Pricing
+    url: https://aws.amazon.com/fargate/pricing/
+  - type: GettingStarted
+    url: https://aws.amazon.com/fargate/getting-started/
+  - type: FAQ
+    url: https://aws.amazon.com/fargate/faqs/
+  - type: APIReference
+    url: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/Welcome.html
+- aid: amazon-fargate:amazon-fargate-tasks-api
+  name: Amazon Fargate Tasks API
+  description: Operations for running and managing Fargate tasks
+  humanURL: https://aws.amazon.com/fargate/
+  baseURL: https://ecs.amazonaws.com
+  tags:
+  - Tasks
+  properties:
+  - type: OpenAPI
+    url: openapi/amazon-fargate-tasks-api-openapi.yml
+  - type: Documentation
+    url: https://docs.aws.amazon.com/AmazonECS/latest/userguide/what-is-fargate.html
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-cluster-schema.json
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-task-definition-schema.json
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-task-schema.json
+  - type: JSONSchema
+    url: json-schema/amazon-fargate-service-schema.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-cluster-structure.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-task-definition-structure.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-task-structure.json
+  - type: JSONStructure
+    url: json-structure/amazon-fargate-service-structure.json
+  - type: Examples
+    url: examples/amazon-fargate-cluster-example.json
+  - type: Examples
+    url: examples/amazon-fargate-task-definition-example.json
+  - type: Examples
+    url: examples/amazon-fargate-task-example.json
+  - type: Examples
+    url: examples/amazon-fargate-service-example.json
+  - type: Pricing
+    url: https://aws.amazon.com/fargate/pricing/
+  - type: GettingStarted
+    url: https://aws.amazon.com/fargate/getting-started/
+  - type: FAQ
+    url: https://aws.amazon.com/fargate/faqs/
+  - type: APIReference
+    url: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/Welcome.html
 common:
   - type: AgenticAccess
     url: agentic-access/amazon-fargate-agentic-access.yml
