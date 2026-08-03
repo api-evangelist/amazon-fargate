@@ -1,0 +1,2369 @@
+openapi: 3.1.0
+info:
+  title: Amazon Fargate API
+  description: Amazon Fargate is a serverless compute engine for containers that works with Amazon ECS and Amazon EKS. This API enables you to run, manage, and monitor containerized applications 
+    without managing servers or clusters. Fargate handles capacity provisioning, patching, and scaling automatically.
+  version: '2014-11-13'
+  contact:
+    name: Amazon Web Services
+    url: https://aws.amazon.com/contact-us/
+  termsOfService: https://aws.amazon.com/service-terms/
+  x-generated-from: documentation
+  x-last-validated: '2026-04-19'
+externalDocs:
+  description: Amazon ECS API Reference (Fargate)
+  url: https://docs.aws.amazon.com/AmazonECS/latest/APIReference/Welcome.html
+servers:
+- url: https://ecs.{region}.amazonaws.com
+  description: Amazon ECS/Fargate Regional Endpoint
+  variables:
+    region:
+      default: us-east-1
+      description: AWS Region
+tags:
+- name: Clusters
+  description: Operations for creating and managing ECS clusters
+- name: Services
+  description: Operations for deploying and managing long-running services
+- name: Tasks
+  description: Operations for running and managing Fargate tasks
+- name: Task Definitions
+  description: Operations for registering and managing task definitions
+- name: Capacity Providers
+  description: Operations for managing capacity providers
+- name: Container Instances
+  description: Operations for managing container instances
+- name: Task Sets
+  description: Operations for managing task sets
+- name: Account Settings
+  description: Operations for managing account-level settings
+- name: Tagging
+  description: Operations for tagging ECS resources
+- name: Attributes
+  description: Operations for managing resource attributes
+security:
+- aws_signature_v4: []
+paths:
+  /#CreateCluster:
+    post:
+      operationId: createCluster
+      summary: Amazon Fargate Create a Cluster
+      description: Creates a new Amazon ECS cluster. By default, your account receives a default cluster when you launch your first container instance.
+      tags:
+      - Clusters
+      requestBody:
+        required: false
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/CreateClusterRequest'
+            examples:
+              CreateClusterRequestExample:
+                summary: Default createCluster request
+                x-microcks-default: true
+                value:
+                  clusterName: my-fargate-cluster
+                  tags:
+                  - key: Environment
+                    value: production
+                  settings:
+                  - name: containerInsights
+                    value: enabled
+      responses:
+        '200':
+          description: Cluster created successfully
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/CreateClusterResponse'
+              examples:
+                CreateCluster200Example:
+                  summary: Default createCluster 200 response
+                  x-microcks-default: true
+                  value:
+                    cluster:
+                      clusterArn: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+                      clusterName: my-fargate-cluster
+                      status: ACTIVE
+                      registeredContainerInstancesCount: 0
+                      runningTasksCount: 0
+                      pendingTasksCount: 0
+                      activeServicesCount: 0
+        '400':
+          description: Bad request - invalid parameters
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#DescribeClusters:
+    post:
+      operationId: describeClusters
+      summary: Amazon Fargate Describe Clusters
+      description: Describes one or more of your clusters.
+      tags:
+      - Clusters
+      requestBody:
+        required: false
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/DescribeClustersRequest'
+            examples:
+              DescribeClustersRequestExample:
+                summary: Default describeClusters request
+                x-microcks-default: true
+                value:
+                  clusters:
+                  - my-fargate-cluster
+                  include:
+                  - SETTINGS
+                  - STATISTICS
+                  - TAGS
+      responses:
+        '200':
+          description: Cluster descriptions returned
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/DescribeClustersResponse'
+              examples:
+                DescribeClusters200Example:
+                  summary: Default describeClusters 200 response
+                  x-microcks-default: true
+                  value:
+                    clusters:
+                    - clusterArn: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+                      clusterName: my-fargate-cluster
+                      status: ACTIVE
+                      runningTasksCount: 5
+                      activeServicesCount: 2
+                    failures: []
+        '400':
+          description: Invalid parameters
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#ListClusters:
+    post:
+      operationId: listClusters
+      summary: Amazon Fargate List Clusters
+      description: Returns a list of existing clusters.
+      tags:
+      - Clusters
+      requestBody:
+        required: false
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/ListClustersRequest'
+            examples:
+              ListClustersRequestExample:
+                summary: Default listClusters request
+                x-microcks-default: true
+                value:
+                  maxResults: 10
+      responses:
+        '200':
+          description: List of clusters returned
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ListClustersResponse'
+              examples:
+                ListClusters200Example:
+                  summary: Default listClusters 200 response
+                  x-microcks-default: true
+                  value:
+                    clusterArns:
+                    - arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+                    - arn:aws:ecs:us-east-1:123456789012:cluster/staging-cluster
+                    nextToken:
+        '400':
+          description: Invalid parameters
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#DeleteCluster:
+    post:
+      operationId: deleteCluster
+      summary: Amazon Fargate Delete a Cluster
+      description: Deletes the specified cluster. The cluster will transition to the INACTIVE state. You cannot delete a cluster that has registered container instances or active services.
+      tags:
+      - Clusters
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/DeleteClusterRequest'
+            examples:
+              DeleteClusterRequestExample:
+                summary: Default deleteCluster request
+                x-microcks-default: true
+                value:
+                  cluster: my-fargate-cluster
+      responses:
+        '200':
+          description: Cluster deleted
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/DeleteClusterResponse'
+              examples:
+                DeleteCluster200Example:
+                  summary: Default deleteCluster 200 response
+                  x-microcks-default: true
+                  value:
+                    cluster:
+                      clusterArn: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+                      clusterName: my-fargate-cluster
+                      status: INACTIVE
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Cluster not found
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#RegisterTaskDefinition:
+    post:
+      operationId: registerTaskDefinition
+      summary: Amazon Fargate Register a Task Definition
+      description: Registers a new task definition from the supplied family and containerDefinitions. Optionally, you can add data volumes to your containers with the volumes parameter. The task 
+        definition requires a launch type of FARGATE to run on Fargate.
+      tags:
+      - Task Definitions
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/RegisterTaskDefinitionRequest'
+            examples:
+              RegisterTaskDefinitionRequestExample:
+                summary: Default registerTaskDefinition request
+                x-microcks-default: true
+                value:
+                  family: my-fargate-task
+                  requiresCompatibilities:
+                  - FARGATE
+                  networkMode: awsvpc
+                  cpu: '256'
+                  memory: '512'
+                  executionRoleArn: arn:aws:iam::123456789012:role/ecsTaskExecutionRole
+                  containerDefinitions:
+                  - name: my-container
+                    image: nginx:latest
+                    portMappings:
+                    - containerPort: 80
+                      protocol: tcp
+                    essential: true
+      responses:
+        '200':
+          description: Task definition registered
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/RegisterTaskDefinitionResponse'
+              examples:
+                RegisterTaskDefinition200Example:
+                  summary: Default registerTaskDefinition 200 response
+                  x-microcks-default: true
+                  value:
+                    taskDefinition:
+                      taskDefinitionArn: arn:aws:ecs:us-east-1:123456789012:task-definition/my-fargate-task:1
+                      family: my-fargate-task
+                      revision: 1
+                      status: ACTIVE
+                      requiresCompatibilities:
+                      - FARGATE
+                      cpu: '256'
+                      memory: '512'
+        '400':
+          description: Invalid task definition
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#DescribeTaskDefinition:
+    post:
+      operationId: describeTaskDefinition
+      summary: Amazon Fargate Describe a Task Definition
+      description: Describes a task definition. You can get a task definition ARN from the RegisterTaskDefinition or ListTaskDefinitions actions.
+      tags:
+      - Task Definitions
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/DescribeTaskDefinitionRequest'
+            examples:
+              DescribeTaskDefinitionRequestExample:
+                summary: Default describeTaskDefinition request
+                x-microcks-default: true
+                value:
+                  taskDefinition: my-fargate-task:1
+                  include:
+                  - TAGS
+      responses:
+        '200':
+          description: Task definition details
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/DescribeTaskDefinitionResponse'
+              examples:
+                DescribeTaskDefinition200Example:
+                  summary: Default describeTaskDefinition 200 response
+                  x-microcks-default: true
+                  value:
+                    taskDefinition:
+                      taskDefinitionArn: arn:aws:ecs:us-east-1:123456789012:task-definition/my-fargate-task:1
+                      family: my-fargate-task
+                      revision: 1
+                      status: ACTIVE
+                      requiresCompatibilities:
+                      - FARGATE
+                      cpu: '256'
+                      memory: '512'
+                    tags: []
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Task definition not found
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#ListTaskDefinitions:
+    post:
+      operationId: listTaskDefinitions
+      summary: Amazon Fargate List Task Definitions
+      description: Returns a list of task definitions that are registered to your account. You can filter the results by family name and by task definition status.
+      tags:
+      - Task Definitions
+      requestBody:
+        required: false
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/ListTaskDefinitionsRequest'
+            examples:
+              ListTaskDefinitionsRequestExample:
+                summary: Default listTaskDefinitions request
+                x-microcks-default: true
+                value:
+                  familyPrefix: my-fargate-task
+                  status: ACTIVE
+                  maxResults: 10
+      responses:
+        '200':
+          description: List of task definition ARNs
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ListTaskDefinitionsResponse'
+              examples:
+                ListTaskDefinitions200Example:
+                  summary: Default listTaskDefinitions 200 response
+                  x-microcks-default: true
+                  value:
+                    taskDefinitionArns:
+                    - arn:aws:ecs:us-east-1:123456789012:task-definition/my-fargate-task:1
+                    - arn:aws:ecs:us-east-1:123456789012:task-definition/my-fargate-task:2
+                    nextToken:
+        '400':
+          description: Invalid parameters
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#DeregisterTaskDefinition:
+    post:
+      operationId: deregisterTaskDefinition
+      summary: Amazon Fargate Deregister a Task Definition
+      description: Deregisters the specified task definition by family and revision. You may deregister a task definition revision by specifying its family and revision, or by specifying its full ARN.
+      tags:
+      - Task Definitions
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/DeregisterTaskDefinitionRequest'
+            examples:
+              DeregisterTaskDefinitionRequestExample:
+                summary: Default deregisterTaskDefinition request
+                x-microcks-default: true
+                value:
+                  taskDefinition: my-fargate-task:1
+      responses:
+        '200':
+          description: Task definition deregistered
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/DeregisterTaskDefinitionResponse'
+              examples:
+                DeregisterTaskDefinition200Example:
+                  summary: Default deregisterTaskDefinition 200 response
+                  x-microcks-default: true
+                  value:
+                    taskDefinition:
+                      taskDefinitionArn: arn:aws:ecs:us-east-1:123456789012:task-definition/my-fargate-task:1
+                      status: INACTIVE
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#RunTask:
+    post:
+      operationId: runTask
+      summary: Amazon Fargate Run a Task
+      description: Starts a new task using the specified task definition on Fargate launch type. You can run tasks on Fargate using the awsvpc network mode.
+      tags:
+      - Tasks
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/RunTaskRequest'
+            examples:
+              RunTaskRequestExample:
+                summary: Default runTask request
+                x-microcks-default: true
+                value:
+                  cluster: my-fargate-cluster
+                  taskDefinition: my-fargate-task:1
+                  launchType: FARGATE
+                  count: 1
+                  networkConfiguration:
+                    awsvpcConfiguration:
+                      subnets:
+                      - subnet-12345678
+                      securityGroups:
+                      - sg-12345678
+                      assignPublicIp: ENABLED
+      responses:
+        '200':
+          description: Task started
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/RunTaskResponse'
+              examples:
+                RunTask200Example:
+                  summary: Default runTask 200 response
+                  x-microcks-default: true
+                  value:
+                    tasks:
+                    - taskArn: arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123
+                      clusterArn: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+                      taskDefinitionArn: arn:aws:ecs:us-east-1:123456789012:task-definition/my-fargate-task:1
+                      lastStatus: PROVISIONING
+                      desiredStatus: RUNNING
+                      launchType: FARGATE
+                    failures: []
+        '400':
+          description: Invalid task configuration
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#StopTask:
+    post:
+      operationId: stopTask
+      summary: Amazon Fargate Stop a Task
+      description: Stops a running task. Any tags associated with the task will be deleted automatically.
+      tags:
+      - Tasks
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/StopTaskRequest'
+            examples:
+              StopTaskRequestExample:
+                summary: Default stopTask request
+                x-microcks-default: true
+                value:
+                  cluster: my-fargate-cluster
+                  task: arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123
+                  reason: Scaling down
+      responses:
+        '200':
+          description: Task stopped
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/StopTaskResponse'
+              examples:
+                StopTask200Example:
+                  summary: Default stopTask 200 response
+                  x-microcks-default: true
+                  value:
+                    task:
+                      taskArn: arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123
+                      lastStatus: STOPPED
+                      stoppedReason: Scaling down
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Task not found
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#DescribeTasks:
+    post:
+      operationId: describeTasks
+      summary: Amazon Fargate Describe Tasks
+      description: Describes a specified task or tasks. Returns the full description of the task including container details, task definition, network configuration, and current status.
+      tags:
+      - Tasks
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/DescribeTasksRequest'
+            examples:
+              DescribeTasksRequestExample:
+                summary: Default describeTasks request
+                x-microcks-default: true
+                value:
+                  cluster: my-fargate-cluster
+                  tasks:
+                  - arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123
+                  include:
+                  - TAGS
+      responses:
+        '200':
+          description: Task details returned
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/DescribeTasksResponse'
+              examples:
+                DescribeTasks200Example:
+                  summary: Default describeTasks 200 response
+                  x-microcks-default: true
+                  value:
+                    tasks:
+                    - taskArn: arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123
+                      clusterArn: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+                      lastStatus: RUNNING
+                      desiredStatus: RUNNING
+                      cpu: '256'
+                      memory: '512'
+                      launchType: FARGATE
+                    failures: []
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#ListTasks:
+    post:
+      operationId: listTasks
+      summary: Amazon Fargate List Tasks
+      description: Returns a list of tasks for a specified cluster. You can filter the results by family name, by a particular container instance, by launch type, or by a desired status.
+      tags:
+      - Tasks
+      requestBody:
+        required: false
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/ListTasksRequest'
+            examples:
+              ListTasksRequestExample:
+                summary: Default listTasks request
+                x-microcks-default: true
+                value:
+                  cluster: my-fargate-cluster
+                  desiredStatus: RUNNING
+                  launchType: FARGATE
+                  maxResults: 20
+      responses:
+        '200':
+          description: List of task ARNs
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ListTasksResponse'
+              examples:
+                ListTasks200Example:
+                  summary: Default listTasks 200 response
+                  x-microcks-default: true
+                  value:
+                    taskArns:
+                    - arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123
+                    - arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/def456
+                    nextToken:
+        '400':
+          description: Invalid parameters
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#CreateService:
+    post:
+      operationId: createService
+      summary: Amazon Fargate Create a Service
+      description: Runs and maintains your desired number of tasks from a specified task definition on Fargate. If the number of tasks running in a service drops below the desiredCount, Amazon ECS 
+        runs another copy of the task.
+      tags:
+      - Services
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/CreateServiceRequest'
+            examples:
+              CreateServiceRequestExample:
+                summary: Default createService request
+                x-microcks-default: true
+                value:
+                  cluster: my-fargate-cluster
+                  serviceName: my-fargate-service
+                  taskDefinition: my-fargate-task:1
+                  desiredCount: 2
+                  launchType: FARGATE
+                  networkConfiguration:
+                    awsvpcConfiguration:
+                      subnets:
+                      - subnet-12345678
+                      securityGroups:
+                      - sg-12345678
+                      assignPublicIp: ENABLED
+                  loadBalancers:
+                  - targetGroupArn: arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/my-tg/abc123
+                    containerName: my-container
+                    containerPort: 80
+      responses:
+        '200':
+          description: Service created
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/CreateServiceResponse'
+              examples:
+                CreateService200Example:
+                  summary: Default createService 200 response
+                  x-microcks-default: true
+                  value:
+                    service:
+                      serviceArn: arn:aws:ecs:us-east-1:123456789012:service/my-fargate-cluster/my-fargate-service
+                      serviceName: my-fargate-service
+                      clusterArn: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+                      desiredCount: 2
+                      runningCount: 0
+                      pendingCount: 0
+                      status: ACTIVE
+                      launchType: FARGATE
+        '400':
+          description: Invalid service configuration
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#DescribeServices:
+    post:
+      operationId: describeServices
+      summary: Amazon Fargate Describe Services
+      description: Describes the specified services running in your cluster.
+      tags:
+      - Services
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/DescribeServicesRequest'
+            examples:
+              DescribeServicesRequestExample:
+                summary: Default describeServices request
+                x-microcks-default: true
+                value:
+                  cluster: my-fargate-cluster
+                  services:
+                  - my-fargate-service
+                  include:
+                  - TAGS
+      responses:
+        '200':
+          description: Service details returned
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/DescribeServicesResponse'
+              examples:
+                DescribeServices200Example:
+                  summary: Default describeServices 200 response
+                  x-microcks-default: true
+                  value:
+                    services:
+                    - serviceArn: arn:aws:ecs:us-east-1:123456789012:service/my-fargate-cluster/my-fargate-service
+                      serviceName: my-fargate-service
+                      status: ACTIVE
+                      desiredCount: 2
+                      runningCount: 2
+                      launchType: FARGATE
+                    failures: []
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#ListServices:
+    post:
+      operationId: listServices
+      summary: Amazon Fargate List Services
+      description: Lists the services that are running in a specified cluster.
+      tags:
+      - Services
+      requestBody:
+        required: false
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/ListServicesRequest'
+            examples:
+              ListServicesRequestExample:
+                summary: Default listServices request
+                x-microcks-default: true
+                value:
+                  cluster: my-fargate-cluster
+                  launchType: FARGATE
+                  maxResults: 20
+      responses:
+        '200':
+          description: List of service ARNs
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ListServicesResponse'
+              examples:
+                ListServices200Example:
+                  summary: Default listServices 200 response
+                  x-microcks-default: true
+                  value:
+                    serviceArns:
+                    - arn:aws:ecs:us-east-1:123456789012:service/my-fargate-cluster/my-fargate-service
+                    nextToken:
+        '400':
+          description: Invalid parameters
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#UpdateService:
+    post:
+      operationId: updateService
+      summary: Amazon Fargate Update a Service
+      description: Modifies the parameters of a service. You can update a service to change the desired count of tasks, update the task definition, or update the deployment configuration.
+      tags:
+      - Services
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/UpdateServiceRequest'
+            examples:
+              UpdateServiceRequestExample:
+                summary: Default updateService request
+                x-microcks-default: true
+                value:
+                  cluster: my-fargate-cluster
+                  service: my-fargate-service
+                  desiredCount: 4
+                  taskDefinition: my-fargate-task:2
+      responses:
+        '200':
+          description: Service updated
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/UpdateServiceResponse'
+              examples:
+                UpdateService200Example:
+                  summary: Default updateService 200 response
+                  x-microcks-default: true
+                  value:
+                    service:
+                      serviceArn: arn:aws:ecs:us-east-1:123456789012:service/my-fargate-cluster/my-fargate-service
+                      serviceName: my-fargate-service
+                      desiredCount: 4
+                      status: ACTIVE
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Service not found
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#DeleteService:
+    post:
+      operationId: deleteService
+      summary: Amazon Fargate Delete a Service
+      description: Deletes a specified service within a cluster. You can delete a service if you have no running tasks in it and the desired task count is zero. If the service is actively maintaining 
+        tasks, you must first reduce the desired task count to zero and then delete the service.
+      tags:
+      - Services
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/DeleteServiceRequest'
+            examples:
+              DeleteServiceRequestExample:
+                summary: Default deleteService request
+                x-microcks-default: true
+                value:
+                  cluster: my-fargate-cluster
+                  service: my-fargate-service
+                  force: false
+      responses:
+        '200':
+          description: Service deleted
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/DeleteServiceResponse'
+              examples:
+                DeleteService200Example:
+                  summary: Default deleteService 200 response
+                  x-microcks-default: true
+                  value:
+                    service:
+                      serviceArn: arn:aws:ecs:us-east-1:123456789012:service/my-fargate-cluster/my-fargate-service
+                      serviceName: my-fargate-service
+                      status: DRAINING
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Service not found
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#TagResource:
+    post:
+      operationId: tagResource
+      summary: Amazon Fargate Tag a Resource
+      description: Associates the specified tags with the specified Amazon ECS resource. You can specify one or more tags to add to each resource.
+      tags:
+      - Tagging
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/TagResourceRequest'
+            examples:
+              TagResourceRequestExample:
+                summary: Default tagResource request
+                x-microcks-default: true
+                value:
+                  resourceArn: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+                  tags:
+                  - key: Environment
+                    value: production
+                  - key: Team
+                    value: platform
+      responses:
+        '200':
+          description: Tags applied successfully
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                type: object
+              examples:
+                TagResource200Example:
+                  summary: Default tagResource 200 response
+                  x-microcks-default: true
+                  value: {}
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#ListTagsForResource:
+    post:
+      operationId: listTagsForResource
+      summary: Amazon Fargate List Tags for a Resource
+      description: List the tags for an Amazon ECS resource.
+      tags:
+      - Tagging
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/ListTagsForResourceRequest'
+            examples:
+              ListTagsForResourceRequestExample:
+                summary: Default listTagsForResource request
+                x-microcks-default: true
+                value:
+                  resourceArn: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+      responses:
+        '200':
+          description: Tags returned
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ListTagsForResourceResponse'
+              examples:
+                ListTagsForResource200Example:
+                  summary: Default listTagsForResource 200 response
+                  x-microcks-default: true
+                  value:
+                    tags:
+                    - key: Environment
+                      value: production
+                    - key: Team
+                      value: platform
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Resource not found
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#PutAccountSetting:
+    post:
+      operationId: putAccountSetting
+      summary: Amazon Fargate Put Account Setting
+      description: Modifies an account setting. Account settings are set on a per-Region basis.
+      tags:
+      - Account Settings
+      requestBody:
+        required: true
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/PutAccountSettingRequest'
+            examples:
+              PutAccountSettingRequestExample:
+                summary: Default putAccountSetting request
+                x-microcks-default: true
+                value:
+                  name: containerInsights
+                  value: enabled
+      responses:
+        '200':
+          description: Account setting updated
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/PutAccountSettingResponse'
+              examples:
+                PutAccountSetting200Example:
+                  summary: Default putAccountSetting 200 response
+                  x-microcks-default: true
+                  value:
+                    setting:
+                      name: containerInsights
+                      value: enabled
+                      principalArn: arn:aws:iam::123456789012:root
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /#ListAccountSettings:
+    post:
+      operationId: listAccountSettings
+      summary: Amazon Fargate List Account Settings
+      description: Lists the account settings for an Amazon ECS resource type for a specified principal.
+      tags:
+      - Account Settings
+      requestBody:
+        required: false
+        content:
+          application/x-amz-json-1.1:
+            schema:
+              $ref: '#/components/schemas/ListAccountSettingsRequest'
+            examples:
+              ListAccountSettingsRequestExample:
+                summary: Default listAccountSettings request
+                x-microcks-default: true
+                value:
+                  effectiveSettings: true
+      responses:
+        '200':
+          description: Account settings returned
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ListAccountSettingsResponse'
+              examples:
+                ListAccountSettings200Example:
+                  summary: Default listAccountSettings 200 response
+                  x-microcks-default: true
+                  value:
+                    settings:
+                    - name: containerInsights
+                      value: enabled
+                      principalArn: arn:aws:iam::123456789012:root
+                    nextToken:
+        '400':
+          description: Invalid request
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/x-amz-json-1.1:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+components:
+  securitySchemes:
+    aws_signature_v4:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: AWS Signature Version 4 authentication. Include the Authorization header with the AWS4-HMAC-SHA256 signing algorithm.
+  schemas:
+    Tag:
+      type: object
+      description: A tag applied to an ECS resource
+      properties:
+        key:
+          type: string
+          description: The tag key
+          example: Environment
+        value:
+          type: string
+          description: The tag value
+          example: production
+    ClusterSetting:
+      type: object
+      description: A cluster setting
+      properties:
+        name:
+          type: string
+          description: Setting name
+          example: containerInsights
+        value:
+          type: string
+          description: Setting value
+          example: enabled
+    Cluster:
+      type: object
+      description: An Amazon ECS cluster
+      properties:
+        clusterArn:
+          type: string
+          description: The ARN of the cluster
+          example: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+        clusterName:
+          type: string
+          description: The name of the cluster
+          example: my-fargate-cluster
+        status:
+          type: string
+          description: Cluster status
+          example: ACTIVE
+          enum:
+          - ACTIVE
+          - PROVISIONING
+          - DEPROVISIONING
+          - FAILED
+          - INACTIVE
+        registeredContainerInstancesCount:
+          type: integer
+          description: Number of registered container instances
+          example: 0
+        runningTasksCount:
+          type: integer
+          description: Number of running tasks
+          example: 5
+        pendingTasksCount:
+          type: integer
+          description: Number of pending tasks
+          example: 0
+        activeServicesCount:
+          type: integer
+          description: Number of active services
+          example: 2
+        tags:
+          type: array
+          description: Tags associated with the cluster
+          items:
+            $ref: '#/components/schemas/Tag'
+        settings:
+          type: array
+          description: Cluster settings
+          items:
+            $ref: '#/components/schemas/ClusterSetting'
+    TaskDefinition:
+      type: object
+      description: An Amazon ECS task definition
+      properties:
+        taskDefinitionArn:
+          type: string
+          description: Full ARN of the task definition
+          example: arn:aws:ecs:us-east-1:123456789012:task-definition/my-fargate-task:1
+        family:
+          type: string
+          description: Family of the task definition
+          example: my-fargate-task
+        revision:
+          type: integer
+          description: Revision number
+          example: 1
+        status:
+          type: string
+          description: Task definition status
+          example: ACTIVE
+          enum:
+          - ACTIVE
+          - INACTIVE
+          - DELETE_IN_PROGRESS
+        requiresCompatibilities:
+          type: array
+          description: Launch types the task definition is compatible with
+          items:
+            type: string
+          example:
+          - FARGATE
+        networkMode:
+          type: string
+          description: Docker networking mode
+          example: awsvpc
+          enum:
+          - bridge
+          - host
+          - awsvpc
+          - none
+        cpu:
+          type: string
+          description: Number of cpu units
+          example: '256'
+        memory:
+          type: string
+          description: Amount of memory in MiB
+          example: '512'
+        executionRoleArn:
+          type: string
+          description: ARN of task execution role
+          example: arn:aws:iam::123456789012:role/ecsTaskExecutionRole
+        taskRoleArn:
+          type: string
+          description: ARN of task IAM role
+          example: arn:aws:iam::123456789012:role/ecsTaskRole
+        containerDefinitions:
+          type: array
+          description: Container definitions
+          items:
+            $ref: '#/components/schemas/ContainerDefinition'
+    ContainerDefinition:
+      type: object
+      description: Container definition for a task
+      properties:
+        name:
+          type: string
+          description: Container name
+          example: my-container
+        image:
+          type: string
+          description: Docker image
+          example: nginx:latest
+        essential:
+          type: boolean
+          description: Whether container is essential
+          example: true
+        cpu:
+          type: integer
+          description: CPU units for the container
+          example: 256
+        memory:
+          type: integer
+          description: Memory limit in MiB
+          example: 512
+        environment:
+          type: array
+          description: Environment variables
+          items:
+            $ref: '#/components/schemas/KeyValuePair'
+        portMappings:
+          type: array
+          description: Port mappings
+          items:
+            $ref: '#/components/schemas/PortMapping'
+        logConfiguration:
+          $ref: '#/components/schemas/LogConfiguration'
+    PortMapping:
+      type: object
+      description: Port mapping for a container
+      properties:
+        containerPort:
+          type: integer
+          description: Container port
+          example: 80
+        hostPort:
+          type: integer
+          description: Host port
+          example: 80
+        protocol:
+          type: string
+          description: Protocol
+          example: tcp
+          enum:
+          - tcp
+          - udp
+    KeyValuePair:
+      type: object
+      description: A key-value pair
+      properties:
+        name:
+          type: string
+          description: Key name
+          example: LOG_LEVEL
+        value:
+          type: string
+          description: Key value
+          example: INFO
+    LogConfiguration:
+      type: object
+      description: Log configuration for a container
+      properties:
+        logDriver:
+          type: string
+          description: Log driver
+          example: awslogs
+          enum:
+          - json-file
+          - syslog
+          - journald
+          - gelf
+          - fluentd
+          - awslogs
+          - splunk
+          - awsfirelens
+        options:
+          type: object
+          description: Log driver options
+          additionalProperties:
+            type: string
+    NetworkConfiguration:
+      type: object
+      description: Network configuration for the task
+      properties:
+        awsvpcConfiguration:
+          $ref: '#/components/schemas/AwsVpcConfiguration'
+    AwsVpcConfiguration:
+      type: object
+      description: VPC configuration for awsvpc network mode
+      required:
+      - subnets
+      properties:
+        subnets:
+          type: array
+          description: Subnets for the task
+          items:
+            type: string
+          example:
+          - subnet-12345678
+        securityGroups:
+          type: array
+          description: Security groups
+          items:
+            type: string
+          example:
+          - sg-12345678
+        assignPublicIp:
+          type: string
+          description: Whether to assign a public IP
+          example: ENABLED
+          enum:
+          - ENABLED
+          - DISABLED
+    Task:
+      type: object
+      description: An Amazon ECS task running on Fargate
+      properties:
+        taskArn:
+          type: string
+          description: ARN of the task
+          example: arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123
+        clusterArn:
+          type: string
+          description: ARN of the cluster
+          example: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+        taskDefinitionArn:
+          type: string
+          description: ARN of the task definition
+          example: arn:aws:ecs:us-east-1:123456789012:task-definition/my-fargate-task:1
+        lastStatus:
+          type: string
+          description: Last known status
+          example: RUNNING
+          enum:
+          - PROVISIONING
+          - PENDING
+          - ACTIVATING
+          - RUNNING
+          - DEACTIVATING
+          - STOPPING
+          - DEPROVISIONING
+          - STOPPED
+          - DELETED
+        desiredStatus:
+          type: string
+          description: Desired status
+          example: RUNNING
+        launchType:
+          type: string
+          description: Launch type
+          example: FARGATE
+          enum:
+          - EC2
+          - FARGATE
+          - EXTERNAL
+        cpu:
+          type: string
+          description: CPU units
+          example: '256'
+        memory:
+          type: string
+          description: Memory in MiB
+          example: '512'
+        createdAt:
+          type: string
+          format: date-time
+          description: Time task was created
+          example: '2026-04-19T12:00:00Z'
+        startedAt:
+          type: string
+          format: date-time
+          description: Time task started running
+          example: '2026-04-19T12:00:30Z'
+        stoppedAt:
+          type: string
+          format: date-time
+          description: Time task stopped
+        stoppedReason:
+          type: string
+          description: Reason task stopped
+        networkInterfaces:
+          type: array
+          description: Network interfaces
+          items:
+            type: object
+        tags:
+          type: array
+          description: Tags
+          items:
+            $ref: '#/components/schemas/Tag'
+    Service:
+      type: object
+      description: An Amazon ECS service
+      properties:
+        serviceArn:
+          type: string
+          description: ARN of the service
+          example: arn:aws:ecs:us-east-1:123456789012:service/my-fargate-cluster/my-fargate-service
+        serviceName:
+          type: string
+          description: Name of the service
+          example: my-fargate-service
+        clusterArn:
+          type: string
+          description: ARN of the cluster
+          example: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+        taskDefinition:
+          type: string
+          description: Task definition ARN or family:revision
+          example: my-fargate-task:1
+        desiredCount:
+          type: integer
+          description: Desired number of tasks
+          example: 2
+        runningCount:
+          type: integer
+          description: Number of running tasks
+          example: 2
+        pendingCount:
+          type: integer
+          description: Number of pending tasks
+          example: 0
+        status:
+          type: string
+          description: Service status
+          example: ACTIVE
+          enum:
+          - ACTIVE
+          - DRAINING
+          - INACTIVE
+        launchType:
+          type: string
+          description: Launch type
+          example: FARGATE
+        networkConfiguration:
+          $ref: '#/components/schemas/NetworkConfiguration'
+        loadBalancers:
+          type: array
+          description: Load balancer configurations
+          items:
+            $ref: '#/components/schemas/LoadBalancer'
+        createdAt:
+          type: string
+          format: date-time
+          description: Service creation time
+        tags:
+          type: array
+          description: Tags
+          items:
+            $ref: '#/components/schemas/Tag'
+    LoadBalancer:
+      type: object
+      description: Load balancer configuration for a service
+      properties:
+        targetGroupArn:
+          type: string
+          description: Target group ARN
+          example: arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/my-tg/abc123
+        loadBalancerName:
+          type: string
+          description: Load balancer name
+        containerName:
+          type: string
+          description: Container name
+          example: my-container
+        containerPort:
+          type: integer
+          description: Container port
+          example: 80
+    AccountSetting:
+      type: object
+      description: An ECS account setting
+      properties:
+        name:
+          type: string
+          description: Setting name
+          example: containerInsights
+        value:
+          type: string
+          description: Setting value
+          example: enabled
+        principalArn:
+          type: string
+          description: Principal ARN
+          example: arn:aws:iam::123456789012:root
+    Failure:
+      type: object
+      description: A failure returned by an API operation
+      properties:
+        arn:
+          type: string
+          description: ARN of the resource that failed
+          example: arn:aws:ecs:us-east-1:123456789012:cluster/missing-cluster
+        reason:
+          type: string
+          description: Reason for the failure
+          example: MISSING
+        detail:
+          type: string
+          description: Additional detail about the failure
+    ErrorResponse:
+      type: object
+      description: Error response from the Amazon ECS API
+      properties:
+        __type:
+          type: string
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
+    CreateClusterRequest:
+      type: object
+      description: Request for CreateCluster operation
+      properties:
+        clusterName:
+          type: string
+          description: Cluster name
+          example: my-fargate-cluster
+        tags:
+          type: array
+          description: Tags to apply
+          items:
+            $ref: '#/components/schemas/Tag'
+        settings:
+          type: array
+          description: Cluster settings
+          items:
+            $ref: '#/components/schemas/ClusterSetting'
+        configuration:
+          type: object
+          description: Cluster configuration
+        capacityProviders:
+          type: array
+          description: Capacity providers
+          items:
+            type: string
+        defaultCapacityProviderStrategy:
+          type: array
+          description: Default capacity provider strategy
+          items:
+            type: object
+    CreateClusterResponse:
+      type: object
+      description: Response from CreateCluster
+      properties:
+        cluster:
+          $ref: '#/components/schemas/Cluster'
+    DescribeClustersRequest:
+      type: object
+      description: Request for DescribeClusters
+      properties:
+        clusters:
+          type: array
+          description: Cluster names or ARNs
+          items:
+            type: string
+        include:
+          type: array
+          description: Additional data to include
+          items:
+            type: string
+    DescribeClustersResponse:
+      type: object
+      description: Response from DescribeClusters
+      properties:
+        clusters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Cluster'
+        failures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Failure'
+    ListClustersRequest:
+      type: object
+      description: Request for ListClusters
+      properties:
+        nextToken:
+          type: string
+          description: Pagination token
+        maxResults:
+          type: integer
+          description: Maximum results
+          example: 10
+    ListClustersResponse:
+      type: object
+      description: Response from ListClusters
+      properties:
+        clusterArns:
+          type: array
+          description: List of cluster ARNs
+          items:
+            type: string
+        nextToken:
+          type: string
+          description: Pagination token for next page
+    DeleteClusterRequest:
+      type: object
+      required:
+      - cluster
+      description: Request for DeleteCluster
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+          example: my-fargate-cluster
+    DeleteClusterResponse:
+      type: object
+      description: Response from DeleteCluster
+      properties:
+        cluster:
+          $ref: '#/components/schemas/Cluster'
+    RegisterTaskDefinitionRequest:
+      type: object
+      required:
+      - family
+      - containerDefinitions
+      description: Request for RegisterTaskDefinition
+      properties:
+        family:
+          type: string
+          description: Task definition family
+          example: my-fargate-task
+        taskRoleArn:
+          type: string
+          description: Task IAM role ARN
+        executionRoleArn:
+          type: string
+          description: Task execution IAM role ARN
+          example: arn:aws:iam::123456789012:role/ecsTaskExecutionRole
+        networkMode:
+          type: string
+          description: Docker networking mode
+          example: awsvpc
+        requiresCompatibilities:
+          type: array
+          description: Launch type compatibility
+          items:
+            type: string
+        cpu:
+          type: string
+          description: CPU units (required for Fargate)
+          example: '256'
+        memory:
+          type: string
+          description: Memory in MiB (required for Fargate)
+          example: '512'
+        containerDefinitions:
+          type: array
+          description: Container definitions
+          items:
+            $ref: '#/components/schemas/ContainerDefinition'
+        volumes:
+          type: array
+          description: Volumes to mount
+          items:
+            type: object
+        tags:
+          type: array
+          description: Tags
+          items:
+            $ref: '#/components/schemas/Tag'
+    RegisterTaskDefinitionResponse:
+      type: object
+      description: Response from RegisterTaskDefinition
+      properties:
+        taskDefinition:
+          $ref: '#/components/schemas/TaskDefinition'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+    DescribeTaskDefinitionRequest:
+      type: object
+      required:
+      - taskDefinition
+      description: Request for DescribeTaskDefinition
+      properties:
+        taskDefinition:
+          type: string
+          description: Task definition family:revision or ARN
+          example: my-fargate-task:1
+        include:
+          type: array
+          description: Additional data to include
+          items:
+            type: string
+    DescribeTaskDefinitionResponse:
+      type: object
+      description: Response from DescribeTaskDefinition
+      properties:
+        taskDefinition:
+          $ref: '#/components/schemas/TaskDefinition'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+    ListTaskDefinitionsRequest:
+      type: object
+      description: Request for ListTaskDefinitions
+      properties:
+        familyPrefix:
+          type: string
+          description: Family prefix filter
+        status:
+          type: string
+          description: Status filter
+          enum:
+          - ACTIVE
+          - INACTIVE
+          - DELETE_IN_PROGRESS
+        sort:
+          type: string
+          description: Sort order
+          enum:
+          - ASC
+          - DESC
+        nextToken:
+          type: string
+          description: Pagination token
+        maxResults:
+          type: integer
+          description: Maximum results
+    ListTaskDefinitionsResponse:
+      type: object
+      description: Response from ListTaskDefinitions
+      properties:
+        taskDefinitionArns:
+          type: array
+          description: List of task definition ARNs
+          items:
+            type: string
+        nextToken:
+          type: string
+          description: Pagination token
+    DeregisterTaskDefinitionRequest:
+      type: object
+      required:
+      - taskDefinition
+      description: Request for DeregisterTaskDefinition
+      properties:
+        taskDefinition:
+          type: string
+          description: Task definition family:revision or ARN
+    DeregisterTaskDefinitionResponse:
+      type: object
+      description: Response from DeregisterTaskDefinition
+      properties:
+        taskDefinition:
+          $ref: '#/components/schemas/TaskDefinition'
+    RunTaskRequest:
+      type: object
+      required:
+      - taskDefinition
+      description: Request for RunTask
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+          example: my-fargate-cluster
+        taskDefinition:
+          type: string
+          description: Task definition
+          example: my-fargate-task:1
+        launchType:
+          type: string
+          description: Launch type
+          example: FARGATE
+          enum:
+          - EC2
+          - FARGATE
+          - EXTERNAL
+        count:
+          type: integer
+          description: Number of tasks to run
+          example: 1
+        networkConfiguration:
+          $ref: '#/components/schemas/NetworkConfiguration'
+        overrides:
+          type: object
+          description: Task overrides
+        tags:
+          type: array
+          description: Tags
+          items:
+            $ref: '#/components/schemas/Tag'
+        enableExecuteCommand:
+          type: boolean
+          description: Enable ECS Exec
+          example: false
+        propagateTags:
+          type: string
+          description: Whether to propagate tags
+          enum:
+          - TASK_DEFINITION
+          - SERVICE
+          - NONE
+    RunTaskResponse:
+      type: object
+      description: Response from RunTask
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+        failures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Failure'
+    StopTaskRequest:
+      type: object
+      required:
+      - task
+      description: Request for StopTask
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        task:
+          type: string
+          description: Task ARN or ID
+          example: arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123
+        reason:
+          type: string
+          description: Reason for stopping the task
+    StopTaskResponse:
+      type: object
+      description: Response from StopTask
+      properties:
+        task:
+          $ref: '#/components/schemas/Task'
+    DescribeTasksRequest:
+      type: object
+      required:
+      - tasks
+      description: Request for DescribeTasks
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        tasks:
+          type: array
+          description: Task ARNs or IDs
+          items:
+            type: string
+        include:
+          type: array
+          description: Additional data to include
+          items:
+            type: string
+    DescribeTasksResponse:
+      type: object
+      description: Response from DescribeTasks
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+        failures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Failure'
+    ListTasksRequest:
+      type: object
+      description: Request for ListTasks
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        containerInstance:
+          type: string
+          description: Container instance filter
+        family:
+          type: string
+          description: Task definition family filter
+        launchType:
+          type: string
+          description: Launch type filter
+          enum:
+          - EC2
+          - FARGATE
+          - EXTERNAL
+        desiredStatus:
+          type: string
+          description: Desired status filter
+          enum:
+          - RUNNING
+          - PENDING
+          - STOPPED
+        nextToken:
+          type: string
+          description: Pagination token
+        maxResults:
+          type: integer
+          description: Maximum results
+    ListTasksResponse:
+      type: object
+      description: Response from ListTasks
+      properties:
+        taskArns:
+          type: array
+          description: List of task ARNs
+          items:
+            type: string
+        nextToken:
+          type: string
+          description: Pagination token
+    CreateServiceRequest:
+      type: object
+      required:
+      - serviceName
+      - taskDefinition
+      description: Request for CreateService
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        serviceName:
+          type: string
+          description: Service name
+          example: my-fargate-service
+        taskDefinition:
+          type: string
+          description: Task definition
+          example: my-fargate-task:1
+        launchType:
+          type: string
+          description: Launch type
+          example: FARGATE
+        desiredCount:
+          type: integer
+          description: Desired number of tasks
+          example: 2
+        networkConfiguration:
+          $ref: '#/components/schemas/NetworkConfiguration'
+        loadBalancers:
+          type: array
+          description: Load balancers
+          items:
+            $ref: '#/components/schemas/LoadBalancer'
+        deploymentConfiguration:
+          type: object
+          description: Deployment configuration
+        tags:
+          type: array
+          description: Tags
+          items:
+            $ref: '#/components/schemas/Tag'
+        enableExecuteCommand:
+          type: boolean
+          description: Enable ECS Exec
+        propagateTags:
+          type: string
+          description: Tag propagation
+          enum:
+          - TASK_DEFINITION
+          - SERVICE
+          - NONE
+    CreateServiceResponse:
+      type: object
+      description: Response from CreateService
+      properties:
+        service:
+          $ref: '#/components/schemas/Service'
+    DescribeServicesRequest:
+      type: object
+      required:
+      - services
+      description: Request for DescribeServices
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        services:
+          type: array
+          description: Service names or ARNs
+          items:
+            type: string
+        include:
+          type: array
+          description: Additional data to include
+          items:
+            type: string
+    DescribeServicesResponse:
+      type: object
+      description: Response from DescribeServices
+      properties:
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/Service'
+        failures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Failure'
+    ListServicesRequest:
+      type: object
+      description: Request for ListServices
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        launchType:
+          type: string
+          description: Launch type filter
+        schedulingStrategy:
+          type: string
+          description: Scheduling strategy filter
+        nextToken:
+          type: string
+          description: Pagination token
+        maxResults:
+          type: integer
+          description: Maximum results
+    ListServicesResponse:
+      type: object
+      description: Response from ListServices
+      properties:
+        serviceArns:
+          type: array
+          description: List of service ARNs
+          items:
+            type: string
+        nextToken:
+          type: string
+          description: Pagination token
+    UpdateServiceRequest:
+      type: object
+      required:
+      - service
+      description: Request for UpdateService
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        service:
+          type: string
+          description: Service name or ARN
+        desiredCount:
+          type: integer
+          description: Desired task count
+        taskDefinition:
+          type: string
+          description: Task definition
+        networkConfiguration:
+          $ref: '#/components/schemas/NetworkConfiguration'
+        deploymentConfiguration:
+          type: object
+          description: Deployment configuration
+        enableExecuteCommand:
+          type: boolean
+          description: Enable ECS Exec
+    UpdateServiceResponse:
+      type: object
+      description: Response from UpdateService
+      properties:
+        service:
+          $ref: '#/components/schemas/Service'
+    DeleteServiceRequest:
+      type: object
+      required:
+      - service
+      description: Request for DeleteService
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        service:
+          type: string
+          description: Service name or ARN
+        force:
+          type: boolean
+          description: Force delete even with running tasks
+    DeleteServiceResponse:
+      type: object
+      description: Response from DeleteService
+      properties:
+        service:
+          $ref: '#/components/schemas/Service'
+    TagResourceRequest:
+      type: object
+      required:
+      - resourceArn
+      - tags
+      description: Request for TagResource
+      properties:
+        resourceArn:
+          type: string
+          description: Resource ARN
+          example: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+        tags:
+          type: array
+          description: Tags to apply
+          items:
+            $ref: '#/components/schemas/Tag'
+    ListTagsForResourceRequest:
+      type: object
+      required:
+      - resourceArn
+      description: Request for ListTagsForResource
+      properties:
+        resourceArn:
+          type: string
+          description: Resource ARN
+    ListTagsForResourceResponse:
+      type: object
+      description: Response from ListTagsForResource
+      properties:
+        tags:
+          type: array
+          description: List of tags
+          items:
+            $ref: '#/components/schemas/Tag'
+    PutAccountSettingRequest:
+      type: object
+      required:
+      - name
+      - value
+      description: Request for PutAccountSetting
+      properties:
+        name:
+          type: string
+          description: Setting name
+          example: containerInsights
+        value:
+          type: string
+          description: Setting value
+          example: enabled
+        principalArn:
+          type: string
+          description: IAM principal ARN
+    PutAccountSettingResponse:
+      type: object
+      description: Response from PutAccountSetting
+      properties:
+        setting:
+          $ref: '#/components/schemas/AccountSetting'
+    ListAccountSettingsRequest:
+      type: object
+      description: Request for ListAccountSettings
+      properties:
+        name:
+          type: string
+          description: Setting name filter
+        value:
+          type: string
+          description: Setting value filter
+        principalArn:
+          type: string
+          description: Principal ARN filter
+        effectiveSettings:
+          type: boolean
+          description: Return effective settings
+        nextToken:
+          type: string
+          description: Pagination token
+        maxResults:
+          type: integer
+          description: Maximum results
+    ListAccountSettingsResponse:
+      type: object
+      description: Response from ListAccountSettings
+      properties:
+        settings:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountSetting'
+        nextToken:
+          type: string
+          description: Pagination token

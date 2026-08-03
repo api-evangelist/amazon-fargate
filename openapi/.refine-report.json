@@ -1,0 +1,24 @@
+{
+  "provider": "amazon-fargate",
+  "sources": [
+    "amazon-fargate-account-settings-api-openapi.yml",
+    "amazon-fargate-clusters-api-openapi.yml",
+    "amazon-fargate-services-api-openapi.yml",
+    "amazon-fargate-tagging-api-openapi.yml",
+    "amazon-fargate-task-definitions-api-openapi.yml",
+    "amazon-fargate-tasks-api-openapi.yml"
+  ],
+  "outputs": [
+    "amazon-fargate-account-settings-api-openapi.yml",
+    "amazon-fargate-clusters-api-openapi.yml",
+    "amazon-fargate-services-api-openapi.yml",
+    "amazon-fargate-tagging-api-openapi.yml",
+    "amazon-fargate-task-definitions-api-openapi.yml",
+    "amazon-fargate-tasks-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
