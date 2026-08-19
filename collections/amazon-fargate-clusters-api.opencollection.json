@@ -1,0 +1,86 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Amazon Fargate Account Settings Clusters API",
+    "version": "2014-11-13"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Clusters",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Amazon Fargate Create a Cluster",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#CreateCluster",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new Amazon ECS cluster. By default, your account receives a default cluster when you launch your first container instance."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate Describe Clusters",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#DescribeClusters",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Describes one or more of your clusters."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate List Clusters",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#ListClusters",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns a list of existing clusters."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate Delete a Cluster",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#DeleteCluster",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Deletes the specified cluster. The cluster will transition to the INACTIVE state. You cannot delete a cluster that has registered container instances or active services."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,86 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Amazon Fargate Account Settings Task Definitions API",
+    "version": "2014-11-13"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Task Definitions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Amazon Fargate Register a Task Definition",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#RegisterTaskDefinition",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Registers a new task definition from the supplied family and containerDefinitions. Optionally, you can add data volumes to your containers with the volumes parameter. The task definition requires a launch type of FARGATE to run on Fargate."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate Describe a Task Definition",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#DescribeTaskDefinition",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Describes a task definition. You can get a task definition ARN from the RegisterTaskDefinition or ListTaskDefinitions actions."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate List Task Definitions",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#ListTaskDefinitions",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns a list of task definitions that are registered to your account. You can filter the results by family name and by task definition status."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate Deregister a Task Definition",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#DeregisterTaskDefinition",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Deregisters the specified task definition by family and revision. You may deregister a task definition revision by specifying its family and revision, or by specifying its full ARN."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

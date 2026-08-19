@@ -1,0 +1,56 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Amazon Fargate Account Settings Tagging API",
+    "version": "2014-11-13"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Tagging",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Amazon Fargate Tag a Resource",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#TagResource",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Associates the specified tags with the specified Amazon ECS resource. You can specify one or more tags to add to each resource."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate List Tags for a Resource",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#ListTagsForResource",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "List the tags for an Amazon ECS resource."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

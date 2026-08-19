@@ -1,0 +1,101 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Amazon Fargate Account Settings Services API",
+    "version": "2014-11-13"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Services",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Amazon Fargate Create a Service",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#CreateService",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Runs and maintains your desired number of tasks from a specified task definition on Fargate. If the number of tasks running in a service drops below the desiredCount, Amazon ECS runs another copy of the task."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate Describe Services",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#DescribeServices",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Describes the specified services running in your cluster."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate List Services",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#ListServices",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Lists the services that are running in a specified cluster."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate Update a Service",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#UpdateService",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Modifies the parameters of a service. You can update a service to change the desired count of tasks, update the task definition, or update the deployment configuration."
+        },
+        {
+          "info": {
+            "name": "Amazon Fargate Delete a Service",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://ecs.{region}.amazonaws.com/#DeleteService",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Deletes a specified service within a cluster. You can delete a service if you have no running tasks in it and the desired task count is zero. If the service is actively maintaining tasks, you must first reduce the desired task count to zero and then delete the service."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
