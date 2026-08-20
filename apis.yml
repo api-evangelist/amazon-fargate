@@ -81,6 +81,8 @@ apis:
   humanURL: https://aws.amazon.com/fargate/
   baseURL: https://ecs.amazonaws.com
   tags:
+  - Cluster
+  tags_raw:
   - Clusters
   properties:
   - type: OpenAPI
@@ -257,6 +259,8 @@ apis:
   humanURL: https://aws.amazon.com/fargate/
   baseURL: https://ecs.amazonaws.com
   tags:
+  - Task
+  tags_raw:
   - Tasks
   properties:
   - type: OpenAPI
