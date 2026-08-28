@@ -11,8 +11,11 @@ info:
     read and executed directly.
   version: 1.0.0
 sourceDescriptions:
-- name: fargateApi
-  url: ../openapi/amazon-fargate-openapi.yml
+- name: clustersApi
+  url: ../openapi/amazon-fargate-clusters-api-openapi.yml
+  type: openapi
+- name: servicesApi
+  url: ../openapi/amazon-fargate-services-api-openapi.yml
   type: openapi
 workflows:
 - workflowId: decommission-cluster

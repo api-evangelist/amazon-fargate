@@ -10,8 +10,11 @@ info:
     action header so the launch can be read and executed directly.
   version: 1.0.0
 sourceDescriptions:
-- name: fargateApi
-  url: ../openapi/amazon-fargate-openapi.yml
+- name: taskDefinitionsApi
+  url: ../openapi/amazon-fargate-task-definitions-api-openapi.yml
+  type: openapi
+- name: tasksApi
+  url: ../openapi/amazon-fargate-tasks-api-openapi.yml
   type: openapi
 workflows:
 - workflowId: run-latest-task-definition

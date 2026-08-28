@@ -11,8 +11,8 @@ info:
     can be read and executed directly.
   version: 1.0.0
 sourceDescriptions:
-- name: fargateApi
-  url: ../openapi/amazon-fargate-openapi.yml
+- name: servicesApi
+  url: ../openapi/amazon-fargate-services-api-openapi.yml
   type: openapi
 workflows:
 - workflowId: teardown-service

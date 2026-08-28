@@ -10,8 +10,8 @@ info:
     operation can be read and executed directly.
   version: 1.0.0
 sourceDescriptions:
-- name: fargateApi
-  url: ../openapi/amazon-fargate-openapi.yml
+- name: tasksApi
+  url: ../openapi/amazon-fargate-tasks-api-openapi.yml
   type: openapi
 workflows:
 - workflowId: stop-task-and-confirm

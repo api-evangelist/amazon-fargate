@@ -12,8 +12,14 @@ info:
     OpenAPI description.
   version: 1.0.0
 sourceDescriptions:
-- name: fargateApi
-  url: ../openapi/amazon-fargate-openapi.yml
+- name: clustersApi
+  url: ../openapi/amazon-fargate-clusters-api-openapi.yml
+  type: openapi
+- name: taskDefinitionsApi
+  url: ../openapi/amazon-fargate-task-definitions-api-openapi.yml
+  type: openapi
+- name: tasksApi
+  url: ../openapi/amazon-fargate-tasks-api-openapi.yml
   type: openapi
 workflows:
 - workflowId: provision-and-run-task
