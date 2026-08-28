@@ -3,6 +3,18 @@ description: >-
   Amazon Fargate is a serverless compute engine for containers that works with both Amazon ECS and Amazon EKS. Fargate
   removes the need to provision and manage servers, letting you specify and pay for resources per application, and
   improves security through application isolation by design.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 specificationVersion: '0.23'
 accessModel:
   pricing: freemium
