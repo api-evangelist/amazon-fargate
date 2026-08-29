@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
   title: Amazon Fargate Account Settings Clusters API
   description: Amazon Fargate is a serverless compute engine for containers that works with Amazon ECS and Amazon EKS. This API enables you to run, manage, and monitor containerized applications without managing servers or clusters. Fargate handles capacity provisioning, patching, and scaling automatically.
@@ -248,12 +248,6 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
-    DeleteClusterResponse:
-      type: object
-      description: Response from DeleteCluster
-      properties:
-        cluster:
-          $ref: '#/components/schemas/Cluster'
     ListClustersRequest:
       type: object
       description: Request for ListClusters
@@ -265,64 +259,18 @@ components:
           type: integer
           description: Maximum results
           example: 10
-    ListClustersResponse:
+    ClusterSetting:
       type: object
-      description: Response from ListClusters
+      description: A cluster setting
       properties:
-        clusterArns:
-          type: array
-          description: List of cluster ARNs
-          items:
-            type: string
-        nextToken:
+        name:
           type: string
-          description: Pagination token for next page
-    Failure:
-      type: object
-      description: A failure returned by an API operation
-      properties:
-        arn:
+          description: Setting name
+          example: containerInsights
+        value:
           type: string
-          description: ARN of the resource that failed
-          example: arn:aws:ecs:us-east-1:123456789012:cluster/missing-cluster
-        reason:
-          type: string
-          description: Reason for the failure
-          example: MISSING
-        detail:
-          type: string
-          description: Additional detail about the failure
-    CreateClusterRequest:
-      type: object
-      description: Request for CreateCluster operation
-      properties:
-        clusterName:
-          type: string
-          description: Cluster name
-          example: my-fargate-cluster
-        tags:
-          type: array
-          description: Tags to apply
-          items:
-            $ref: '#/components/schemas/Tag'
-        settings:
-          type: array
-          description: Cluster settings
-          items:
-            $ref: '#/components/schemas/ClusterSetting'
-        configuration:
-          type: object
-          description: Cluster configuration
-        capacityProviders:
-          type: array
-          description: Capacity providers
-          items:
-            type: string
-        defaultCapacityProviderStrategy:
-          type: array
-          description: Default capacity provider strategy
-          items:
-            type: object
+          description: Setting value
+          example: enabled
     Tag:
       type: object
       description: A tag applied to an ECS resource
@@ -383,6 +331,98 @@ components:
           description: Cluster settings
           items:
             $ref: '#/components/schemas/ClusterSetting'
+    ErrorResponse:
+      type: object
+      description: Error response from the Amazon ECS API
+      properties:
+        __type:
+          type: string
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
+    CreateClusterRequest:
+      type: object
+      description: Request for CreateCluster operation
+      properties:
+        clusterName:
+          type: string
+          description: Cluster name
+          example: my-fargate-cluster
+        tags:
+          type: array
+          description: Tags to apply
+          items:
+            $ref: '#/components/schemas/Tag'
+        settings:
+          type: array
+          description: Cluster settings
+          items:
+            $ref: '#/components/schemas/ClusterSetting'
+        configuration:
+          type: object
+          description: Cluster configuration
+        capacityProviders:
+          type: array
+          description: Capacity providers
+          items:
+            type: string
+        defaultCapacityProviderStrategy:
+          type: array
+          description: Default capacity provider strategy
+          items:
+            type: object
+    CreateClusterResponse:
+      type: object
+      description: Response from CreateCluster
+      properties:
+        cluster:
+          $ref: '#/components/schemas/Cluster'
+    ListClustersResponse:
+      type: object
+      description: Response from ListClusters
+      properties:
+        clusterArns:
+          type: array
+          description: List of cluster ARNs
+          items:
+            type: string
+        nextToken:
+          type: string
+          description: Pagination token for next page
+    DeleteClusterRequest:
+      type: object
+      required:
+      - cluster
+      description: Request for DeleteCluster
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+          example: my-fargate-cluster
+    DeleteClusterResponse:
+      type: object
+      description: Response from DeleteCluster
+      properties:
+        cluster:
+          $ref: '#/components/schemas/Cluster'
+    Failure:
+      type: object
+      description: A failure returned by an API operation
+      properties:
+        arn:
+          type: string
+          description: ARN of the resource that failed
+          example: arn:aws:ecs:us-east-1:123456789012:cluster/missing-cluster
+        reason:
+          type: string
+          description: Reason for the failure
+          example: MISSING
+        detail:
+          type: string
+          description: Additional detail about the failure
     DescribeClustersRequest:
       type: object
       description: Request for DescribeClusters
@@ -397,12 +437,6 @@ components:
           description: Additional data to include
           items:
             type: string
-    CreateClusterResponse:
-      type: object
-      description: Response from CreateCluster
-      properties:
-        cluster:
-          $ref: '#/components/schemas/Cluster'
     DescribeClustersResponse:
       type: object
       description: Response from DescribeClusters
@@ -415,40 +449,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Failure'
-    DeleteClusterRequest:
-      type: object
-      required:
-      - cluster
-      description: Request for DeleteCluster
-      properties:
-        cluster:
-          type: string
-          description: Cluster name or ARN
-          example: my-fargate-cluster
-    ErrorResponse:
-      type: object
-      description: Error response from the Amazon ECS API
-      properties:
-        __type:
-          type: string
-          description: Error type
-          example: InvalidParameterException
-        message:
-          type: string
-          description: Error message
-          example: The specified cluster is not in the ACTIVE state.
-    ClusterSetting:
-      type: object
-      description: A cluster setting
-      properties:
-        name:
-          type: string
-          description: Setting name
-          example: containerInsights
-        value:
-          type: string
-          description: Setting value
-          example: enabled
   securitySchemes:
     aws_signature_v4:
       type: apiKey

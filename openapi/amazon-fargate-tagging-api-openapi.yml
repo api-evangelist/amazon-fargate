@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
   title: Amazon Fargate Account Settings Tagging API
   description: Amazon Fargate is a serverless compute engine for containers that works with Amazon ECS and Amazon EKS. This API enables you to run, manage, and monitor containerized applications without managing servers or clusters. Fargate handles capacity provisioning, patching, and scaling automatically.
@@ -132,6 +132,15 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
+    ListTagsForResourceResponse:
+      type: object
+      description: Response from ListTagsForResource
+      properties:
+        tags:
+          type: array
+          description: List of tags
+          items:
+            $ref: '#/components/schemas/Tag'
     Tag:
       type: object
       description: A tag applied to an ECS resource
@@ -144,6 +153,18 @@ components:
           type: string
           description: The tag value
           example: production
+    ErrorResponse:
+      type: object
+      description: Error response from the Amazon ECS API
+      properties:
+        __type:
+          type: string
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
     TagResourceRequest:
       type: object
       required:
@@ -158,27 +179,6 @@ components:
         tags:
           type: array
           description: Tags to apply
-          items:
-            $ref: '#/components/schemas/Tag'
-    ErrorResponse:
-      type: object
-      description: Error response from the Amazon ECS API
-      properties:
-        __type:
-          type: string
-          description: Error type
-          example: InvalidParameterException
-        message:
-          type: string
-          description: Error message
-          example: The specified cluster is not in the ACTIVE state.
-    ListTagsForResourceResponse:
-      type: object
-      description: Response from ListTagsForResource
-      properties:
-        tags:
-          type: array
-          description: List of tags
           items:
             $ref: '#/components/schemas/Tag'
     ListTagsForResourceRequest:
