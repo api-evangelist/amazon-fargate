@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Amazon Fargate Account Settings Tagging API
+  title: Amazon Fargate Tagging API
   description: Amazon Fargate is a serverless compute engine for containers that works with Amazon ECS and Amazon EKS. This API enables you to run, manage, and monitor containerized applications without managing servers or clusters. Fargate handles capacity provisioning, patching, and scaling automatically.
   version: '2014-11-13'
   contact:
@@ -132,6 +132,34 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
+    TagResourceRequest:
+      type: object
+      required:
+      - resourceArn
+      - tags
+      description: Request for TagResource
+      properties:
+        resourceArn:
+          type: string
+          description: Resource ARN
+          example: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
+        tags:
+          type: array
+          description: Tags to apply
+          items:
+            $ref: '#/components/schemas/Tag'
+    ErrorResponse:
+      type: object
+      description: Error response from the Amazon ECS API
+      properties:
+        __type:
+          type: string
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
     ListTagsForResourceResponse:
       type: object
       description: Response from ListTagsForResource
@@ -153,34 +181,6 @@ components:
           type: string
           description: The tag value
           example: production
-    ErrorResponse:
-      type: object
-      description: Error response from the Amazon ECS API
-      properties:
-        __type:
-          type: string
-          description: Error type
-          example: InvalidParameterException
-        message:
-          type: string
-          description: Error message
-          example: The specified cluster is not in the ACTIVE state.
-    TagResourceRequest:
-      type: object
-      required:
-      - resourceArn
-      - tags
-      description: Request for TagResource
-      properties:
-        resourceArn:
-          type: string
-          description: Resource ARN
-          example: arn:aws:ecs:us-east-1:123456789012:cluster/my-fargate-cluster
-        tags:
-          type: array
-          description: Tags to apply
-          items:
-            $ref: '#/components/schemas/Tag'
     ListTagsForResourceRequest:
       type: object
       required:

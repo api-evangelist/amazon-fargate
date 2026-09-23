@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Amazon Fargate Account Settings Tasks API
+  title: Amazon Fargate Tasks API
   description: Amazon Fargate is a serverless compute engine for containers that works with Amazon ECS and Amazon EKS. This API enables you to run, manage, and monitor containerized applications without managing servers or clusters. Fargate handles capacity provisioning, patching, and scaling automatically.
   version: '2014-11-13'
   contact:
@@ -258,6 +258,98 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      description: Error response from the Amazon ECS API
+      properties:
+        __type:
+          type: string
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
+    RunTaskRequest:
+      type: object
+      required:
+      - taskDefinition
+      description: Request for RunTask
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+          example: my-fargate-cluster
+        taskDefinition:
+          type: string
+          description: Task definition
+          example: my-fargate-task:1
+        launchType:
+          type: string
+          description: Launch type
+          example: FARGATE
+          enum:
+          - EC2
+          - FARGATE
+          - EXTERNAL
+        count:
+          type: integer
+          description: Number of tasks to run
+          example: 1
+        networkConfiguration:
+          $ref: '#/components/schemas/NetworkConfiguration'
+        overrides:
+          type: object
+          description: Task overrides
+        tags:
+          type: array
+          description: Tags
+          items:
+            $ref: '#/components/schemas/Tag'
+        enableExecuteCommand:
+          type: boolean
+          description: Enable ECS Exec
+          example: false
+        propagateTags:
+          type: string
+          description: Whether to propagate tags
+          enum:
+          - TASK_DEFINITION
+          - SERVICE
+          - NONE
+    NetworkConfiguration:
+      type: object
+      description: Network configuration for the task
+      properties:
+        awsvpcConfiguration:
+          $ref: '#/components/schemas/AwsVpcConfiguration'
+    AwsVpcConfiguration:
+      type: object
+      description: VPC configuration for awsvpc network mode
+      required:
+      - subnets
+      properties:
+        subnets:
+          type: array
+          description: Subnets for the task
+          items:
+            type: string
+          example:
+          - subnet-12345678
+        securityGroups:
+          type: array
+          description: Security groups
+          items:
+            type: string
+          example:
+          - sg-12345678
+        assignPublicIp:
+          type: string
+          description: Whether to assign a public IP
+          example: ENABLED
+          enum:
+          - ENABLED
+          - DISABLED
     ListTasksResponse:
       type: object
       description: Response from ListTasks
@@ -270,6 +362,18 @@ components:
         nextToken:
           type: string
           description: Pagination token
+    Tag:
+      type: object
+      description: A tag applied to an ECS resource
+      properties:
+        key:
+          type: string
+          description: The tag key
+          example: Environment
+        value:
+          type: string
+          description: The tag value
+          example: production
     ListTasksRequest:
       type: object
       description: Request for ListTasks
@@ -303,24 +407,6 @@ components:
         maxResults:
           type: integer
           description: Maximum results
-    RunTaskResponse:
-      type: object
-      description: Response from RunTask
-      properties:
-        tasks:
-          type: array
-          items:
-            $ref: '#/components/schemas/Task'
-        failures:
-          type: array
-          items:
-            $ref: '#/components/schemas/Failure'
-    StopTaskResponse:
-      type: object
-      description: Response from StopTask
-      properties:
-        task:
-          $ref: '#/components/schemas/Task'
     Task:
       type: object
       description: An Amazon ECS task running on Fargate
@@ -398,99 +484,6 @@ components:
           description: Tags
           items:
             $ref: '#/components/schemas/Tag'
-    Tag:
-      type: object
-      description: A tag applied to an ECS resource
-      properties:
-        key:
-          type: string
-          description: The tag key
-          example: Environment
-        value:
-          type: string
-          description: The tag value
-          example: production
-    RunTaskRequest:
-      type: object
-      required:
-      - taskDefinition
-      description: Request for RunTask
-      properties:
-        cluster:
-          type: string
-          description: Cluster name or ARN
-          example: my-fargate-cluster
-        taskDefinition:
-          type: string
-          description: Task definition
-          example: my-fargate-task:1
-        launchType:
-          type: string
-          description: Launch type
-          example: FARGATE
-          enum:
-          - EC2
-          - FARGATE
-          - EXTERNAL
-        count:
-          type: integer
-          description: Number of tasks to run
-          example: 1
-        networkConfiguration:
-          $ref: '#/components/schemas/NetworkConfiguration'
-        overrides:
-          type: object
-          description: Task overrides
-        tags:
-          type: array
-          description: Tags
-          items:
-            $ref: '#/components/schemas/Tag'
-        enableExecuteCommand:
-          type: boolean
-          description: Enable ECS Exec
-          example: false
-        propagateTags:
-          type: string
-          description: Whether to propagate tags
-          enum:
-          - TASK_DEFINITION
-          - SERVICE
-          - NONE
-    NetworkConfiguration:
-      type: object
-      description: Network configuration for the task
-      properties:
-        awsvpcConfiguration:
-          $ref: '#/components/schemas/AwsVpcConfiguration'
-    ErrorResponse:
-      type: object
-      description: Error response from the Amazon ECS API
-      properties:
-        __type:
-          type: string
-          description: Error type
-          example: InvalidParameterException
-        message:
-          type: string
-          description: Error message
-          example: The specified cluster is not in the ACTIVE state.
-    StopTaskRequest:
-      type: object
-      required:
-      - task
-      description: Request for StopTask
-      properties:
-        cluster:
-          type: string
-          description: Cluster name or ARN
-        task:
-          type: string
-          description: Task ARN or ID
-          example: arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123
-        reason:
-          type: string
-          description: Reason for stopping the task
     DescribeTasksResponse:
       type: object
       description: Response from DescribeTasks
@@ -503,48 +496,24 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Failure'
-    Failure:
+    StopTaskResponse:
       type: object
-      description: A failure returned by an API operation
+      description: Response from StopTask
       properties:
-        arn:
-          type: string
-          description: ARN of the resource that failed
-          example: arn:aws:ecs:us-east-1:123456789012:cluster/missing-cluster
-        reason:
-          type: string
-          description: Reason for the failure
-          example: MISSING
-        detail:
-          type: string
-          description: Additional detail about the failure
-    AwsVpcConfiguration:
+        task:
+          $ref: '#/components/schemas/Task'
+    RunTaskResponse:
       type: object
-      description: VPC configuration for awsvpc network mode
-      required:
-      - subnets
+      description: Response from RunTask
       properties:
-        subnets:
+        tasks:
           type: array
-          description: Subnets for the task
           items:
-            type: string
-          example:
-          - subnet-12345678
-        securityGroups:
+            $ref: '#/components/schemas/Task'
+        failures:
           type: array
-          description: Security groups
           items:
-            type: string
-          example:
-          - sg-12345678
-        assignPublicIp:
-          type: string
-          description: Whether to assign a public IP
-          example: ENABLED
-          enum:
-          - ENABLED
-          - DISABLED
+            $ref: '#/components/schemas/Failure'
     DescribeTasksRequest:
       type: object
       required:
@@ -564,6 +533,37 @@ components:
           description: Additional data to include
           items:
             type: string
+    Failure:
+      type: object
+      description: A failure returned by an API operation
+      properties:
+        arn:
+          type: string
+          description: ARN of the resource that failed
+          example: arn:aws:ecs:us-east-1:123456789012:cluster/missing-cluster
+        reason:
+          type: string
+          description: Reason for the failure
+          example: MISSING
+        detail:
+          type: string
+          description: Additional detail about the failure
+    StopTaskRequest:
+      type: object
+      required:
+      - task
+      description: Request for StopTask
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        task:
+          type: string
+          description: Task ARN or ID
+          example: arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123
+        reason:
+          type: string
+          description: Reason for stopping the task
   securitySchemes:
     aws_signature_v4:
       type: apiKey

@@ -126,6 +126,52 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      description: Error response from the Amazon ECS API
+      properties:
+        __type:
+          type: string
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
+    AccountSetting:
+      type: object
+      description: An ECS account setting
+      properties:
+        name:
+          type: string
+          description: Setting name
+          example: containerInsights
+        value:
+          type: string
+          description: Setting value
+          example: enabled
+        principalArn:
+          type: string
+          description: Principal ARN
+          example: arn:aws:iam::123456789012:root
+    PutAccountSettingRequest:
+      type: object
+      required:
+      - name
+      - value
+      description: Request for PutAccountSetting
+      properties:
+        name:
+          type: string
+          description: Setting name
+          example: containerInsights
+        value:
+          type: string
+          description: Setting value
+          example: enabled
+        principalArn:
+          type: string
+          description: IAM principal ARN
     ListAccountSettingsRequest:
       type: object
       description: Request for ListAccountSettings
@@ -148,58 +194,12 @@ components:
         maxResults:
           type: integer
           description: Maximum results
-    AccountSetting:
-      type: object
-      description: An ECS account setting
-      properties:
-        name:
-          type: string
-          description: Setting name
-          example: containerInsights
-        value:
-          type: string
-          description: Setting value
-          example: enabled
-        principalArn:
-          type: string
-          description: Principal ARN
-          example: arn:aws:iam::123456789012:root
-    ErrorResponse:
-      type: object
-      description: Error response from the Amazon ECS API
-      properties:
-        __type:
-          type: string
-          description: Error type
-          example: InvalidParameterException
-        message:
-          type: string
-          description: Error message
-          example: The specified cluster is not in the ACTIVE state.
     PutAccountSettingResponse:
       type: object
       description: Response from PutAccountSetting
       properties:
         setting:
           $ref: '#/components/schemas/AccountSetting'
-    PutAccountSettingRequest:
-      type: object
-      required:
-      - name
-      - value
-      description: Request for PutAccountSetting
-      properties:
-        name:
-          type: string
-          description: Setting name
-          example: containerInsights
-        value:
-          type: string
-          description: Setting value
-          example: enabled
-        principalArn:
-          type: string
-          description: IAM principal ARN
     ListAccountSettingsResponse:
       type: object
       description: Response from ListAccountSettings

@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Amazon Fargate Account Settings Services API
+  title: Amazon Fargate Services API
   description: Amazon Fargate is a serverless compute engine for containers that works with Amazon ECS and Amazon EKS. This API enables you to run, manage, and monitor containerized applications without managing servers or clusters. Fargate handles capacity provisioning, patching, and scaling automatically.
   version: '2014-11-13'
   contact:
@@ -321,65 +321,139 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      description: Error response from the Amazon ECS API
+      properties:
+        __type:
+          type: string
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
+    ListServicesResponse:
+      type: object
+      description: Response from ListServices
+      properties:
+        serviceArns:
+          type: array
+          description: List of service ARNs
+          items:
+            type: string
+        nextToken:
+          type: string
+          description: Pagination token
+    CreateServiceRequest:
+      type: object
+      required:
+      - serviceName
+      - taskDefinition
+      description: Request for CreateService
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        serviceName:
+          type: string
+          description: Service name
+          example: my-fargate-service
+        taskDefinition:
+          type: string
+          description: Task definition
+          example: my-fargate-task:1
+        launchType:
+          type: string
+          description: Launch type
+          example: FARGATE
+        desiredCount:
+          type: integer
+          description: Desired number of tasks
+          example: 2
+        networkConfiguration:
+          $ref: '#/components/schemas/NetworkConfiguration'
+        loadBalancers:
+          type: array
+          description: Load balancers
+          items:
+            $ref: '#/components/schemas/LoadBalancer'
+        deploymentConfiguration:
+          type: object
+          description: Deployment configuration
+        tags:
+          type: array
+          description: Tags
+          items:
+            $ref: '#/components/schemas/Tag'
+        enableExecuteCommand:
+          type: boolean
+          description: Enable ECS Exec
+        propagateTags:
+          type: string
+          description: Tag propagation
+          enum:
+          - TASK_DEFINITION
+          - SERVICE
+          - NONE
+    ListServicesRequest:
+      type: object
+      description: Request for ListServices
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        launchType:
+          type: string
+          description: Launch type filter
+        schedulingStrategy:
+          type: string
+          description: Scheduling strategy filter
+        nextToken:
+          type: string
+          description: Pagination token
+        maxResults:
+          type: integer
+          description: Maximum results
+    NetworkConfiguration:
+      type: object
+      description: Network configuration for the task
+      properties:
+        awsvpcConfiguration:
+          $ref: '#/components/schemas/AwsVpcConfiguration'
+    AwsVpcConfiguration:
+      type: object
+      description: VPC configuration for awsvpc network mode
+      required:
+      - subnets
+      properties:
+        subnets:
+          type: array
+          description: Subnets for the task
+          items:
+            type: string
+          example:
+          - subnet-12345678
+        securityGroups:
+          type: array
+          description: Security groups
+          items:
+            type: string
+          example:
+          - sg-12345678
+        assignPublicIp:
+          type: string
+          description: Whether to assign a public IP
+          example: ENABLED
+          enum:
+          - ENABLED
+          - DISABLED
     DeleteServiceResponse:
       type: object
       description: Response from DeleteService
       properties:
         service:
           $ref: '#/components/schemas/Service'
-    DeleteServiceRequest:
-      type: object
-      required:
-      - service
-      description: Request for DeleteService
-      properties:
-        cluster:
-          type: string
-          description: Cluster name or ARN
-        service:
-          type: string
-          description: Service name or ARN
-        force:
-          type: boolean
-          description: Force delete even with running tasks
-    Tag:
-      type: object
-      description: A tag applied to an ECS resource
-      properties:
-        key:
-          type: string
-          description: The tag key
-          example: Environment
-        value:
-          type: string
-          description: The tag value
-          example: production
-    UpdateServiceRequest:
-      type: object
-      required:
-      - service
-      description: Request for UpdateService
-      properties:
-        cluster:
-          type: string
-          description: Cluster name or ARN
-        service:
-          type: string
-          description: Service name or ARN
-        desiredCount:
-          type: integer
-          description: Desired task count
-        taskDefinition:
-          type: string
-          description: Task definition
-        networkConfiguration:
-          $ref: '#/components/schemas/NetworkConfiguration'
-        deploymentConfiguration:
-          type: object
-          description: Deployment configuration
-        enableExecuteCommand:
-          type: boolean
-          description: Enable ECS Exec
     Service:
       type: object
       description: An Amazon ECS service
@@ -440,67 +514,6 @@ components:
           description: Tags
           items:
             $ref: '#/components/schemas/Tag'
-    ListServicesResponse:
-      type: object
-      description: Response from ListServices
-      properties:
-        serviceArns:
-          type: array
-          description: List of service ARNs
-          items:
-            type: string
-        nextToken:
-          type: string
-          description: Pagination token
-    ErrorResponse:
-      type: object
-      description: Error response from the Amazon ECS API
-      properties:
-        __type:
-          type: string
-          description: Error type
-          example: InvalidParameterException
-        message:
-          type: string
-          description: Error message
-          example: The specified cluster is not in the ACTIVE state.
-    DescribeServicesRequest:
-      type: object
-      required:
-      - services
-      description: Request for DescribeServices
-      properties:
-        cluster:
-          type: string
-          description: Cluster name or ARN
-        services:
-          type: array
-          description: Service names or ARNs
-          items:
-            type: string
-        include:
-          type: array
-          description: Additional data to include
-          items:
-            type: string
-    DescribeServicesResponse:
-      type: object
-      description: Response from DescribeServices
-      properties:
-        services:
-          type: array
-          items:
-            $ref: '#/components/schemas/Service'
-        failures:
-          type: array
-          items:
-            $ref: '#/components/schemas/Failure'
-    CreateServiceResponse:
-      type: object
-      description: Response from CreateService
-      properties:
-        service:
-          $ref: '#/components/schemas/Service'
     LoadBalancer:
       type: object
       description: Load balancer configuration for a service
@@ -520,82 +533,77 @@ components:
           type: integer
           description: Container port
           example: 80
-    ListServicesRequest:
-      type: object
-      description: Request for ListServices
-      properties:
-        cluster:
-          type: string
-          description: Cluster name or ARN
-        launchType:
-          type: string
-          description: Launch type filter
-        schedulingStrategy:
-          type: string
-          description: Scheduling strategy filter
-        nextToken:
-          type: string
-          description: Pagination token
-        maxResults:
-          type: integer
-          description: Maximum results
-    CreateServiceRequest:
+    UpdateServiceRequest:
       type: object
       required:
-      - serviceName
-      - taskDefinition
-      description: Request for CreateService
+      - service
+      description: Request for UpdateService
       properties:
         cluster:
           type: string
           description: Cluster name or ARN
-        serviceName:
+        service:
           type: string
-          description: Service name
-          example: my-fargate-service
+          description: Service name or ARN
+        desiredCount:
+          type: integer
+          description: Desired task count
         taskDefinition:
           type: string
           description: Task definition
-          example: my-fargate-task:1
-        launchType:
-          type: string
-          description: Launch type
-          example: FARGATE
-        desiredCount:
-          type: integer
-          description: Desired number of tasks
-          example: 2
         networkConfiguration:
           $ref: '#/components/schemas/NetworkConfiguration'
-        loadBalancers:
-          type: array
-          description: Load balancers
-          items:
-            $ref: '#/components/schemas/LoadBalancer'
         deploymentConfiguration:
           type: object
           description: Deployment configuration
-        tags:
-          type: array
-          description: Tags
-          items:
-            $ref: '#/components/schemas/Tag'
         enableExecuteCommand:
           type: boolean
           description: Enable ECS Exec
-        propagateTags:
-          type: string
-          description: Tag propagation
-          enum:
-          - TASK_DEFINITION
-          - SERVICE
-          - NONE
     UpdateServiceResponse:
       type: object
       description: Response from UpdateService
       properties:
         service:
           $ref: '#/components/schemas/Service'
+    DescribeServicesResponse:
+      type: object
+      description: Response from DescribeServices
+      properties:
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/Service'
+        failures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Failure'
+    DeleteServiceRequest:
+      type: object
+      required:
+      - service
+      description: Request for DeleteService
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        service:
+          type: string
+          description: Service name or ARN
+        force:
+          type: boolean
+          description: Force delete even with running tasks
+    Tag:
+      type: object
+      description: A tag applied to an ECS resource
+      properties:
+        key:
+          type: string
+          description: The tag key
+          example: Environment
+        value:
+          type: string
+          description: The tag value
+          example: production
     Failure:
       type: object
       description: A failure returned by an API operation
@@ -611,39 +619,31 @@ components:
         detail:
           type: string
           description: Additional detail about the failure
-    AwsVpcConfiguration:
+    DescribeServicesRequest:
       type: object
-      description: VPC configuration for awsvpc network mode
       required:
-      - subnets
+      - services
+      description: Request for DescribeServices
       properties:
-        subnets:
-          type: array
-          description: Subnets for the task
-          items:
-            type: string
-          example:
-          - subnet-12345678
-        securityGroups:
-          type: array
-          description: Security groups
-          items:
-            type: string
-          example:
-          - sg-12345678
-        assignPublicIp:
+        cluster:
           type: string
-          description: Whether to assign a public IP
-          example: ENABLED
-          enum:
-          - ENABLED
-          - DISABLED
-    NetworkConfiguration:
+          description: Cluster name or ARN
+        services:
+          type: array
+          description: Service names or ARNs
+          items:
+            type: string
+        include:
+          type: array
+          description: Additional data to include
+          items:
+            type: string
+    CreateServiceResponse:
       type: object
-      description: Network configuration for the task
+      description: Response from CreateService
       properties:
-        awsvpcConfiguration:
-          $ref: '#/components/schemas/AwsVpcConfiguration'
+        service:
+          $ref: '#/components/schemas/Service'
   securitySchemes:
     aws_signature_v4:
       type: apiKey

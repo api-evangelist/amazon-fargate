@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Amazon Fargate Account Settings Task Definitions API
+  title: Amazon Fargate Task Definitions API
   description: Amazon Fargate is a serverless compute engine for containers that works with Amazon ECS and Amazon EKS. This API enables you to run, manage, and monitor containerized applications without managing servers or clusters. Fargate handles capacity provisioning, patching, and scaling automatically.
   version: '2014-11-13'
   contact:
@@ -257,82 +257,40 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
-    LogConfiguration:
+    ErrorResponse:
       type: object
-      description: Log configuration for a container
+      description: Error response from the Amazon ECS API
       properties:
-        logDriver:
+        __type:
           type: string
-          description: Log driver
-          example: awslogs
-          enum:
-          - json-file
-          - syslog
-          - journald
-          - gelf
-          - fluentd
-          - awslogs
-          - splunk
-          - awsfirelens
-        options:
-          type: object
-          description: Log driver options
-          additionalProperties:
-            type: string
-    DeregisterTaskDefinitionResponse:
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
+    DescribeTaskDefinitionResponse:
       type: object
-      description: Response from DeregisterTaskDefinition
+      description: Response from DescribeTaskDefinition
       properties:
         taskDefinition:
           $ref: '#/components/schemas/TaskDefinition'
-    ContainerDefinition:
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+    KeyValuePair:
       type: object
-      description: Container definition for a task
+      description: A key-value pair
       properties:
         name:
           type: string
-          description: Container name
-          example: my-container
-        image:
-          type: string
-          description: Docker image
-          example: nginx:latest
-        essential:
-          type: boolean
-          description: Whether container is essential
-          example: true
-        cpu:
-          type: integer
-          description: CPU units for the container
-          example: 256
-        memory:
-          type: integer
-          description: Memory limit in MiB
-          example: 512
-        environment:
-          type: array
-          description: Environment variables
-          items:
-            $ref: '#/components/schemas/KeyValuePair'
-        portMappings:
-          type: array
-          description: Port mappings
-          items:
-            $ref: '#/components/schemas/PortMapping'
-        logConfiguration:
-          $ref: '#/components/schemas/LogConfiguration'
-    Tag:
-      type: object
-      description: A tag applied to an ECS resource
-      properties:
-        key:
-          type: string
-          description: The tag key
-          example: Environment
+          description: Key name
+          example: LOG_LEVEL
         value:
           type: string
-          description: The tag value
-          example: production
+          description: Key value
+          example: INFO
     PortMapping:
       type: object
       description: Port mapping for a container
@@ -352,136 +310,6 @@ components:
           enum:
           - tcp
           - udp
-    ErrorResponse:
-      type: object
-      description: Error response from the Amazon ECS API
-      properties:
-        __type:
-          type: string
-          description: Error type
-          example: InvalidParameterException
-        message:
-          type: string
-          description: Error message
-          example: The specified cluster is not in the ACTIVE state.
-    ListTaskDefinitionsResponse:
-      type: object
-      description: Response from ListTaskDefinitions
-      properties:
-        taskDefinitionArns:
-          type: array
-          description: List of task definition ARNs
-          items:
-            type: string
-        nextToken:
-          type: string
-          description: Pagination token
-    DescribeTaskDefinitionResponse:
-      type: object
-      description: Response from DescribeTaskDefinition
-      properties:
-        taskDefinition:
-          $ref: '#/components/schemas/TaskDefinition'
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/Tag'
-    DescribeTaskDefinitionRequest:
-      type: object
-      required:
-      - taskDefinition
-      description: Request for DescribeTaskDefinition
-      properties:
-        taskDefinition:
-          type: string
-          description: Task definition family:revision or ARN
-          example: my-fargate-task:1
-        include:
-          type: array
-          description: Additional data to include
-          items:
-            type: string
-    DeregisterTaskDefinitionRequest:
-      type: object
-      required:
-      - taskDefinition
-      description: Request for DeregisterTaskDefinition
-      properties:
-        taskDefinition:
-          type: string
-          description: Task definition family:revision or ARN
-    KeyValuePair:
-      type: object
-      description: A key-value pair
-      properties:
-        name:
-          type: string
-          description: Key name
-          example: LOG_LEVEL
-        value:
-          type: string
-          description: Key value
-          example: INFO
-    RegisterTaskDefinitionResponse:
-      type: object
-      description: Response from RegisterTaskDefinition
-      properties:
-        taskDefinition:
-          $ref: '#/components/schemas/TaskDefinition'
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/Tag'
-    RegisterTaskDefinitionRequest:
-      type: object
-      required:
-      - family
-      - containerDefinitions
-      description: Request for RegisterTaskDefinition
-      properties:
-        family:
-          type: string
-          description: Task definition family
-          example: my-fargate-task
-        taskRoleArn:
-          type: string
-          description: Task IAM role ARN
-        executionRoleArn:
-          type: string
-          description: Task execution IAM role ARN
-          example: arn:aws:iam::123456789012:role/ecsTaskExecutionRole
-        networkMode:
-          type: string
-          description: Docker networking mode
-          example: awsvpc
-        requiresCompatibilities:
-          type: array
-          description: Launch type compatibility
-          items:
-            type: string
-        cpu:
-          type: string
-          description: CPU units (required for Fargate)
-          example: '256'
-        memory:
-          type: string
-          description: Memory in MiB (required for Fargate)
-          example: '512'
-        containerDefinitions:
-          type: array
-          description: Container definitions
-          items:
-            $ref: '#/components/schemas/ContainerDefinition'
-        volumes:
-          type: array
-          description: Volumes to mount
-          items:
-            type: object
-        tags:
-          type: array
-          description: Tags
-          items:
-            $ref: '#/components/schemas/Tag'
     ListTaskDefinitionsRequest:
       type: object
       description: Request for ListTaskDefinitions
@@ -508,6 +336,21 @@ components:
         maxResults:
           type: integer
           description: Maximum results
+    DeregisterTaskDefinitionResponse:
+      type: object
+      description: Response from DeregisterTaskDefinition
+      properties:
+        taskDefinition:
+          $ref: '#/components/schemas/TaskDefinition'
+    DeregisterTaskDefinitionRequest:
+      type: object
+      required:
+      - taskDefinition
+      description: Request for DeregisterTaskDefinition
+      properties:
+        taskDefinition:
+          type: string
+          description: Task definition family:revision or ARN
     TaskDefinition:
       type: object
       description: An Amazon ECS task definition
@@ -569,6 +412,163 @@ components:
           description: Container definitions
           items:
             $ref: '#/components/schemas/ContainerDefinition'
+    ListTaskDefinitionsResponse:
+      type: object
+      description: Response from ListTaskDefinitions
+      properties:
+        taskDefinitionArns:
+          type: array
+          description: List of task definition ARNs
+          items:
+            type: string
+        nextToken:
+          type: string
+          description: Pagination token
+    RegisterTaskDefinitionResponse:
+      type: object
+      description: Response from RegisterTaskDefinition
+      properties:
+        taskDefinition:
+          $ref: '#/components/schemas/TaskDefinition'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+    RegisterTaskDefinitionRequest:
+      type: object
+      required:
+      - family
+      - containerDefinitions
+      description: Request for RegisterTaskDefinition
+      properties:
+        family:
+          type: string
+          description: Task definition family
+          example: my-fargate-task
+        taskRoleArn:
+          type: string
+          description: Task IAM role ARN
+        executionRoleArn:
+          type: string
+          description: Task execution IAM role ARN
+          example: arn:aws:iam::123456789012:role/ecsTaskExecutionRole
+        networkMode:
+          type: string
+          description: Docker networking mode
+          example: awsvpc
+        requiresCompatibilities:
+          type: array
+          description: Launch type compatibility
+          items:
+            type: string
+        cpu:
+          type: string
+          description: CPU units (required for Fargate)
+          example: '256'
+        memory:
+          type: string
+          description: Memory in MiB (required for Fargate)
+          example: '512'
+        containerDefinitions:
+          type: array
+          description: Container definitions
+          items:
+            $ref: '#/components/schemas/ContainerDefinition'
+        volumes:
+          type: array
+          description: Volumes to mount
+          items:
+            type: object
+        tags:
+          type: array
+          description: Tags
+          items:
+            $ref: '#/components/schemas/Tag'
+    Tag:
+      type: object
+      description: A tag applied to an ECS resource
+      properties:
+        key:
+          type: string
+          description: The tag key
+          example: Environment
+        value:
+          type: string
+          description: The tag value
+          example: production
+    LogConfiguration:
+      type: object
+      description: Log configuration for a container
+      properties:
+        logDriver:
+          type: string
+          description: Log driver
+          example: awslogs
+          enum:
+          - json-file
+          - syslog
+          - journald
+          - gelf
+          - fluentd
+          - awslogs
+          - splunk
+          - awsfirelens
+        options:
+          type: object
+          description: Log driver options
+          additionalProperties:
+            type: string
+    DescribeTaskDefinitionRequest:
+      type: object
+      required:
+      - taskDefinition
+      description: Request for DescribeTaskDefinition
+      properties:
+        taskDefinition:
+          type: string
+          description: Task definition family:revision or ARN
+          example: my-fargate-task:1
+        include:
+          type: array
+          description: Additional data to include
+          items:
+            type: string
+    ContainerDefinition:
+      type: object
+      description: Container definition for a task
+      properties:
+        name:
+          type: string
+          description: Container name
+          example: my-container
+        image:
+          type: string
+          description: Docker image
+          example: nginx:latest
+        essential:
+          type: boolean
+          description: Whether container is essential
+          example: true
+        cpu:
+          type: integer
+          description: CPU units for the container
+          example: 256
+        memory:
+          type: integer
+          description: Memory limit in MiB
+          example: 512
+        environment:
+          type: array
+          description: Environment variables
+          items:
+            $ref: '#/components/schemas/KeyValuePair'
+        portMappings:
+          type: array
+          description: Port mappings
+          items:
+            $ref: '#/components/schemas/PortMapping'
+        logConfiguration:
+          $ref: '#/components/schemas/LogConfiguration'
   securitySchemes:
     aws_signature_v4:
       type: apiKey
