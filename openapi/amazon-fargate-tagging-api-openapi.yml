@@ -148,6 +148,27 @@ components:
           description: Tags to apply
           items:
             $ref: '#/components/schemas/Tag'
+    ListTagsForResourceRequest:
+      type: object
+      required:
+      - resourceArn
+      description: Request for ListTagsForResource
+      properties:
+        resourceArn:
+          type: string
+          description: Resource ARN
+    Tag:
+      type: object
+      description: A tag applied to an ECS resource
+      properties:
+        key:
+          type: string
+          description: The tag key
+          example: Environment
+        value:
+          type: string
+          description: The tag value
+          example: production
     ErrorResponse:
       type: object
       description: Error response from the Amazon ECS API
@@ -169,27 +190,6 @@ components:
           description: List of tags
           items:
             $ref: '#/components/schemas/Tag'
-    Tag:
-      type: object
-      description: A tag applied to an ECS resource
-      properties:
-        key:
-          type: string
-          description: The tag key
-          example: Environment
-        value:
-          type: string
-          description: The tag value
-          example: production
-    ListTagsForResourceRequest:
-      type: object
-      required:
-      - resourceArn
-      description: Request for ListTagsForResource
-      properties:
-        resourceArn:
-          type: string
-          description: Resource ARN
   securitySchemes:
     aws_signature_v4:
       type: apiKey

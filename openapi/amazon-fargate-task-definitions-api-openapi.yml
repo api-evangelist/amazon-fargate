@@ -257,18 +257,12 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
-    ErrorResponse:
+    DeregisterTaskDefinitionResponse:
       type: object
-      description: Error response from the Amazon ECS API
+      description: Response from DeregisterTaskDefinition
       properties:
-        __type:
-          type: string
-          description: Error type
-          example: InvalidParameterException
-        message:
-          type: string
-          description: Error message
-          example: The specified cluster is not in the ACTIVE state.
+        taskDefinition:
+          $ref: '#/components/schemas/TaskDefinition'
     DescribeTaskDefinitionResponse:
       type: object
       description: Response from DescribeTaskDefinition
@@ -279,78 +273,18 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Tag'
-    KeyValuePair:
+    ListTaskDefinitionsResponse:
       type: object
-      description: A key-value pair
+      description: Response from ListTaskDefinitions
       properties:
-        name:
-          type: string
-          description: Key name
-          example: LOG_LEVEL
-        value:
-          type: string
-          description: Key value
-          example: INFO
-    PortMapping:
-      type: object
-      description: Port mapping for a container
-      properties:
-        containerPort:
-          type: integer
-          description: Container port
-          example: 80
-        hostPort:
-          type: integer
-          description: Host port
-          example: 80
-        protocol:
-          type: string
-          description: Protocol
-          example: tcp
-          enum:
-          - tcp
-          - udp
-    ListTaskDefinitionsRequest:
-      type: object
-      description: Request for ListTaskDefinitions
-      properties:
-        familyPrefix:
-          type: string
-          description: Family prefix filter
-        status:
-          type: string
-          description: Status filter
-          enum:
-          - ACTIVE
-          - INACTIVE
-          - DELETE_IN_PROGRESS
-        sort:
-          type: string
-          description: Sort order
-          enum:
-          - ASC
-          - DESC
+        taskDefinitionArns:
+          type: array
+          description: List of task definition ARNs
+          items:
+            type: string
         nextToken:
           type: string
           description: Pagination token
-        maxResults:
-          type: integer
-          description: Maximum results
-    DeregisterTaskDefinitionResponse:
-      type: object
-      description: Response from DeregisterTaskDefinition
-      properties:
-        taskDefinition:
-          $ref: '#/components/schemas/TaskDefinition'
-    DeregisterTaskDefinitionRequest:
-      type: object
-      required:
-      - taskDefinition
-      description: Request for DeregisterTaskDefinition
-      properties:
-        taskDefinition:
-          type: string
-          description: Task definition family:revision or ARN
     TaskDefinition:
       type: object
       description: An Amazon ECS task definition
@@ -412,18 +346,6 @@ components:
           description: Container definitions
           items:
             $ref: '#/components/schemas/ContainerDefinition'
-    ListTaskDefinitionsResponse:
-      type: object
-      description: Response from ListTaskDefinitions
-      properties:
-        taskDefinitionArns:
-          type: array
-          description: List of task definition ARNs
-          items:
-            type: string
-        nextToken:
-          type: string
-          description: Pagination token
     RegisterTaskDefinitionResponse:
       type: object
       description: Response from RegisterTaskDefinition
@@ -434,6 +356,143 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Tag'
+    DeregisterTaskDefinitionRequest:
+      type: object
+      required:
+      - taskDefinition
+      description: Request for DeregisterTaskDefinition
+      properties:
+        taskDefinition:
+          type: string
+          description: Task definition family:revision or ARN
+    Tag:
+      type: object
+      description: A tag applied to an ECS resource
+      properties:
+        key:
+          type: string
+          description: The tag key
+          example: Environment
+        value:
+          type: string
+          description: The tag value
+          example: production
+    ContainerDefinition:
+      type: object
+      description: Container definition for a task
+      properties:
+        name:
+          type: string
+          description: Container name
+          example: my-container
+        image:
+          type: string
+          description: Docker image
+          example: nginx:latest
+        essential:
+          type: boolean
+          description: Whether container is essential
+          example: true
+        cpu:
+          type: integer
+          description: CPU units for the container
+          example: 256
+        memory:
+          type: integer
+          description: Memory limit in MiB
+          example: 512
+        environment:
+          type: array
+          description: Environment variables
+          items:
+            $ref: '#/components/schemas/KeyValuePair'
+        portMappings:
+          type: array
+          description: Port mappings
+          items:
+            $ref: '#/components/schemas/PortMapping'
+        logConfiguration:
+          $ref: '#/components/schemas/LogConfiguration'
+    ErrorResponse:
+      type: object
+      description: Error response from the Amazon ECS API
+      properties:
+        __type:
+          type: string
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
+    PortMapping:
+      type: object
+      description: Port mapping for a container
+      properties:
+        containerPort:
+          type: integer
+          description: Container port
+          example: 80
+        hostPort:
+          type: integer
+          description: Host port
+          example: 80
+        protocol:
+          type: string
+          description: Protocol
+          example: tcp
+          enum:
+          - tcp
+          - udp
+    KeyValuePair:
+      type: object
+      description: A key-value pair
+      properties:
+        name:
+          type: string
+          description: Key name
+          example: LOG_LEVEL
+        value:
+          type: string
+          description: Key value
+          example: INFO
+    DescribeTaskDefinitionRequest:
+      type: object
+      required:
+      - taskDefinition
+      description: Request for DescribeTaskDefinition
+      properties:
+        taskDefinition:
+          type: string
+          description: Task definition family:revision or ARN
+          example: my-fargate-task:1
+        include:
+          type: array
+          description: Additional data to include
+          items:
+            type: string
+    LogConfiguration:
+      type: object
+      description: Log configuration for a container
+      properties:
+        logDriver:
+          type: string
+          description: Log driver
+          example: awslogs
+          enum:
+          - json-file
+          - syslog
+          - journald
+          - gelf
+          - fluentd
+          - awslogs
+          - splunk
+          - awsfirelens
+        options:
+          type: object
+          description: Log driver options
+          additionalProperties:
+            type: string
     RegisterTaskDefinitionRequest:
       type: object
       required:
@@ -484,91 +543,32 @@ components:
           description: Tags
           items:
             $ref: '#/components/schemas/Tag'
-    Tag:
+    ListTaskDefinitionsRequest:
       type: object
-      description: A tag applied to an ECS resource
+      description: Request for ListTaskDefinitions
       properties:
-        key:
+        familyPrefix:
           type: string
-          description: The tag key
-          example: Environment
-        value:
+          description: Family prefix filter
+        status:
           type: string
-          description: The tag value
-          example: production
-    LogConfiguration:
-      type: object
-      description: Log configuration for a container
-      properties:
-        logDriver:
-          type: string
-          description: Log driver
-          example: awslogs
+          description: Status filter
           enum:
-          - json-file
-          - syslog
-          - journald
-          - gelf
-          - fluentd
-          - awslogs
-          - splunk
-          - awsfirelens
-        options:
-          type: object
-          description: Log driver options
-          additionalProperties:
-            type: string
-    DescribeTaskDefinitionRequest:
-      type: object
-      required:
-      - taskDefinition
-      description: Request for DescribeTaskDefinition
-      properties:
-        taskDefinition:
+          - ACTIVE
+          - INACTIVE
+          - DELETE_IN_PROGRESS
+        sort:
           type: string
-          description: Task definition family:revision or ARN
-          example: my-fargate-task:1
-        include:
-          type: array
-          description: Additional data to include
-          items:
-            type: string
-    ContainerDefinition:
-      type: object
-      description: Container definition for a task
-      properties:
-        name:
+          description: Sort order
+          enum:
+          - ASC
+          - DESC
+        nextToken:
           type: string
-          description: Container name
-          example: my-container
-        image:
-          type: string
-          description: Docker image
-          example: nginx:latest
-        essential:
-          type: boolean
-          description: Whether container is essential
-          example: true
-        cpu:
+          description: Pagination token
+        maxResults:
           type: integer
-          description: CPU units for the container
-          example: 256
-        memory:
-          type: integer
-          description: Memory limit in MiB
-          example: 512
-        environment:
-          type: array
-          description: Environment variables
-          items:
-            $ref: '#/components/schemas/KeyValuePair'
-        portMappings:
-          type: array
-          description: Port mappings
-          items:
-            $ref: '#/components/schemas/PortMapping'
-        logConfiguration:
-          $ref: '#/components/schemas/LogConfiguration'
+          description: Maximum results
   securitySchemes:
     aws_signature_v4:
       type: apiKey

@@ -458,7 +458,7 @@ maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
   url: https://apievangelist.com
-x-parent: aws
+x-parent: amazon-web-services
 x-relationship: product
 x-aliases:
 - AWS Fargate
