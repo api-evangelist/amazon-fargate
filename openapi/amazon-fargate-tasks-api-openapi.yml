@@ -258,21 +258,6 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
-    Failure:
-      type: object
-      description: A failure returned by an API operation
-      properties:
-        arn:
-          type: string
-          description: ARN of the resource that failed
-          example: arn:aws:ecs:us-east-1:123456789012:cluster/missing-cluster
-        reason:
-          type: string
-          description: Reason for the failure
-          example: MISSING
-        detail:
-          type: string
-          description: Additional detail about the failure
     RunTaskRequest:
       type: object
       required:
@@ -347,6 +332,12 @@ components:
           enum:
           - ENABLED
           - DISABLED
+    StopTaskResponse:
+      type: object
+      description: Response from StopTask
+      properties:
+        task:
+          $ref: '#/components/schemas/Task'
     ListTasksRequest:
       type: object
       description: Request for ListTasks
@@ -380,22 +371,6 @@ components:
         maxResults:
           type: integer
           description: Maximum results
-    StopTaskRequest:
-      type: object
-      required:
-      - task
-      description: Request for StopTask
-      properties:
-        cluster:
-          type: string
-          description: Cluster name or ARN
-        task:
-          type: string
-          description: Task ARN or ID
-          example: arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123
-        reason:
-          type: string
-          description: Reason for stopping the task
     DescribeTasksRequest:
       type: object
       required:
@@ -415,12 +390,28 @@ components:
           description: Additional data to include
           items:
             type: string
-    StopTaskResponse:
+    NetworkConfiguration:
       type: object
-      description: Response from StopTask
+      description: Network configuration for the task
       properties:
+        awsvpcConfiguration:
+          $ref: '#/components/schemas/AwsVpcConfiguration'
+    StopTaskRequest:
+      type: object
+      required:
+      - task
+      description: Request for StopTask
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
         task:
-          $ref: '#/components/schemas/Task'
+          type: string
+          description: Task ARN or ID
+          example: arn:aws:ecs:us-east-1:123456789012:task/my-fargate-cluster/abc123
+        reason:
+          type: string
+          description: Reason for stopping the task
     DescribeTasksResponse:
       type: object
       description: Response from DescribeTasks
@@ -433,6 +424,21 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Failure'
+    Failure:
+      type: object
+      description: A failure returned by an API operation
+      properties:
+        arn:
+          type: string
+          description: ARN of the resource that failed
+          example: arn:aws:ecs:us-east-1:123456789012:cluster/missing-cluster
+        reason:
+          type: string
+          description: Reason for the failure
+          example: MISSING
+        detail:
+          type: string
+          description: Additional detail about the failure
     ListTasksResponse:
       type: object
       description: Response from ListTasks
@@ -445,12 +451,18 @@ components:
         nextToken:
           type: string
           description: Pagination token
-    NetworkConfiguration:
+    ErrorResponse:
       type: object
-      description: Network configuration for the task
+      description: Error response from the Amazon ECS API
       properties:
-        awsvpcConfiguration:
-          $ref: '#/components/schemas/AwsVpcConfiguration'
+        __type:
+          type: string
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
     Task:
       type: object
       description: An Amazon ECS task running on Fargate
@@ -540,18 +552,6 @@ components:
           type: string
           description: The tag value
           example: production
-    ErrorResponse:
-      type: object
-      description: Error response from the Amazon ECS API
-      properties:
-        __type:
-          type: string
-          description: Error type
-          example: InvalidParameterException
-        message:
-          type: string
-          description: Error message
-          example: The specified cluster is not in the ACTIVE state.
     RunTaskResponse:
       type: object
       description: Response from RunTask

@@ -248,46 +248,40 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
-    Failure:
-      type: object
-      description: A failure returned by an API operation
-      properties:
-        arn:
-          type: string
-          description: ARN of the resource that failed
-          example: arn:aws:ecs:us-east-1:123456789012:cluster/missing-cluster
-        reason:
-          type: string
-          description: Reason for the failure
-          example: MISSING
-        detail:
-          type: string
-          description: Additional detail about the failure
-    DeleteClusterRequest:
-      type: object
-      required:
-      - cluster
-      description: Request for DeleteCluster
-      properties:
-        cluster:
-          type: string
-          description: Cluster name or ARN
-          example: my-fargate-cluster
-    ClusterSetting:
-      type: object
-      description: A cluster setting
-      properties:
-        name:
-          type: string
-          description: Setting name
-          example: containerInsights
-        value:
-          type: string
-          description: Setting value
-          example: enabled
     DeleteClusterResponse:
       type: object
       description: Response from DeleteCluster
+      properties:
+        cluster:
+          $ref: '#/components/schemas/Cluster'
+    DescribeClustersRequest:
+      type: object
+      description: Request for DescribeClusters
+      properties:
+        clusters:
+          type: array
+          description: Cluster names or ARNs
+          items:
+            type: string
+        include:
+          type: array
+          description: Additional data to include
+          items:
+            type: string
+    ListClustersRequest:
+      type: object
+      description: Request for ListClusters
+      properties:
+        nextToken:
+          type: string
+          description: Pagination token
+        maxResults:
+          type: integer
+          description: Maximum results
+          example: 10
+    CreateClusterResponse:
+      type: object
+      description: Response from CreateCluster
       properties:
         cluster:
           $ref: '#/components/schemas/Cluster'
@@ -303,43 +297,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Failure'
-    ListClustersRequest:
-      type: object
-      description: Request for ListClusters
-      properties:
-        nextToken:
-          type: string
-          description: Pagination token
-        maxResults:
-          type: integer
-          description: Maximum results
-          example: 10
-    DescribeClustersRequest:
-      type: object
-      description: Request for DescribeClusters
-      properties:
-        clusters:
-          type: array
-          description: Cluster names or ARNs
-          items:
-            type: string
-        include:
-          type: array
-          description: Additional data to include
-          items:
-            type: string
-    ListClustersResponse:
-      type: object
-      description: Response from ListClusters
-      properties:
-        clusterArns:
-          type: array
-          description: List of cluster ARNs
-          items:
-            type: string
-        nextToken:
-          type: string
-          description: Pagination token for next page
     CreateClusterRequest:
       type: object
       description: Request for CreateCluster operation
@@ -371,6 +328,55 @@ components:
           description: Default capacity provider strategy
           items:
             type: object
+    DeleteClusterRequest:
+      type: object
+      required:
+      - cluster
+      description: Request for DeleteCluster
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+          example: my-fargate-cluster
+    Failure:
+      type: object
+      description: A failure returned by an API operation
+      properties:
+        arn:
+          type: string
+          description: ARN of the resource that failed
+          example: arn:aws:ecs:us-east-1:123456789012:cluster/missing-cluster
+        reason:
+          type: string
+          description: Reason for the failure
+          example: MISSING
+        detail:
+          type: string
+          description: Additional detail about the failure
+    ClusterSetting:
+      type: object
+      description: A cluster setting
+      properties:
+        name:
+          type: string
+          description: Setting name
+          example: containerInsights
+        value:
+          type: string
+          description: Setting value
+          example: enabled
+    ListClustersResponse:
+      type: object
+      description: Response from ListClusters
+      properties:
+        clusterArns:
+          type: array
+          description: List of cluster ARNs
+          items:
+            type: string
+        nextToken:
+          type: string
+          description: Pagination token for next page
     Cluster:
       type: object
       description: An Amazon ECS cluster
@@ -419,18 +425,6 @@ components:
           description: Cluster settings
           items:
             $ref: '#/components/schemas/ClusterSetting'
-    Tag:
-      type: object
-      description: A tag applied to an ECS resource
-      properties:
-        key:
-          type: string
-          description: The tag key
-          example: Environment
-        value:
-          type: string
-          description: The tag value
-          example: production
     ErrorResponse:
       type: object
       description: Error response from the Amazon ECS API
@@ -443,12 +437,18 @@ components:
           type: string
           description: Error message
           example: The specified cluster is not in the ACTIVE state.
-    CreateClusterResponse:
+    Tag:
       type: object
-      description: Response from CreateCluster
+      description: A tag applied to an ECS resource
       properties:
-        cluster:
-          $ref: '#/components/schemas/Cluster'
+        key:
+          type: string
+          description: The tag key
+          example: Environment
+        value:
+          type: string
+          description: The tag value
+          example: production
   securitySchemes:
     aws_signature_v4:
       type: apiKey

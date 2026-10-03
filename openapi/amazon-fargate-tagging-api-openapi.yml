@@ -148,6 +148,15 @@ components:
           description: Tags to apply
           items:
             $ref: '#/components/schemas/Tag'
+    ListTagsForResourceResponse:
+      type: object
+      description: Response from ListTagsForResource
+      properties:
+        tags:
+          type: array
+          description: List of tags
+          items:
+            $ref: '#/components/schemas/Tag'
     ListTagsForResourceRequest:
       type: object
       required:
@@ -157,18 +166,6 @@ components:
         resourceArn:
           type: string
           description: Resource ARN
-    Tag:
-      type: object
-      description: A tag applied to an ECS resource
-      properties:
-        key:
-          type: string
-          description: The tag key
-          example: Environment
-        value:
-          type: string
-          description: The tag value
-          example: production
     ErrorResponse:
       type: object
       description: Error response from the Amazon ECS API
@@ -181,15 +178,18 @@ components:
           type: string
           description: Error message
           example: The specified cluster is not in the ACTIVE state.
-    ListTagsForResourceResponse:
+    Tag:
       type: object
-      description: Response from ListTagsForResource
+      description: A tag applied to an ECS resource
       properties:
-        tags:
-          type: array
-          description: List of tags
-          items:
-            $ref: '#/components/schemas/Tag'
+        key:
+          type: string
+          description: The tag key
+          example: Environment
+        value:
+          type: string
+          description: The tag value
+          example: production
   securitySchemes:
     aws_signature_v4:
       type: apiKey

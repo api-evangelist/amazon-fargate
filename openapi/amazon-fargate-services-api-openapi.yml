@@ -321,66 +321,6 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
-    UpdateServiceRequest:
-      type: object
-      required:
-      - service
-      description: Request for UpdateService
-      properties:
-        cluster:
-          type: string
-          description: Cluster name or ARN
-        service:
-          type: string
-          description: Service name or ARN
-        desiredCount:
-          type: integer
-          description: Desired task count
-        taskDefinition:
-          type: string
-          description: Task definition
-        networkConfiguration:
-          $ref: '#/components/schemas/NetworkConfiguration'
-        deploymentConfiguration:
-          type: object
-          description: Deployment configuration
-        enableExecuteCommand:
-          type: boolean
-          description: Enable ECS Exec
-    Failure:
-      type: object
-      description: A failure returned by an API operation
-      properties:
-        arn:
-          type: string
-          description: ARN of the resource that failed
-          example: arn:aws:ecs:us-east-1:123456789012:cluster/missing-cluster
-        reason:
-          type: string
-          description: Reason for the failure
-          example: MISSING
-        detail:
-          type: string
-          description: Additional detail about the failure
-    LoadBalancer:
-      type: object
-      description: Load balancer configuration for a service
-      properties:
-        targetGroupArn:
-          type: string
-          description: Target group ARN
-          example: arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/my-tg/abc123
-        loadBalancerName:
-          type: string
-          description: Load balancer name
-        containerName:
-          type: string
-          description: Container name
-          example: my-container
-        containerPort:
-          type: integer
-          description: Container port
-          example: 80
     AwsVpcConfiguration:
       type: object
       description: VPC configuration for awsvpc network mode
@@ -408,33 +348,31 @@ components:
           enum:
           - ENABLED
           - DISABLED
-    DescribeServicesResponse:
+    ListServicesRequest:
       type: object
-      description: Response from DescribeServices
-      properties:
-        services:
-          type: array
-          items:
-            $ref: '#/components/schemas/Service'
-        failures:
-          type: array
-          items:
-            $ref: '#/components/schemas/Failure'
-    DeleteServiceRequest:
-      type: object
-      required:
-      - service
-      description: Request for DeleteService
+      description: Request for ListServices
       properties:
         cluster:
           type: string
           description: Cluster name or ARN
-        service:
+        launchType:
           type: string
-          description: Service name or ARN
-        force:
-          type: boolean
-          description: Force delete even with running tasks
+          description: Launch type filter
+        schedulingStrategy:
+          type: string
+          description: Scheduling strategy filter
+        nextToken:
+          type: string
+          description: Pagination token
+        maxResults:
+          type: integer
+          description: Maximum results
+    NetworkConfiguration:
+      type: object
+      description: Network configuration for the task
+      properties:
+        awsvpcConfiguration:
+          $ref: '#/components/schemas/AwsVpcConfiguration'
     Service:
       type: object
       description: An Amazon ECS service
@@ -495,43 +433,25 @@ components:
           description: Tags
           items:
             $ref: '#/components/schemas/Tag'
-    DeleteServiceResponse:
+    LoadBalancer:
       type: object
-      description: Response from DeleteService
+      description: Load balancer configuration for a service
       properties:
-        service:
-          $ref: '#/components/schemas/Service'
-    ListServicesRequest:
-      type: object
-      description: Request for ListServices
-      properties:
-        cluster:
+        targetGroupArn:
           type: string
-          description: Cluster name or ARN
-        launchType:
+          description: Target group ARN
+          example: arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/my-tg/abc123
+        loadBalancerName:
           type: string
-          description: Launch type filter
-        schedulingStrategy:
+          description: Load balancer name
+        containerName:
           type: string
-          description: Scheduling strategy filter
-        nextToken:
-          type: string
-          description: Pagination token
-        maxResults:
+          description: Container name
+          example: my-container
+        containerPort:
           type: integer
-          description: Maximum results
-    NetworkConfiguration:
-      type: object
-      description: Network configuration for the task
-      properties:
-        awsvpcConfiguration:
-          $ref: '#/components/schemas/AwsVpcConfiguration'
-    UpdateServiceResponse:
-      type: object
-      description: Response from UpdateService
-      properties:
-        service:
-          $ref: '#/components/schemas/Service'
+          description: Container port
+          example: 80
     CreateServiceRequest:
       type: object
       required:
@@ -583,36 +503,6 @@ components:
           - TASK_DEFINITION
           - SERVICE
           - NONE
-    Tag:
-      type: object
-      description: A tag applied to an ECS resource
-      properties:
-        key:
-          type: string
-          description: The tag key
-          example: Environment
-        value:
-          type: string
-          description: The tag value
-          example: production
-    CreateServiceResponse:
-      type: object
-      description: Response from CreateService
-      properties:
-        service:
-          $ref: '#/components/schemas/Service'
-    ErrorResponse:
-      type: object
-      description: Error response from the Amazon ECS API
-      properties:
-        __type:
-          type: string
-          description: Error type
-          example: InvalidParameterException
-        message:
-          type: string
-          description: Error message
-          example: The specified cluster is not in the ACTIVE state.
     ListServicesResponse:
       type: object
       description: Response from ListServices
@@ -625,6 +515,51 @@ components:
         nextToken:
           type: string
           description: Pagination token
+    Failure:
+      type: object
+      description: A failure returned by an API operation
+      properties:
+        arn:
+          type: string
+          description: ARN of the resource that failed
+          example: arn:aws:ecs:us-east-1:123456789012:cluster/missing-cluster
+        reason:
+          type: string
+          description: Reason for the failure
+          example: MISSING
+        detail:
+          type: string
+          description: Additional detail about the failure
+    DescribeServicesResponse:
+      type: object
+      description: Response from DescribeServices
+      properties:
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/Service'
+        failures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Failure'
+    Tag:
+      type: object
+      description: A tag applied to an ECS resource
+      properties:
+        key:
+          type: string
+          description: The tag key
+          example: Environment
+        value:
+          type: string
+          description: The tag value
+          example: production
+    DeleteServiceResponse:
+      type: object
+      description: Response from DeleteService
+      properties:
+        service:
+          $ref: '#/components/schemas/Service'
     DescribeServicesRequest:
       type: object
       required:
@@ -644,6 +579,71 @@ components:
           description: Additional data to include
           items:
             type: string
+    DeleteServiceRequest:
+      type: object
+      required:
+      - service
+      description: Request for DeleteService
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        service:
+          type: string
+          description: Service name or ARN
+        force:
+          type: boolean
+          description: Force delete even with running tasks
+    UpdateServiceResponse:
+      type: object
+      description: Response from UpdateService
+      properties:
+        service:
+          $ref: '#/components/schemas/Service'
+    CreateServiceResponse:
+      type: object
+      description: Response from CreateService
+      properties:
+        service:
+          $ref: '#/components/schemas/Service'
+    ErrorResponse:
+      type: object
+      description: Error response from the Amazon ECS API
+      properties:
+        __type:
+          type: string
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
+    UpdateServiceRequest:
+      type: object
+      required:
+      - service
+      description: Request for UpdateService
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        service:
+          type: string
+          description: Service name or ARN
+        desiredCount:
+          type: integer
+          description: Desired task count
+        taskDefinition:
+          type: string
+          description: Task definition
+        networkConfiguration:
+          $ref: '#/components/schemas/NetworkConfiguration'
+        deploymentConfiguration:
+          type: object
+          description: Deployment configuration
+        enableExecuteCommand:
+          type: boolean
+          description: Enable ECS Exec
   securitySchemes:
     aws_signature_v4:
       type: apiKey

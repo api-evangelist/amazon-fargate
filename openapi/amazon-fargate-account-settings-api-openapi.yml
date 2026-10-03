@@ -144,6 +144,12 @@ components:
         principalArn:
           type: string
           description: IAM principal ARN
+    PutAccountSettingResponse:
+      type: object
+      description: Response from PutAccountSetting
+      properties:
+        setting:
+          $ref: '#/components/schemas/AccountSetting'
     ListAccountSettingsResponse:
       type: object
       description: Response from ListAccountSettings
@@ -155,12 +161,22 @@ components:
         nextToken:
           type: string
           description: Pagination token
-    PutAccountSettingResponse:
+    AccountSetting:
       type: object
-      description: Response from PutAccountSetting
+      description: An ECS account setting
       properties:
-        setting:
-          $ref: '#/components/schemas/AccountSetting'
+        name:
+          type: string
+          description: Setting name
+          example: containerInsights
+        value:
+          type: string
+          description: Setting value
+          example: enabled
+        principalArn:
+          type: string
+          description: Principal ARN
+          example: arn:aws:iam::123456789012:root
     ErrorResponse:
       type: object
       description: Error response from the Amazon ECS API
@@ -195,22 +211,6 @@ components:
         maxResults:
           type: integer
           description: Maximum results
-    AccountSetting:
-      type: object
-      description: An ECS account setting
-      properties:
-        name:
-          type: string
-          description: Setting name
-          example: containerInsights
-        value:
-          type: string
-          description: Setting value
-          example: enabled
-        principalArn:
-          type: string
-          description: Principal ARN
-          example: arn:aws:iam::123456789012:root
   securitySchemes:
     aws_signature_v4:
       type: apiKey

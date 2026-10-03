@@ -257,12 +257,53 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
+    PortMapping:
+      type: object
+      description: Port mapping for a container
+      properties:
+        containerPort:
+          type: integer
+          description: Container port
+          example: 80
+        hostPort:
+          type: integer
+          description: Host port
+          example: 80
+        protocol:
+          type: string
+          description: Protocol
+          example: tcp
+          enum:
+          - tcp
+          - udp
+    RegisterTaskDefinitionResponse:
+      type: object
+      description: Response from RegisterTaskDefinition
+      properties:
+        taskDefinition:
+          $ref: '#/components/schemas/TaskDefinition'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
     DeregisterTaskDefinitionResponse:
       type: object
       description: Response from DeregisterTaskDefinition
       properties:
         taskDefinition:
           $ref: '#/components/schemas/TaskDefinition'
+    KeyValuePair:
+      type: object
+      description: A key-value pair
+      properties:
+        name:
+          type: string
+          description: Key name
+          example: LOG_LEVEL
+        value:
+          type: string
+          description: Key value
+          example: INFO
     DescribeTaskDefinitionResponse:
       type: object
       description: Response from DescribeTaskDefinition
@@ -273,6 +314,41 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Tag'
+    ListTaskDefinitionsRequest:
+      type: object
+      description: Request for ListTaskDefinitions
+      properties:
+        familyPrefix:
+          type: string
+          description: Family prefix filter
+        status:
+          type: string
+          description: Status filter
+          enum:
+          - ACTIVE
+          - INACTIVE
+          - DELETE_IN_PROGRESS
+        sort:
+          type: string
+          description: Sort order
+          enum:
+          - ASC
+          - DESC
+        nextToken:
+          type: string
+          description: Pagination token
+        maxResults:
+          type: integer
+          description: Maximum results
+    DeregisterTaskDefinitionRequest:
+      type: object
+      required:
+      - taskDefinition
+      description: Request for DeregisterTaskDefinition
+      properties:
+        taskDefinition:
+          type: string
+          description: Task definition family:revision or ARN
     ListTaskDefinitionsResponse:
       type: object
       description: Response from ListTaskDefinitions
@@ -346,116 +422,6 @@ components:
           description: Container definitions
           items:
             $ref: '#/components/schemas/ContainerDefinition'
-    RegisterTaskDefinitionResponse:
-      type: object
-      description: Response from RegisterTaskDefinition
-      properties:
-        taskDefinition:
-          $ref: '#/components/schemas/TaskDefinition'
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/Tag'
-    DeregisterTaskDefinitionRequest:
-      type: object
-      required:
-      - taskDefinition
-      description: Request for DeregisterTaskDefinition
-      properties:
-        taskDefinition:
-          type: string
-          description: Task definition family:revision or ARN
-    Tag:
-      type: object
-      description: A tag applied to an ECS resource
-      properties:
-        key:
-          type: string
-          description: The tag key
-          example: Environment
-        value:
-          type: string
-          description: The tag value
-          example: production
-    ContainerDefinition:
-      type: object
-      description: Container definition for a task
-      properties:
-        name:
-          type: string
-          description: Container name
-          example: my-container
-        image:
-          type: string
-          description: Docker image
-          example: nginx:latest
-        essential:
-          type: boolean
-          description: Whether container is essential
-          example: true
-        cpu:
-          type: integer
-          description: CPU units for the container
-          example: 256
-        memory:
-          type: integer
-          description: Memory limit in MiB
-          example: 512
-        environment:
-          type: array
-          description: Environment variables
-          items:
-            $ref: '#/components/schemas/KeyValuePair'
-        portMappings:
-          type: array
-          description: Port mappings
-          items:
-            $ref: '#/components/schemas/PortMapping'
-        logConfiguration:
-          $ref: '#/components/schemas/LogConfiguration'
-    ErrorResponse:
-      type: object
-      description: Error response from the Amazon ECS API
-      properties:
-        __type:
-          type: string
-          description: Error type
-          example: InvalidParameterException
-        message:
-          type: string
-          description: Error message
-          example: The specified cluster is not in the ACTIVE state.
-    PortMapping:
-      type: object
-      description: Port mapping for a container
-      properties:
-        containerPort:
-          type: integer
-          description: Container port
-          example: 80
-        hostPort:
-          type: integer
-          description: Host port
-          example: 80
-        protocol:
-          type: string
-          description: Protocol
-          example: tcp
-          enum:
-          - tcp
-          - udp
-    KeyValuePair:
-      type: object
-      description: A key-value pair
-      properties:
-        name:
-          type: string
-          description: Key name
-          example: LOG_LEVEL
-        value:
-          type: string
-          description: Key value
-          example: INFO
     DescribeTaskDefinitionRequest:
       type: object
       required:
@@ -493,6 +459,18 @@ components:
           description: Log driver options
           additionalProperties:
             type: string
+    ErrorResponse:
+      type: object
+      description: Error response from the Amazon ECS API
+      properties:
+        __type:
+          type: string
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
     RegisterTaskDefinitionRequest:
       type: object
       required:
@@ -543,32 +521,54 @@ components:
           description: Tags
           items:
             $ref: '#/components/schemas/Tag'
-    ListTaskDefinitionsRequest:
+    Tag:
       type: object
-      description: Request for ListTaskDefinitions
+      description: A tag applied to an ECS resource
       properties:
-        familyPrefix:
+        key:
           type: string
-          description: Family prefix filter
-        status:
+          description: The tag key
+          example: Environment
+        value:
           type: string
-          description: Status filter
-          enum:
-          - ACTIVE
-          - INACTIVE
-          - DELETE_IN_PROGRESS
-        sort:
+          description: The tag value
+          example: production
+    ContainerDefinition:
+      type: object
+      description: Container definition for a task
+      properties:
+        name:
           type: string
-          description: Sort order
-          enum:
-          - ASC
-          - DESC
-        nextToken:
+          description: Container name
+          example: my-container
+        image:
           type: string
-          description: Pagination token
-        maxResults:
+          description: Docker image
+          example: nginx:latest
+        essential:
+          type: boolean
+          description: Whether container is essential
+          example: true
+        cpu:
           type: integer
-          description: Maximum results
+          description: CPU units for the container
+          example: 256
+        memory:
+          type: integer
+          description: Memory limit in MiB
+          example: 512
+        environment:
+          type: array
+          description: Environment variables
+          items:
+            $ref: '#/components/schemas/KeyValuePair'
+        portMappings:
+          type: array
+          description: Port mappings
+          items:
+            $ref: '#/components/schemas/PortMapping'
+        logConfiguration:
+          $ref: '#/components/schemas/LogConfiguration'
   securitySchemes:
     aws_signature_v4:
       type: apiKey
