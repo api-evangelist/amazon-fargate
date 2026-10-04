@@ -321,6 +321,144 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
+    DescribeServicesRequest:
+      type: object
+      required:
+      - services
+      description: Request for DescribeServices
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        services:
+          type: array
+          description: Service names or ARNs
+          items:
+            type: string
+        include:
+          type: array
+          description: Additional data to include
+          items:
+            type: string
+    DescribeServicesResponse:
+      type: object
+      description: Response from DescribeServices
+      properties:
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/Service'
+        failures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Failure'
+    DeleteServiceRequest:
+      type: object
+      required:
+      - service
+      description: Request for DeleteService
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        service:
+          type: string
+          description: Service name or ARN
+        force:
+          type: boolean
+          description: Force delete even with running tasks
+    UpdateServiceRequest:
+      type: object
+      required:
+      - service
+      description: Request for UpdateService
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        service:
+          type: string
+          description: Service name or ARN
+        desiredCount:
+          type: integer
+          description: Desired task count
+        taskDefinition:
+          type: string
+          description: Task definition
+        networkConfiguration:
+          $ref: '#/components/schemas/NetworkConfiguration'
+        deploymentConfiguration:
+          type: object
+          description: Deployment configuration
+        enableExecuteCommand:
+          type: boolean
+          description: Enable ECS Exec
+    CreateServiceRequest:
+      type: object
+      required:
+      - serviceName
+      - taskDefinition
+      description: Request for CreateService
+      properties:
+        cluster:
+          type: string
+          description: Cluster name or ARN
+        serviceName:
+          type: string
+          description: Service name
+          example: my-fargate-service
+        taskDefinition:
+          type: string
+          description: Task definition
+          example: my-fargate-task:1
+        launchType:
+          type: string
+          description: Launch type
+          example: FARGATE
+        desiredCount:
+          type: integer
+          description: Desired number of tasks
+          example: 2
+        networkConfiguration:
+          $ref: '#/components/schemas/NetworkConfiguration'
+        loadBalancers:
+          type: array
+          description: Load balancers
+          items:
+            $ref: '#/components/schemas/LoadBalancer'
+        deploymentConfiguration:
+          type: object
+          description: Deployment configuration
+        tags:
+          type: array
+          description: Tags
+          items:
+            $ref: '#/components/schemas/Tag'
+        enableExecuteCommand:
+          type: boolean
+          description: Enable ECS Exec
+        propagateTags:
+          type: string
+          description: Tag propagation
+          enum:
+          - TASK_DEFINITION
+          - SERVICE
+          - NONE
+    Failure:
+      type: object
+      description: A failure returned by an API operation
+      properties:
+        arn:
+          type: string
+          description: ARN of the resource that failed
+          example: arn:aws:ecs:us-east-1:123456789012:cluster/missing-cluster
+        reason:
+          type: string
+          description: Reason for the failure
+          example: MISSING
+        detail:
+          type: string
+          description: Additional detail about the failure
     AwsVpcConfiguration:
       type: object
       description: VPC configuration for awsvpc network mode
@@ -367,12 +505,30 @@ components:
         maxResults:
           type: integer
           description: Maximum results
+    Tag:
+      type: object
+      description: A tag applied to an ECS resource
+      properties:
+        key:
+          type: string
+          description: The tag key
+          example: Environment
+        value:
+          type: string
+          description: The tag value
+          example: production
     NetworkConfiguration:
       type: object
       description: Network configuration for the task
       properties:
         awsvpcConfiguration:
           $ref: '#/components/schemas/AwsVpcConfiguration'
+    DeleteServiceResponse:
+      type: object
+      description: Response from DeleteService
+      properties:
+        service:
+          $ref: '#/components/schemas/Service'
     Service:
       type: object
       description: An Amazon ECS service
@@ -433,6 +589,12 @@ components:
           description: Tags
           items:
             $ref: '#/components/schemas/Tag'
+    UpdateServiceResponse:
+      type: object
+      description: Response from UpdateService
+      properties:
+        service:
+          $ref: '#/components/schemas/Service'
     LoadBalancer:
       type: object
       description: Load balancer configuration for a service
@@ -452,57 +614,6 @@ components:
           type: integer
           description: Container port
           example: 80
-    CreateServiceRequest:
-      type: object
-      required:
-      - serviceName
-      - taskDefinition
-      description: Request for CreateService
-      properties:
-        cluster:
-          type: string
-          description: Cluster name or ARN
-        serviceName:
-          type: string
-          description: Service name
-          example: my-fargate-service
-        taskDefinition:
-          type: string
-          description: Task definition
-          example: my-fargate-task:1
-        launchType:
-          type: string
-          description: Launch type
-          example: FARGATE
-        desiredCount:
-          type: integer
-          description: Desired number of tasks
-          example: 2
-        networkConfiguration:
-          $ref: '#/components/schemas/NetworkConfiguration'
-        loadBalancers:
-          type: array
-          description: Load balancers
-          items:
-            $ref: '#/components/schemas/LoadBalancer'
-        deploymentConfiguration:
-          type: object
-          description: Deployment configuration
-        tags:
-          type: array
-          description: Tags
-          items:
-            $ref: '#/components/schemas/Tag'
-        enableExecuteCommand:
-          type: boolean
-          description: Enable ECS Exec
-        propagateTags:
-          type: string
-          description: Tag propagation
-          enum:
-          - TASK_DEFINITION
-          - SERVICE
-          - NONE
     ListServicesResponse:
       type: object
       description: Response from ListServices
@@ -515,91 +626,6 @@ components:
         nextToken:
           type: string
           description: Pagination token
-    Failure:
-      type: object
-      description: A failure returned by an API operation
-      properties:
-        arn:
-          type: string
-          description: ARN of the resource that failed
-          example: arn:aws:ecs:us-east-1:123456789012:cluster/missing-cluster
-        reason:
-          type: string
-          description: Reason for the failure
-          example: MISSING
-        detail:
-          type: string
-          description: Additional detail about the failure
-    DescribeServicesResponse:
-      type: object
-      description: Response from DescribeServices
-      properties:
-        services:
-          type: array
-          items:
-            $ref: '#/components/schemas/Service'
-        failures:
-          type: array
-          items:
-            $ref: '#/components/schemas/Failure'
-    Tag:
-      type: object
-      description: A tag applied to an ECS resource
-      properties:
-        key:
-          type: string
-          description: The tag key
-          example: Environment
-        value:
-          type: string
-          description: The tag value
-          example: production
-    DeleteServiceResponse:
-      type: object
-      description: Response from DeleteService
-      properties:
-        service:
-          $ref: '#/components/schemas/Service'
-    DescribeServicesRequest:
-      type: object
-      required:
-      - services
-      description: Request for DescribeServices
-      properties:
-        cluster:
-          type: string
-          description: Cluster name or ARN
-        services:
-          type: array
-          description: Service names or ARNs
-          items:
-            type: string
-        include:
-          type: array
-          description: Additional data to include
-          items:
-            type: string
-    DeleteServiceRequest:
-      type: object
-      required:
-      - service
-      description: Request for DeleteService
-      properties:
-        cluster:
-          type: string
-          description: Cluster name or ARN
-        service:
-          type: string
-          description: Service name or ARN
-        force:
-          type: boolean
-          description: Force delete even with running tasks
-    UpdateServiceResponse:
-      type: object
-      description: Response from UpdateService
-      properties:
-        service:
-          $ref: '#/components/schemas/Service'
     CreateServiceResponse:
       type: object
       description: Response from CreateService
@@ -618,32 +644,6 @@ components:
           type: string
           description: Error message
           example: The specified cluster is not in the ACTIVE state.
-    UpdateServiceRequest:
-      type: object
-      required:
-      - service
-      description: Request for UpdateService
-      properties:
-        cluster:
-          type: string
-          description: Cluster name or ARN
-        service:
-          type: string
-          description: Service name or ARN
-        desiredCount:
-          type: integer
-          description: Desired task count
-        taskDefinition:
-          type: string
-          description: Task definition
-        networkConfiguration:
-          $ref: '#/components/schemas/NetworkConfiguration'
-        deploymentConfiguration:
-          type: object
-          description: Deployment configuration
-        enableExecuteCommand:
-          type: boolean
-          description: Enable ECS Exec
   securitySchemes:
     aws_signature_v4:
       type: apiKey

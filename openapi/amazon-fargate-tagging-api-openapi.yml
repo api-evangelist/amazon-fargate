@@ -148,36 +148,6 @@ components:
           description: Tags to apply
           items:
             $ref: '#/components/schemas/Tag'
-    ListTagsForResourceResponse:
-      type: object
-      description: Response from ListTagsForResource
-      properties:
-        tags:
-          type: array
-          description: List of tags
-          items:
-            $ref: '#/components/schemas/Tag'
-    ListTagsForResourceRequest:
-      type: object
-      required:
-      - resourceArn
-      description: Request for ListTagsForResource
-      properties:
-        resourceArn:
-          type: string
-          description: Resource ARN
-    ErrorResponse:
-      type: object
-      description: Error response from the Amazon ECS API
-      properties:
-        __type:
-          type: string
-          description: Error type
-          example: InvalidParameterException
-        message:
-          type: string
-          description: Error message
-          example: The specified cluster is not in the ACTIVE state.
     Tag:
       type: object
       description: A tag applied to an ECS resource
@@ -190,6 +160,36 @@ components:
           type: string
           description: The tag value
           example: production
+    ListTagsForResourceRequest:
+      type: object
+      required:
+      - resourceArn
+      description: Request for ListTagsForResource
+      properties:
+        resourceArn:
+          type: string
+          description: Resource ARN
+    ListTagsForResourceResponse:
+      type: object
+      description: Response from ListTagsForResource
+      properties:
+        tags:
+          type: array
+          description: List of tags
+          items:
+            $ref: '#/components/schemas/Tag'
+    ErrorResponse:
+      type: object
+      description: Error response from the Amazon ECS API
+      properties:
+        __type:
+          type: string
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
   securitySchemes:
     aws_signature_v4:
       type: apiKey

@@ -276,91 +276,71 @@ components:
           enum:
           - tcp
           - udp
-    RegisterTaskDefinitionResponse:
+    RegisterTaskDefinitionRequest:
       type: object
-      description: Response from RegisterTaskDefinition
+      required:
+      - family
+      - containerDefinitions
+      description: Request for RegisterTaskDefinition
       properties:
-        taskDefinition:
-          $ref: '#/components/schemas/TaskDefinition'
+        family:
+          type: string
+          description: Task definition family
+          example: my-fargate-task
+        taskRoleArn:
+          type: string
+          description: Task IAM role ARN
+        executionRoleArn:
+          type: string
+          description: Task execution IAM role ARN
+          example: arn:aws:iam::123456789012:role/ecsTaskExecutionRole
+        networkMode:
+          type: string
+          description: Docker networking mode
+          example: awsvpc
+        requiresCompatibilities:
+          type: array
+          description: Launch type compatibility
+          items:
+            type: string
+        cpu:
+          type: string
+          description: CPU units (required for Fargate)
+          example: '256'
+        memory:
+          type: string
+          description: Memory in MiB (required for Fargate)
+          example: '512'
+        containerDefinitions:
+          type: array
+          description: Container definitions
+          items:
+            $ref: '#/components/schemas/ContainerDefinition'
+        volumes:
+          type: array
+          description: Volumes to mount
+          items:
+            type: object
         tags:
           type: array
+          description: Tags
           items:
             $ref: '#/components/schemas/Tag'
-    DeregisterTaskDefinitionResponse:
-      type: object
-      description: Response from DeregisterTaskDefinition
-      properties:
-        taskDefinition:
-          $ref: '#/components/schemas/TaskDefinition'
-    KeyValuePair:
-      type: object
-      description: A key-value pair
-      properties:
-        name:
-          type: string
-          description: Key name
-          example: LOG_LEVEL
-        value:
-          type: string
-          description: Key value
-          example: INFO
-    DescribeTaskDefinitionResponse:
-      type: object
-      description: Response from DescribeTaskDefinition
-      properties:
-        taskDefinition:
-          $ref: '#/components/schemas/TaskDefinition'
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/Tag'
-    ListTaskDefinitionsRequest:
-      type: object
-      description: Request for ListTaskDefinitions
-      properties:
-        familyPrefix:
-          type: string
-          description: Family prefix filter
-        status:
-          type: string
-          description: Status filter
-          enum:
-          - ACTIVE
-          - INACTIVE
-          - DELETE_IN_PROGRESS
-        sort:
-          type: string
-          description: Sort order
-          enum:
-          - ASC
-          - DESC
-        nextToken:
-          type: string
-          description: Pagination token
-        maxResults:
-          type: integer
-          description: Maximum results
-    DeregisterTaskDefinitionRequest:
+    DescribeTaskDefinitionRequest:
       type: object
       required:
       - taskDefinition
-      description: Request for DeregisterTaskDefinition
+      description: Request for DescribeTaskDefinition
       properties:
         taskDefinition:
           type: string
           description: Task definition family:revision or ARN
-    ListTaskDefinitionsResponse:
-      type: object
-      description: Response from ListTaskDefinitions
-      properties:
-        taskDefinitionArns:
+          example: my-fargate-task:1
+        include:
           type: array
-          description: List of task definition ARNs
+          description: Additional data to include
           items:
             type: string
-        nextToken:
-          type: string
-          description: Pagination token
     TaskDefinition:
       type: object
       description: An Amazon ECS task definition
@@ -422,105 +402,54 @@ components:
           description: Container definitions
           items:
             $ref: '#/components/schemas/ContainerDefinition'
-    DescribeTaskDefinitionRequest:
+    ListTaskDefinitionsResponse:
       type: object
-      required:
-      - taskDefinition
-      description: Request for DescribeTaskDefinition
+      description: Response from ListTaskDefinitions
+      properties:
+        taskDefinitionArns:
+          type: array
+          description: List of task definition ARNs
+          items:
+            type: string
+        nextToken:
+          type: string
+          description: Pagination token
+    DescribeTaskDefinitionResponse:
+      type: object
+      description: Response from DescribeTaskDefinition
       properties:
         taskDefinition:
-          type: string
-          description: Task definition family:revision or ARN
-          example: my-fargate-task:1
-        include:
-          type: array
-          description: Additional data to include
-          items:
-            type: string
-    LogConfiguration:
-      type: object
-      description: Log configuration for a container
-      properties:
-        logDriver:
-          type: string
-          description: Log driver
-          example: awslogs
-          enum:
-          - json-file
-          - syslog
-          - journald
-          - gelf
-          - fluentd
-          - awslogs
-          - splunk
-          - awsfirelens
-        options:
-          type: object
-          description: Log driver options
-          additionalProperties:
-            type: string
-    ErrorResponse:
-      type: object
-      description: Error response from the Amazon ECS API
-      properties:
-        __type:
-          type: string
-          description: Error type
-          example: InvalidParameterException
-        message:
-          type: string
-          description: Error message
-          example: The specified cluster is not in the ACTIVE state.
-    RegisterTaskDefinitionRequest:
-      type: object
-      required:
-      - family
-      - containerDefinitions
-      description: Request for RegisterTaskDefinition
-      properties:
-        family:
-          type: string
-          description: Task definition family
-          example: my-fargate-task
-        taskRoleArn:
-          type: string
-          description: Task IAM role ARN
-        executionRoleArn:
-          type: string
-          description: Task execution IAM role ARN
-          example: arn:aws:iam::123456789012:role/ecsTaskExecutionRole
-        networkMode:
-          type: string
-          description: Docker networking mode
-          example: awsvpc
-        requiresCompatibilities:
-          type: array
-          description: Launch type compatibility
-          items:
-            type: string
-        cpu:
-          type: string
-          description: CPU units (required for Fargate)
-          example: '256'
-        memory:
-          type: string
-          description: Memory in MiB (required for Fargate)
-          example: '512'
-        containerDefinitions:
-          type: array
-          description: Container definitions
-          items:
-            $ref: '#/components/schemas/ContainerDefinition'
-        volumes:
-          type: array
-          description: Volumes to mount
-          items:
-            type: object
+          $ref: '#/components/schemas/TaskDefinition'
         tags:
           type: array
-          description: Tags
           items:
             $ref: '#/components/schemas/Tag'
+    ListTaskDefinitionsRequest:
+      type: object
+      description: Request for ListTaskDefinitions
+      properties:
+        familyPrefix:
+          type: string
+          description: Family prefix filter
+        status:
+          type: string
+          description: Status filter
+          enum:
+          - ACTIVE
+          - INACTIVE
+          - DELETE_IN_PROGRESS
+        sort:
+          type: string
+          description: Sort order
+          enum:
+          - ASC
+          - DESC
+        nextToken:
+          type: string
+          description: Pagination token
+        maxResults:
+          type: integer
+          description: Maximum results
     Tag:
       type: object
       description: A tag applied to an ECS resource
@@ -569,6 +498,77 @@ components:
             $ref: '#/components/schemas/PortMapping'
         logConfiguration:
           $ref: '#/components/schemas/LogConfiguration'
+    KeyValuePair:
+      type: object
+      description: A key-value pair
+      properties:
+        name:
+          type: string
+          description: Key name
+          example: LOG_LEVEL
+        value:
+          type: string
+          description: Key value
+          example: INFO
+    RegisterTaskDefinitionResponse:
+      type: object
+      description: Response from RegisterTaskDefinition
+      properties:
+        taskDefinition:
+          $ref: '#/components/schemas/TaskDefinition'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+    DeregisterTaskDefinitionRequest:
+      type: object
+      required:
+      - taskDefinition
+      description: Request for DeregisterTaskDefinition
+      properties:
+        taskDefinition:
+          type: string
+          description: Task definition family:revision or ARN
+    DeregisterTaskDefinitionResponse:
+      type: object
+      description: Response from DeregisterTaskDefinition
+      properties:
+        taskDefinition:
+          $ref: '#/components/schemas/TaskDefinition'
+    ErrorResponse:
+      type: object
+      description: Error response from the Amazon ECS API
+      properties:
+        __type:
+          type: string
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
+    LogConfiguration:
+      type: object
+      description: Log configuration for a container
+      properties:
+        logDriver:
+          type: string
+          description: Log driver
+          example: awslogs
+          enum:
+          - json-file
+          - syslog
+          - journald
+          - gelf
+          - fluentd
+          - awslogs
+          - splunk
+          - awsfirelens
+        options:
+          type: object
+          description: Log driver options
+          additionalProperties:
+            type: string
   securitySchemes:
     aws_signature_v4:
       type: apiKey

@@ -144,12 +144,6 @@ components:
         principalArn:
           type: string
           description: IAM principal ARN
-    PutAccountSettingResponse:
-      type: object
-      description: Response from PutAccountSetting
-      properties:
-        setting:
-          $ref: '#/components/schemas/AccountSetting'
     ListAccountSettingsResponse:
       type: object
       description: Response from ListAccountSettings
@@ -177,18 +171,6 @@ components:
           type: string
           description: Principal ARN
           example: arn:aws:iam::123456789012:root
-    ErrorResponse:
-      type: object
-      description: Error response from the Amazon ECS API
-      properties:
-        __type:
-          type: string
-          description: Error type
-          example: InvalidParameterException
-        message:
-          type: string
-          description: Error message
-          example: The specified cluster is not in the ACTIVE state.
     ListAccountSettingsRequest:
       type: object
       description: Request for ListAccountSettings
@@ -211,6 +193,24 @@ components:
         maxResults:
           type: integer
           description: Maximum results
+    PutAccountSettingResponse:
+      type: object
+      description: Response from PutAccountSetting
+      properties:
+        setting:
+          $ref: '#/components/schemas/AccountSetting'
+    ErrorResponse:
+      type: object
+      description: Error response from the Amazon ECS API
+      properties:
+        __type:
+          type: string
+          description: Error type
+          example: InvalidParameterException
+        message:
+          type: string
+          description: Error message
+          example: The specified cluster is not in the ACTIVE state.
   securitySchemes:
     aws_signature_v4:
       type: apiKey
