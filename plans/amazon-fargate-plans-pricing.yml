@@ -1,0 +1,106 @@
+# Pricing transcribed from the provider's own page — see provenance. Numbers are quoted, not derived.
+generated: '2026-10-28'
+method: searched
+source: https://aws.amazon.com/fargate/pricing/
+sources:
+- https://aws.amazon.com/fargate/pricing/
+provenance:
+  tool: engine/economics/harvest_pricing.py
+  run: 20261028T161713
+  grounding: every price_text was found verbatim in the fetched page text
+audience: developer-api
+pricing_basis: usage-other
+delivery:
+  delivery: managed
+  method: page
+  read: '2026-10-28'
+published: true
+note: Main rate tables are dynamic region-based placeholders that did not render; numeric prices only
+  appear in the pricing examples for US East (N. Virginia). Page also mentions Fargate Spot 'up to a 70%
+  discount' and Compute Savings Plans 'up to 50%' savings for 1- or 3-year commitments.
+plan_count: 5
+currency: USD
+plans:
+- name: Linux/X86 (US East N. Virginia, from pricing example)
+  price_text: $0.000011244 per vCPU second
+  price: 1.1244e-05
+  currency: USD
+  period: per-use
+  unit: vCPU-second
+- name: Linux/X86 memory (US East N. Virginia, from pricing example)
+  price_text: $0.000001235 per GB per second
+  price: 1.235e-06
+  currency: USD
+  period: per-use
+  unit: GB-second
+- name: Ephemeral storage (from pricing example)
+  price_text: $0.0000000308 per GB per second
+  price: 3.08e-08
+  currency: USD
+  period: per-use
+  unit: GB-second
+  included_quota: 20 GB of ephemeral storage is available for all Fargate Tasks and Pods by default
+- name: Linux/ARM vCPU (from pricing example)
+  price_text: $0.0000089944 per vCPU second
+  price: 8.9944e-06
+  currency: USD
+  period: per-use
+  unit: vCPU-second
+- name: Linux/ARM memory (from pricing example)
+  price_text: $0.0000009889 per GB per second
+  price: 9.889e-07
+  currency: USD
+  period: per-use
+  unit: GB-second
+rate_limit_statements:
+- Pricing is calculated per second with a 1-minute minimum.
+- For Windows containers, billing is calculated per second with a 5-minute minimum.
+x-canonical:
+  generated: '2026-11-01'
+  vocabulary: engine/economics/plans-canonical.yml
+  models:
+  - hybrid
+  units:
+  - compute
+  - data
+  plans:
+  - name: Linux/X86 (US East N. Virginia, from pricing example)
+    access: other
+    model: hybrid
+    model_how: derived
+    units:
+    - compute
+    periods:
+    - other
+  - name: Linux/X86 memory (US East N. Virginia, from pricing example)
+    access: other
+    model: hybrid
+    model_how: derived
+    units:
+    - data
+    periods:
+    - other
+  - name: Ephemeral storage (from pricing example)
+    access: other
+    model: hybrid
+    model_how: derived
+    units:
+    - data
+    periods:
+    - other
+  - name: Linux/ARM vCPU (from pricing example)
+    access: other
+    model: hybrid
+    model_how: derived
+    units:
+    - compute
+    periods:
+    - other
+  - name: Linux/ARM memory (from pricing example)
+    access: other
+    model: hybrid
+    model_how: derived
+    units:
+    - data
+    periods:
+    - other
