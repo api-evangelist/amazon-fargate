@@ -5,6 +5,9 @@ artifacts:
   agentic-access/amazon-fargate-agentic-access.yml:
     method: generated
     evidence: declared in the artifact
+  ai-preferences/amazon-fargate-ai-preferences.yml:
+    method: harvested
+    evidence: declared in the artifact
   arazzo/amazon-fargate-cluster-inventory-audit-workflow.yml:
     method: derived
     evidence: Arazzo whose sourceDescriptions are our split specs (../openapi/)
@@ -34,6 +37,12 @@ artifacts:
     evidence: Arazzo whose sourceDescriptions are our split specs (../openapi/)
   authentication/amazon-fargate-authentication.yml:
     method: derived
+    evidence: declared in the artifact
+  certification/status.yml:
+    method: unknown
+    evidence: no authorship recorded
+  cli/amazon-fargate-cli.yml:
+    method: searched
     evidence: declared in the artifact
   collections/amazon-fargate-account-settings-api.opencollection.json:
     method: derived
@@ -77,6 +86,18 @@ artifacts:
   collections/amazon-fargate.postman_collection.json:
     method: derived
     evidence: openapi/amazon-fargate
+  conformance/amazon-fargate-conformance.yml:
+    method: derived
+    evidence: declared in the artifact
+  data-model/amazon-fargate-data-model.yml:
+    method: derived
+    evidence: declared in the artifact
+  eligibility/amazon-fargate-eligibility.yml:
+    method: harvested
+    evidence: declared in the artifact
+  errors/amazon-fargate-problem-types.yml:
+    method: derived
+    evidence: declared in the artifact
   examples/amazon-fargate-account-setting-example.json:
     method: unknown
     evidence: no authorship recorded
@@ -131,6 +152,9 @@ artifacts:
   front-door-ai/2026-09-17.yml:
     method: unknown
     evidence: no authorship recorded
+  hosts/amazon-fargate-hosts.yml:
+    method: derived
+    evidence: declared in the artifact
   integrations/_index.yml:
     method: generated
     evidence: carries an API Evangelist house phrase
@@ -161,6 +185,18 @@ artifacts:
   json-schema/amazon-fargate-key-value-pair-schema.json:
     method: unknown
     evidence: no authorship recorded
+  json-schema/amazon-fargate-list-account-settings-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/amazon-fargate-list-account-settings-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/amazon-fargate-list-tags-for-resource-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/amazon-fargate-list-tags-for-resource-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
   json-schema/amazon-fargate-load-balancer-schema.json:
     method: unknown
     evidence: no authorship recorded
@@ -173,7 +209,16 @@ artifacts:
   json-schema/amazon-fargate-port-mapping-schema.json:
     method: unknown
     evidence: no authorship recorded
+  json-schema/amazon-fargate-put-account-setting-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/amazon-fargate-put-account-setting-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
   json-schema/amazon-fargate-service-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/amazon-fargate-tag-resource-request-schema.json:
     method: unknown
     evidence: no authorship recorded
   json-schema/amazon-fargate-tag-schema.json:
@@ -236,7 +281,7 @@ artifacts:
   kin/checks-2026-10-23T222754.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
-  kin/checks-2026-11-02T082323.yml:
+  kin/checks-2026-11-06T143934.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
   kin/score-2026-09-23T000603.yml:
@@ -305,6 +350,21 @@ artifacts:
   kin/score-2026-11-02T082323.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-11-06T143934.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  llms/amazon-fargate-llms-provenance.yml:
+    method: unknown
+    evidence: no authorship recorded
+  llms/amazon-fargate-llms.txt:
+    method: unknown
+    evidence: no authorship recorded
+  mcp/amazon-fargate-mcp.yml:
+    method: searched
+    evidence: declared in the artifact
+  mcp/amazon-fargate-tool-crosswalk.yml:
+    method: derived
+    evidence: declared in the artifact
   openapi/amazon-fargate-account-settings-api-openapi.yml:
     method: unknown
     evidence: no authorship recorded
@@ -323,16 +383,28 @@ artifacts:
   openapi/amazon-fargate-tasks-api-openapi.yml:
     method: unknown
     evidence: no authorship recorded
+  packages/amazon-fargate-packages.yml:
+    method: searched
+    evidence: declared in the artifact
+  patterns/amazon-fargate-patterns.yml:
+    method: derived
+    evidence: declared in the artifact
   plans/amazon-fargate-plans-pricing.yml:
     method: searched
     evidence: declared in the artifact
   postman/amazon-fargate.postman_collection.json:
     method: derived
     evidence: openapi/amazon-fargate
+  privacy/amazon-fargate-privacy-policy.yml:
+    method: harvested
+    evidence: declared in the artifact
   rate-limits/amazon-fargate-rate-limits.yml:
-    method: generated
+    method: searched
     evidence: declared in the artifact
   rules/amazon-fargate-jsonschema-spectral-rules.yml:
+    method: generated
+    evidence: declared in the artifact
+  rules/amazon-fargate-rules.yml:
     method: generated
     evidence: declared in the artifact
   rules/amazon-fargate-spectral-rules.yml:
@@ -347,6 +419,24 @@ artifacts:
   sla/amazon-fargate-sla.yml:
     method: generated
     evidence: declared in the artifact
+  terms/amazon-fargate-terms-of-service.yml:
+    method: harvested
+    evidence: declared in the artifact
+  vendors/amazon-fargate-vendors.yml:
+    method: unknown
+    evidence: no authorship recorded
   vocabulary/amazon-fargate-vocabulary.yaml:
+    method: unknown
+    evidence: no authorship recorded
+  vocabulary/amazon-fargate-vocabulary.yml:
+    method: derived
+    evidence: declared in the artifact
+  well-known/amazon-fargate-midway-auth-openid-configuration.json:
+    method: unknown
+    evidence: no authorship recorded
+  well-known/amazon-fargate-security.txt:
+    method: unknown
+    evidence: no authorship recorded
+  well-known/amazon-fargate-well-known.yml:
     method: unknown
     evidence: no authorship recorded
